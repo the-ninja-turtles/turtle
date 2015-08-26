@@ -325,7 +325,7 @@ When writing any block of code that is logically subordinate to the line immedia
 
 ## Files
 
-* Do not end a file with any character other than a newline.
+* Always end a file with a newline character.
 * Always end lines with \n and never with \r\n.
 * See http://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/ for more details.
 
