@@ -1,16 +1,14 @@
-import http from 'http';
 import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import models from './models';
 
+import auth from './routes/auth';
+import users from './routes/users';
+import projects, { validation } from './routes/projects';
 import sprints from './routes/sprints';
 import tasks from './routes/tasks';
 
 let app = express();
-
-// app is a function handler being supplied to http server
-let server = http.Server(app);
 
 // middleware for http request logging
 app.use(morgan('dev'));
@@ -20,18 +18,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 // routes
-app.use('/sprints', sprints);
-app.use('/tasks', tasks);
+app.use(auth);
+app.use(users); // maintains user table using Auth0 JSON Web Token
+app.param('projectId', validation); // stores project in req.project if valid
+app.use('/projects', projects);
+app.use('/projects/:projectId/sprints', sprints);
+app.use('/projects/:projectId/tasks', tasks);
 
 // catch 404
 app.use((req, res, next) => {
-  res.status(404).send('Not Found');
+  res.sendStatus(404);
 });
 
-// create tables and listen
-let port = process.env.PORT || 3000;
-models.sequelize.sync().then(() => {
-  server.listen(port, () => {
-    console.log('Listening on port', port);
-  });
-});
+export default app;
