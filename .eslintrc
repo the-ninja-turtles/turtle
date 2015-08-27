@@ -1,0 +1,84 @@
+rules:
+  # Defaults
+  no-console:
+    - 0
+
+  # Indentation
+  indent:
+    - 2
+    - 2
+
+  # Variables
+  no-unused-vars:
+    - 1
+    -
+      vars: all
+      args: none
+  no-var:
+    - 2
+
+  # Literals
+  quotes:
+    - 2
+    - single
+    - avoid-escape
+
+  # Language constructs
+  curly:
+    - 2
+    - all
+  eqeqeq:
+    - 2
+  prefer-arrow-callback:
+    - 2
+  consistent-this:
+    - 2
+    - self
+  arrow-parens:
+    - 2
+    - always
+
+  # Padding and whitespace
+  no-trailing-spaces:
+    - 2
+  space-after-keywords:
+    - 2
+    - always
+  space-before-blocks:
+    - 2
+    - always
+  space-in-parens:
+    - 2
+    - never
+  comma-spacing:
+    - 2
+  brace-style:
+    - 2
+  arrow-spacing:
+    - 2
+
+  # Semicolons
+  semi:
+    - 2
+    - always
+
+  # Files
+  linebreak-style:
+    - 2
+    - unix
+  eol-last:
+    - 2
+
+env:
+  node: true
+  browser: true
+  es6: true
+
+ecmaFeatures:
+  modules: true
+  jsx: true
+
+plugins:
+  - react
+
+extends: 'eslint:recommended'
