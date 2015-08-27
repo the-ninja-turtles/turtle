@@ -5,5 +5,5 @@ class HelloWorld extends React.Component {
     return <p>Hello, world!</p>;
   }
 }
- 
+
 export default HelloWorld;
