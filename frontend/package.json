@@ -17,5 +17,9 @@
       "babel-runtime": "npm:babel-runtime@^5.8.20",
       "core-js": "npm:core-js@^1.1.0"
     }
+  },
+  "devDependencies": {
+    "react": "~0.13.3",
+    "reflux": "~0.2.12"
   }
 }
