@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
+    "start": "babel-node ./server/server.js",
     "test": "echo 'no tests yet :-('"
   },
   "jspm": {
@@ -17,6 +18,9 @@
       "babel-runtime": "npm:babel-runtime@^5.8.20",
       "core-js": "npm:core-js@^1.1.0"
     }
+  },
+  "dependencies": {
+    "express": "~4.13.3"
   },
   "devDependencies": {
     "react": "~0.13.3",
