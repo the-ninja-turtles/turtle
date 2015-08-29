@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
+    "start": "babel-node ./server/server.js",
     "test": "echo 'no tests yet :-('"
   },
   "jspm": {
@@ -18,8 +19,25 @@
       "core-js": "npm:core-js@^1.1.0"
     }
   },
+  "dependencies": {
+    "express": "~4.13.3"
+  },
   "devDependencies": {
+    "autoprefixer-core": "~5.2.1",
+    "blue-tape": "^0.1.10",
+    "csswring": "~3.0.7",
+    "del": "~1.2.1",
+    "gulp-imagemin": "~2.3.0",
+    "gulp-minify-html": "~1.0.4",
+    "gulp-postcss": "~6.0.0",
+    "gulp-replace": "~0.5.4",
+    "gulp-tape": "0.0.2",
+    "jspm": "^0.16.2",
+    "postcss-import": "~7.0.0",
+    "postcss-nested": "~1.0.0",
     "react": "~0.13.3",
-    "reflux": "~0.2.12"
+    "reflux": "~0.2.12",
+    "require-dir": "~0.3.0",
+    "run-sequence": "~1.1.2"
   }
 }
