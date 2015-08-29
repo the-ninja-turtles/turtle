@@ -7,16 +7,18 @@
     "doc": "docs",
     "test": "tests"
   },
-  "scripts": {
-    "test": "babel-node tests/test.js | faucet"
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "socket.io": "^1.3.6"
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "express-jwt": "^3.0.1"
   },
   "devDependencies": {
     "blue-tape": "^0.1.10",
-    "socket.io-client": "^1.3.6"
+    "jsonwebtoken": "^5.0.5",
+    "supertest": "^1.1.0",
+    "supertest-as-promised": "^2.0.2"
   }
 }
