@@ -1,6 +1,11 @@
 machine:
   node:
     version: iojs-v3.2.0
+dependencies:
+  post:
+    - npm install -g gulp
 test:
   pre:
-    - npm install -g gulp
+    - gulp install
+  override:
+    - gulp test
