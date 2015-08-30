@@ -1,24 +1,24 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import auth from './auth.js';
-import feed from './feed.js';
 import publish from './publish.js';
 import subscribe from './subscribe.js';
+import normalize from './normalize.js';
 
 let publicApp = express();
 let privateApp = express();
 
-publicApp.use(auth(process.env.AUTH0_SECRET || 'secret', process.env.AUTH0_AUDIENCE || 'audience'));
-publicApp.use(feed);
+publicApp.use(normalize);
+publicApp.use(auth);
 publicApp.use(subscribe);
 publicApp.use((req, res) => {
-  res.status(404).send();
+  res.status(404).json({error: 'Not found'});
 });
 
 privateApp.use(bodyParser.json());
 privateApp.use(publish);
 privateApp.use((req, res) => {
-  res.status(404).send();
+  res.status(404).json({error: 'Not found'});
 });
 
 export let publicApi = publicApp.listen(process.env.PORT_EXT || 8000);

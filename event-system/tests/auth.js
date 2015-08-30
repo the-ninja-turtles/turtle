@@ -1,5 +1,24 @@
 import jwt from 'jsonwebtoken';
 
+export const token = (id) => {
+  return jwt.sign(profile(id), new Buffer(process.env.AUTH0_SECRET || 'secret', 'base64'), {audience: process.env.AUTH0_AUDIENCE || 'audience'});
+};
+
+export const authorization = (id) => {
+  return 'Bearer ' + token(id);
+};
+
+export const fakeauth = (id) => {
+  return (req, res, next) => {
+    req.user = profile(id);
+    next();
+  };
+};
+
+export const profile = (id) => {
+  return profiles[id];
+};
+
 const profiles = [
   {
     'email': 'test1@test.com',
@@ -39,9 +58,3 @@ const profiles = [
     'created_at': '2015-08-29T14:59:21.044Z'
   }
 ];
-
-const createToken = (user) => {
-  return jwt.sign(user, new Buffer(process.env.AUTH0_SECRET || 'secret', 'base64'), {audience: process.env.AUTH0_AUDIENCE || 'audience'});
-};
-
-export default profiles.map(createToken).map((token) => 'Bearer ' + token);
