@@ -5,6 +5,8 @@ import eslint from 'gulp-eslint';
 
 import eventSystemTasks from './event-system/gulpfile';
 
+import frontendTasks from './frontend/gulpfile';
+
 gulp.task('lint', () => {
   return gulp.src(['**/*.js', '!**/config.js', '!**/node_modules/**/*.js', '!**/jspm_packages/**/*.js'])
     .pipe(eslint({useEslintrc: true}))
@@ -17,6 +19,6 @@ gulp.task('tape', () => {
     .pipe(tape());
 });
 
-gulp.task('install', ['event-system:install']);
+gulp.task('install', ['frontend:install', 'event-system:install']);
 gulp.task('test', ['lint', 'tape']);
-gulp.task('build', ['event-system:build']);
+gulp.task('build', ['frontend:build', 'event-system:build']);
