@@ -1,11 +1,9 @@
 /*eslint no-unused-vars: 0*/
 import gulp from 'gulp';
-import tape from 'gulp-tape';
 import eslint from 'gulp-eslint';
 
-import eventSystemTasks from './event-system/gulpfile';
-
-import frontendTasks from './frontend/gulpfile';
+import frontendTasks from './frontend/gulpfile.babel.js';
+import eventSystemTasks from './event-system/gulpfile.babel.js';
 
 gulp.task('lint', () => {
   return gulp.src(['**/*.js', '!**/config.js', '!**/node_modules/**/*.js', '!**/jspm_packages/**/*.js'])
@@ -14,11 +12,8 @@ gulp.task('lint', () => {
     .pipe(eslint.failOnError());
 });
 
-gulp.task('tape', () => {
-  return gulp.src('*/tests/*.js')
-    .pipe(tape());
-});
-
 gulp.task('install', ['frontend:install', 'event-system:install']);
-gulp.task('test', ['lint', 'tape']);
+gulp.task('test', ['frontend:test', 'event-system:test']);
 gulp.task('build', ['frontend:build', 'event-system:build']);
+
+gulp.task('default', ['lint', 'test']);

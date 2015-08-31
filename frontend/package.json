@@ -3,9 +3,13 @@
   "description": "Frontend for the fastest agile project management app",
   "version": "1.0.0",
   "main": "server/server.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
   "scripts": {
     "start": "babel-node ./server/server.js",
-    "test": "echo 'no tests yet :-('"
+    "test": "gulp frontend:test"
   },
   "jspm": {
     "directories": {},
@@ -19,6 +23,8 @@
       "core-js": "npm:core-js@^1.1.0"
     }
   },
+  "author": "Andrey, David, Wesley",
+  "license": "ISC",
   "dependencies": {
     "express": "~4.13.3"
   },

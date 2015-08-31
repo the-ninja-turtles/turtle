@@ -1,14 +1,16 @@
 {
-  "name": "event-system",
+  "name": "turtle-event-system",
   "version": "1.0.0",
-  "description": "",
+  "description": "Event system for the fastest agile project management app",
   "main": "src/index.js",
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
-  "scripts": {},
-  "author": "",
+  "scripts": {
+    "test": "gulp event-system:test"
+  },
+  "author": "Andrey, David, Wesley",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.13.3",
@@ -17,6 +19,7 @@
   },
   "devDependencies": {
     "blue-tape": "^0.1.10",
+    "gulp-tape": "0.0.2",
     "jsonwebtoken": "^5.0.5",
     "supertest": "^1.1.0",
     "supertest-as-promised": "^2.0.2"

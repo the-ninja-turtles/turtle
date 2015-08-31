@@ -8,4 +8,4 @@ test:
   pre:
     - gulp install
   override:
-    - gulp test
+    - gulp
