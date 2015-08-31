@@ -1,0 +1,22 @@
+.sprintBoard{
+  background: silver;
+  width: 100%;
+  height: 100%;
+}
+
+.sprintColumn{
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0.5em;
+  background: gray;
+  width: 20%;
+  height: 100%;
+  text-align: center;
+}
+
+.sprintTask{
+  background: yellow;
+  width: 90%;
+  margin: auto;
+  padding: 0.2em;
+}

@@ -44,6 +44,7 @@
     "react": "~0.13.3",
     "reflux": "~0.2.12",
     "require-dir": "~0.3.0",
-    "run-sequence": "~1.1.2"
+    "run-sequence": "~1.1.2",
+    "postcss-normalize": "~0.1.1"
   }
 }

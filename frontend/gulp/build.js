@@ -5,6 +5,7 @@ import minifyHtml from 'gulp-minify-html';
 import replace from 'gulp-replace';
 import runSeq from 'run-sequence';
 import postcss from 'gulp-postcss';
+import normalizeCSS from 'postcss-normalize';
 import nested from 'postcss-nested';
 import atImport from 'postcss-import';
 import autoprefixer from 'autoprefixer-core';
@@ -30,6 +31,7 @@ gulp.task('frontend:build:js', () => {
 // Build CSS using PostCSS
 gulp.task('frontend:build:css', () => {
   let processors = [
+    normalizeCSS,
     atImport({from: global.paths.mainstylefile}), // allows import of css files in other css files
     nested, // allows style nesting
     autoprefixer, // adds prefixes to css not supported by all browsers

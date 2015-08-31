@@ -1,5 +1,9 @@
-body{
-  background: green;
+html, body{
+  height: 100%;
 }
 
-@import "components/hello.css";
+#app{
+  height: 100%;
+}
+
+@import "components/sprintboard/sprintboard.css";
