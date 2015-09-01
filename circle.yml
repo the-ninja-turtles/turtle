@@ -1,6 +1,6 @@
 machine:
   node:
-    version: iojs-v3.2.0
+    version: iojs-v2.3.1
 dependencies:
   post:
     - npm install -g gulp
