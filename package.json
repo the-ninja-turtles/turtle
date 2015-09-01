@@ -5,6 +5,7 @@
   "main": "index.js",
   "devDependencies": {
     "babel-core": "^5.8.22",
+    "babel-plugin-rewire": "^0.1.21",
     "eslint": "^1.2.1",
     "eslint-plugin-react": "^3.3.0",
     "gulp": "^3.9.0",
@@ -23,5 +24,10 @@
   "bugs": {
     "url": "https://github.com/the-ninja-turtles/turtle/issues"
   },
-  "homepage": "https://github.com/the-ninja-turtles/turtle#readme"
+  "homepage": "https://github.com/the-ninja-turtles/turtle#readme",
+  "babel": {
+    "plugins": [
+      "babel-plugin-rewire"
+    ]
+  }
 }
