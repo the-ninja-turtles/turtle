@@ -15,6 +15,7 @@
     "directories": {},
     "dependencies": {
       "react": "npm:react@^0.13.3",
+      "react-router": "npm:react-router@^0.13.3",
       "reflux": "npm:reflux@^0.2.12"
     },
     "devDependencies": {
@@ -27,6 +28,7 @@
   "license": "ISC",
   "dependencies": {
     "babel-runtime": "^5.8.20",
+    "ejs": "^2.3.3",
     "express": "~4.13.3"
   },
   "devDependencies": {

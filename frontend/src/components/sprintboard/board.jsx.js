@@ -40,7 +40,7 @@ let SprintBoard = React.createClass({
     });
 
     return (
-      <div className="sprintBoard">
+      <div className='sprintBoard'>
         {sprintColumns}
       </div>
     );

@@ -17,8 +17,8 @@ let SprintColumn = React.createClass({
     });
     console.log('column properties', this.props);
     return (
-      <div className="sprintColumn">
-        <p className="columnName">{this.props.columnName}</p>
+      <div className='sprintColumn'>
+        <p className='columnName'>{this.props.columnName}</p>
         {tasks}
       </div>
     );

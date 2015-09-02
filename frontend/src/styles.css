@@ -6,4 +6,8 @@ html, body{
   height: 100%;
 }
 
+.appContainer{
+  height: 100%;
+}
+
 @import "components/sprintboard/sprintboard.css";
