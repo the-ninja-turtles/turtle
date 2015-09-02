@@ -15,7 +15,7 @@ import jspm from 'jspm';
 
 // One build task to rule them all.
 gulp.task('frontend:build', (done) => {
-  runSeq('frontend:clean', ['frontend:build:js', 'frontend:build:css', 'frontend:build:html', 'frontend:build:img'], done);
+  runSeq('frontend:clean', ['frontend:build:js', 'frontend:build:css', 'frontend:build:img'], done);
 });
 
 gulp.task('frontend:build:js', () => {
