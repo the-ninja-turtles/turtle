@@ -1,5 +1,9 @@
-import React from 'react/addons';
-// import App from './components/hello-container.jsx.js';
-import SprintBoard from './components/sprintboard/board.jsx';
+'use strict';
 
-React.render(<SprintBoard />, document.getElementById('app'));
+import React from 'react/addons';
+import Router from 'react-router';
+import routes from './routes.jsx';
+
+Router.run(routes, Router.HistoryLocation, (Handler) => {
+  React.render(<Handler/>, document.getElementById('app'));
+});
