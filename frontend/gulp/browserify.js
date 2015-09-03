@@ -2,6 +2,9 @@ import gulp from 'gulp';
 
 import browserify from 'browserify';
 import babelify from 'babelify';
+import ejsify from 'ejsify';
+import brfs from 'brfs';
+import packageify from 'packageify';
 
 import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
@@ -42,7 +45,10 @@ let mapError = (err) => {
 
 gulp.task('browserify', () => {
   return browserify(global.paths.jsEntry, { debug: true })
-    .transform(babelify, {})
+    .transform(babelify)
+    .transform(ejsify)
+    .transform(brfs)
+    .transform(packageify)
     .bundle()
     .on('error', mapError.bind(this))
     .pipe(source(global.paths.jsEntry))
