@@ -37,9 +37,6 @@
   "babel": {
     "optional": [
       "runtime"
-    ],
-    "plugins": [
-      "babel-plugin-rewire"
     ]
   }
 }

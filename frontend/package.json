@@ -11,41 +11,34 @@
     "start": "node dist/server.js",
     "test": "gulp frontend:test"
   },
-  "jspm": {
-    "directories": {},
-    "dependencies": {
-      "react": "npm:react@^0.13.3",
-      "react-router": "npm:react-router@^0.13.3",
-      "reflux": "npm:reflux@^0.2.12"
-    },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.22",
-      "babel-runtime": "npm:babel-runtime@^5.8.20",
-      "core-js": "npm:core-js@^1.1.0"
-    }
-  },
   "author": "Andrey, David, Wesley",
   "license": "ISC",
   "dependencies": {
     "babel-runtime": "^5.8.20",
     "ejs": "^2.3.3",
-    "express": "~4.13.3"
+    "express": "~4.13.3",
+    "react": "^0.13.3",
+    "react-router": "^0.13.3",
+    "reflux": "^0.2.12"
   },
   "devDependencies": {
     "autoprefixer-core": "~5.2.1",
+    "babelify": "^6.3.0",
+    "browser-sync": "^2.9.1",
+    "browserify": "^11.0.1",
+    "chalk": "^1.1.1",
     "csswring": "~3.0.7",
-    "del": "~1.2.1",
     "gulp-imagemin": "~2.3.0",
-    "gulp-minify-html": "~1.0.4",
     "gulp-postcss": "~6.0.0",
-    "gulp-replace": "~0.5.4",
-    "jspm": "^0.16.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.4.0",
+    "gulp-util": "^3.0.6",
     "postcss-import": "~7.0.0",
     "postcss-nested": "~1.0.0",
-    "react": "~0.13.3",
-    "reflux": "~0.2.12",
-    "require-dir": "~0.3.0",
     "postcss-normalize": "~0.1.1",
-    "run-sequence": "^1.1.2"
+    "requiredir": "^1.0.7",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

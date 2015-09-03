@@ -1,25 +1,38 @@
-/*eslint no-unused-vars: 0*/
 import path from 'path';
+import npm from 'npm';
+import glob from 'glob';
 import gulp from 'gulp';
 import eslint from 'gulp-eslint';
 import test from './gulp/test.js';
 
-import frontendTasks from './frontend/gulpfile.babel.js';
-import eventSystemTasks from './event-system/gulpfile.babel.js';
-import projectServiceTasks from './project-service/gulpfile.babel.js';
+try {
+  require('./frontend/gulpfile.babel.js');
+  require('./event-system/gulpfile.babel.js');
+  require('./project-service/gulpfile.babel.js');
+} catch(err) {
+  console.log('please run gulp install first');
+}
 
 gulp.task('lint', () => {
-  return gulp.src(['**/*.js', '!**/dist/**/*.js', '!**/node_modules/**/*.js', '!**/jspm_packages/**/*.js'])
+  return gulp.src(['**/*.js', '!**/dist/**/*.js', '!**/node_modules/**/*.js'])
     .pipe(eslint({useEslintrc: true}))
     .pipe(eslint.format())
     .pipe(eslint.failOnError());
 });
 
-gulp.task('install', ['frontend:install', 'event-system:install', 'project-service:install']);
-
-gulp.task('test', () => {
-  return test(path.join(__dirname, '**'));
+gulp.task('install', () => {
+  return Promise.all(glob.sync('**/package.json', {ignore: '**/node_modules/**/*.json'}).map((file) => {
+    return new Promise((resolve) => {
+      let dir = path.dirname(path.resolve(file));
+      npm.load(() => {
+        npm.prefix = dir;
+        npm.install(resolve);
+      });
+    });
+  }));
 });
+
+gulp.task('test', test.bind(null, '**'));
 
 gulp.task('build', ['frontend:build', 'event-system:build', 'project-service:build']);
 

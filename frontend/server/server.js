@@ -12,7 +12,7 @@ app.get('*', (req, res) => {
   res.render('index.ejs');
 });
 
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log('Turtle frontend server listening on port ', port);
 });

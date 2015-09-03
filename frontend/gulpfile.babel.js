@@ -1,47 +1,22 @@
 import path from 'path';
 import gulp from 'gulp';
-import install from '../gulp/install.js';
+import requiredir from 'requiredir';
 import test from '../gulp/test.js';
 
-let prependDirname = (relPath) => {
-  return path.join(__dirname, relPath);
-};
-
 global.paths = {
-  html: prependDirname('index.html'),
-  // currently there aren't any .jsx files, but hopefully later on we will change
-  // all jsx.js files to .jsx files
-  scripts: ['src/**/*.js', 'src/**/*.jsx'].map(prependDirname),
-  images: [
-    'src/**/*.jpg', 'src/**/*.jpeg',
-    'src/**/*.png', 'src/**/*.gif',
-    'src/**/*.svg', 'src/**/*.ico'
-  ].map(prependDirname),
-  mainstylefile: prependDirname('src/styles.css'),
-  styles: prependDirname('src/components/**/*.css'),
-  destination: prependDirname('dist'),
-  public: prependDirname('dist/public')
+  jsEntry: path.join(__dirname, 'src/main.jsx.js'),
+  serverEntry: path.join(__dirname, 'server/server.js'),
+  cssEntry: path.join(__dirname, 'src/styles.css'),
+  js: path.join(__dirname, 'src/**/*.js'),
+  styles: path.join(__dirname, 'src/**/*.css'),
+  images: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico'].map((ext) => {
+    return path.join(__dirname, 'src/**/*' + ext);
+  }),
+  views: path.join(__dirname, 'server/**/*.ejs'),
+  dist: path.join(__dirname, 'dist'),
+  public: path.join(__dirname, 'dist/public')
 };
 
-// Require all tasks in the 'gulp' folder.
-try {
-  let requireDir = require('require-dir');
-  requireDir('./gulp', { recurse: false });
-} catch(e) {
-  console.log('please run gulp install');
-}
+gulp.task('frontend:test', test.bind(null, __dirname));
 
-// Default task: watch for changes.
-// gulp.task('default', ['frontend:watch']);
-
-gulp.task('frontend:install', () => {
-  return install(__dirname).then(() => {
-    let jspm = require('jspm');
-    jspm.setPackagePath(__dirname);
-    return jspm.install(true, { lock: true });
-  });
-});
-
-gulp.task('frontend:test', () => {
-  return test(__dirname);
-});
+requiredir(path.join(__dirname, 'gulp'));

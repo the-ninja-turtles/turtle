@@ -1,6 +1,7 @@
 import React from 'react/addons';
 import {RouteHandler, Link} from 'react-router';
 
+console.log('hello');
 let App = React.createClass({
   render: () => {
     return (

@@ -1,68 +1,22 @@
-import path from 'path';
 import gulp from 'gulp';
 import babel from 'gulp-babel';
 import imagemin from 'gulp-imagemin';
-import minifyHtml from 'gulp-minify-html';
-import replace from 'gulp-replace';
-import runSeq from 'run-sequence';
-import postcss from 'gulp-postcss';
-import normalizeCSS from 'postcss-normalize';
-import nested from 'postcss-nested';
-import atImport from 'postcss-import';
-import autoprefixer from 'autoprefixer-core';
-import csswring from 'csswring';
-import jspm from 'jspm';
 
+gulp.task('frontend:build', ['frontend:build:js', 'frontend:build:css', 'frontend:build:img', 'frontend:build:server']);
 
-// One build task to rule them all.
-gulp.task('frontend:build', (done) => {
-  runSeq('frontend:clean', ['frontend:build:js', 'frontend:build:css', 'frontend:build:html', 'frontend:build:img', 'frontend:build:server'], done);
+gulp.task('frontend:build:views', () => {
+  return gulp.src(global.paths.views)
+    .pipe(gulp.dest(global.paths.dist));
 });
 
-gulp.task('frontend:build:server', () => {
-  return gulp.src(path.join(__dirname, '../server/server.js'))
+gulp.task('frontend:build:server', ['frontend:build:views'], () => {
+  return gulp.src(global.paths.serverEntry)
     .pipe(babel())
-    .pipe(gulp.dest(global.paths.destination));
+    .pipe(gulp.dest(global.paths.dist));
 });
 
-gulp.task('frontend:build:js', () => {
-  let jspmPackageDir = path.join(__dirname, '..');
-  jspm.setPackagePath(jspmPackageDir);
-  let builder = new jspm.Builder();
-
-  return builder.buildSFX('src/main.jsx', path.join(global.paths.public, 'app.min.js'),
-    {sourceMaps: true, minify: true}
-  );
-});
-
-// Build CSS using PostCSS
-gulp.task('frontend:build:css', () => {
-  let processors = [
-    normalizeCSS,
-    atImport({from: global.paths.mainstylefile}), // allows import of css files in other css files
-    nested, // allows style nesting
-    autoprefixer, // adds prefixes to css not supported by all browsers
-    csswring // minifies css
-  ];
-  return gulp.src(global.paths.mainstylefile)
-    .pipe(postcss(processors))
-    .pipe(gulp.dest(global.paths.public));
-});
-
-// Build HTML for distribution.
-gulp.task('frontend:build:html', () => {
-  return gulp.src(global.paths.html)
-    // .pipe(replace('css/app.css', 'app.min.css'))
-    .pipe(replace('jspm_packages/system.js', 'app.min.js'))
-    .pipe(replace('<script src="config.js"></script>', ''))
-    .pipe(replace("<script>System.import('./src/main.jsx');</script>", ''))
-    .pipe(minifyHtml())
-    .pipe(gulp.dest(global.paths.public));
-});
-
-// Build images for distribution.
 gulp.task('frontend:build:img', () => {
   gulp.src(global.paths.images)
     .pipe(imagemin())
-    .pipe(gulp.dest(path.join(global.paths.public, 'images')));
+    .pipe(gulp.dest(global.paths.public));
 });
