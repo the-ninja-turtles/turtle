@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const testUsers = [
+const profiles = [
   {
     'email': 'test1@test.com',
     'connection': 'Username-Password-Authentication',
@@ -41,7 +41,7 @@ const testUsers = [
 ];
 
 const createToken = (user) => {
-  return jwt.sign(user, new Buffer('secret', 'base64'), {audience: 'audience'});
+  return jwt.sign(user, new Buffer(process.env.AUTH0_SECRET || 'secret', 'base64'), {audience: process.env.AUTH0_AUDIENCE || 'audience'});
 };
 
-export default testUsers.map(createToken).map((token) => 'Bearer ' + token);
+export default profiles.map(createToken).map((token) => 'Bearer ' + token);

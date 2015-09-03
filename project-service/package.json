@@ -4,7 +4,7 @@
   "description": "Project service for the fastest agile project management app",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node ./src/index.js",
+    "start": "node dist/index.js",
     "test": "gulp project-service:test"
   },
   "author": "Andrey, David, Wesley",
@@ -14,6 +14,7 @@
   },
   "homepage": "https://github.com/the-ninja-turtles/turtle#readme",
   "dependencies": {
+    "babel-runtime": "^5.8.20",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "express-jwt": "^3.0.1",
@@ -24,13 +25,6 @@
     "sequelize": "^3.6.0"
   },
   "devDependencies": {
-    "babel": "^5.8.23",
-    "blue-tape": "^0.1.10",
-    "gulp-shell": "^0.4.3",
-    "jsonwebtoken": "^5.0.5",
-    "sqlite3": "^3.0.10",
-    "supertest": "^1.1.0",
-    "supertest-as-promised": "^2.0.2",
-    "tap-spec": "^4.1.0"
+    "sqlite3": "^3.0.10"
   }
 }

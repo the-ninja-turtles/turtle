@@ -8,20 +8,18 @@
     "test": "tests"
   },
   "scripts": {
+    "start": "node dist/index.js",
     "test": "gulp event-system:test"
   },
   "author": "Andrey, David, Wesley",
   "license": "ISC",
   "dependencies": {
+    "babel-runtime": "^5.8.20",
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "express-jwt": "^3.0.1"
   },
   "devDependencies": {
-    "blue-tape": "^0.1.10",
-    "gulp-tape": "0.0.2",
-    "jsonwebtoken": "^5.0.5",
-    "supertest": "^1.1.0",
-    "supertest-as-promised": "^2.0.2"
+    "fakeredis": "^0.3.2"
   }
 }

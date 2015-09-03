@@ -1,5 +1,6 @@
-import gulp from 'gulp';
 import path from 'path';
+import gulp from 'gulp';
+import babel from 'gulp-babel';
 import imagemin from 'gulp-imagemin';
 import minifyHtml from 'gulp-minify-html';
 import replace from 'gulp-replace';
@@ -15,7 +16,13 @@ import jspm from 'jspm';
 
 // One build task to rule them all.
 gulp.task('frontend:build', (done) => {
-  runSeq('frontend:clean', ['frontend:build:js', 'frontend:build:css', 'frontend:build:html', 'frontend:build:img'], done);
+  runSeq('frontend:clean', ['frontend:build:js', 'frontend:build:css', 'frontend:build:html', 'frontend:build:img', 'frontend:build:server'], done);
+});
+
+gulp.task('frontend:build:server', () => {
+  return gulp.src(path.join(__dirname, '../server/server.js'))
+    .pipe(babel())
+    .pipe(gulp.dest(global.paths.destination));
 });
 
 gulp.task('frontend:build:js', () => {
@@ -23,7 +30,7 @@ gulp.task('frontend:build:js', () => {
   jspm.setPackagePath(jspmPackageDir);
   let builder = new jspm.Builder();
 
-  return builder.buildSFX('src/main.jsx', path.join(global.paths.destination, 'app.min.js'),
+  return builder.buildSFX('src/main.jsx', path.join(global.paths.public, 'app.min.js'),
     {sourceMaps: true, minify: true}
   );
 });
@@ -39,7 +46,7 @@ gulp.task('frontend:build:css', () => {
   ];
   return gulp.src(global.paths.mainstylefile)
     .pipe(postcss(processors))
-    .pipe(gulp.dest(global.paths.destination));
+    .pipe(gulp.dest(global.paths.public));
 });
 
 // Build HTML for distribution.
@@ -50,12 +57,12 @@ gulp.task('frontend:build:html', () => {
     .pipe(replace('<script src="config.js"></script>', ''))
     .pipe(replace("<script>System.import('./src/main.jsx');</script>", ''))
     .pipe(minifyHtml())
-    .pipe(gulp.dest(global.paths.destination));
+    .pipe(gulp.dest(global.paths.public));
 });
 
 // Build images for distribution.
 gulp.task('frontend:build:img', () => {
   gulp.src(global.paths.images)
     .pipe(imagemin())
-    .pipe(gulp.dest(path.join(global.paths.destination, 'images')));
+    .pipe(gulp.dest(path.join(global.paths.public, 'images')));
 });

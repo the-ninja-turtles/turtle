@@ -1,6 +1,6 @@
 import npm from 'npm';
 
-export let npmInstall = (dir) => {
+export default (dir) => {
   return new Promise((resolve) => {
     npm.load(() => {
       npm.prefix = dir;

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
-import configs from '../../config.js';
+import configs from '../config.js';
 
 let env = process.env.NODE_ENV || 'development';
 let config = configs[env];

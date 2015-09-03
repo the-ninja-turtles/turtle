@@ -43,7 +43,7 @@ export const profiles = [
 ];
 
 const createToken = (user) => {
-  return jwt.sign(user, new Buffer('secret', 'base64'), {audience: 'audience'});
+  return jwt.sign(user, new Buffer(process.env.AUTH0_SECRET || 'secret', 'base64'), {audience: process.env.AUTH0_AUDIENCE || 'audience'});
 };
 
 export default profiles.map(createToken).map((token) => 'Bearer ' + token);

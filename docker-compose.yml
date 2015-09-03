@@ -1,0 +1,39 @@
+frontend:
+  build: frontend
+  ports:
+    - "8080:80"
+  links:
+    - projectservice
+    - eventsystem
+
+projectservice:
+  build: project-service
+  ports:
+   - "3000:80"
+  links:
+   - postgres
+   - eventsystem
+  environment:
+    AUTH0_SECRET:
+    AUTH0_AUDIENCE:
+    POSTGRES_USER:
+    POSTGRES_PASSWORD:
+
+eventsystem:
+  build: event-system
+  ports:
+    - "4000:80"
+  links:
+    - redis
+  environment:
+    AUTH0_SECRET:
+    AUTH0_AUDIENCE:
+
+postgres:
+  image: postgres:latest
+  environment:
+    POSTGRES_USER:
+    POSTGRES_PASSWORD:
+
+redis:
+  image: redis:latest

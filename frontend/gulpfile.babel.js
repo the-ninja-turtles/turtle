@@ -1,6 +1,7 @@
 import path from 'path';
 import gulp from 'gulp';
-import {npmInstall} from '../gulp/tools.js';
+import install from '../gulp/install.js';
+import test from '../gulp/test.js';
 
 let prependDirname = (relPath) => {
   return path.join(__dirname, relPath);
@@ -18,7 +19,8 @@ global.paths = {
   ].map(prependDirname),
   mainstylefile: prependDirname('src/styles.css'),
   styles: prependDirname('src/components/**/*.css'),
-  destination: prependDirname('dist')
+  destination: prependDirname('dist'),
+  public: prependDirname('dist/public')
 };
 
 // Require all tasks in the 'gulp' folder.
@@ -33,9 +35,13 @@ try {
 // gulp.task('default', ['frontend:watch']);
 
 gulp.task('frontend:install', () => {
-  return npmInstall(__dirname).then(() => {
+  return install(__dirname).then(() => {
     let jspm = require('jspm');
     jspm.setPackagePath(__dirname);
     return jspm.install(true, { lock: true });
   });
+});
+
+gulp.task('frontend:test', () => {
+  return test(__dirname);
 });

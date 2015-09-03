@@ -16,11 +16,11 @@ let config = {
     logging: false
   },
   production: {
-    host: process.env.HOST,
+    host: process.env.POSTGRES_PORT_5432_TCP_ADDR,
     dialect: 'postgres',
-    database: process.env.DB,
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD
+    database: 'postgres',
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD
   }
 };
 

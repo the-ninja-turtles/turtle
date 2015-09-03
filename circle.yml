@@ -7,5 +7,3 @@ dependencies:
 test:
   pre:
     - gulp install
-  override:
-    - gulp

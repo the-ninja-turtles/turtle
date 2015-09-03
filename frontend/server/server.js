@@ -1,12 +1,10 @@
-import http from 'http';
+import path from 'path';
 import express from 'express';
 
 let app = express();
-app.use(express.static(__dirname + '/../dist'));
+app.use(express.static(path.join(__dirname, 'public')));
 
-let server = http.createServer(app);
-
-server.listen(process.env.PORT || 3000, process.env.IP || '0.0.0.0', () => {
-  let addr = server.address();
-  console.log('Turtle frontend server listening at', addr.address + ':' + addr.port);
+let port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log('Turtle frontend server listening on port ', port);
 });
