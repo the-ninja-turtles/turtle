@@ -4,10 +4,10 @@ import requiredir from 'requiredir';
 import test from '../gulp/test.js';
 
 global.paths = {
-  jsEntry: path.join(__dirname, 'src/main.jsx.js'),
+  jsEntry: path.join(__dirname, 'src/main.jsx'),
   serverEntry: path.join(__dirname, 'server/server.js'),
   cssEntry: path.join(__dirname, 'src/styles.css'),
-  js: path.join(__dirname, 'src/**/*.js'),
+  js: [path.join(__dirname, 'src/**/*.js'), path.join(__dirname, 'src/**/*.jsx')],
   styles: path.join(__dirname, 'src/**/*.css'),
   images: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico'].map((ext) => {
     return path.join(__dirname, 'src/**/*' + ext);
