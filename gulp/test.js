@@ -4,6 +4,8 @@ import tape from 'blue-tape';
 import spec from 'tap-spec';
 
 export default (dir) => {
+  process.env.BABEL_ENV = 'test';
+
   let stream = tape.createStream()
     .pipe(spec())
     .pipe(process.stdout);

@@ -37,6 +37,11 @@
   "babel": {
     "optional": [
       "runtime"
-    ]
+    ],
+    "env": {
+      "test": {
+        "plugins": ["rewire"]
+      }
+    }
   }
 }
