@@ -1,8 +1,8 @@
-# Project Service
+# Project Service - API
 
 Project microservice is used to manage Turtle's primary business logic. The external (public) REST API provides request endpoints for CRUD operations on a user's projects, sprints, and tasks. The project service relies on the JSON Web Token issued by **Auth0** to authenticate incoming requests.
 
-The project service will also expose internal API to provide information on a project's members to the **event system** microservice and allow the **invitation system** microservice to request addition/removal of users to/from projects.
+The project service will also expose internal API to allow the **invitation system** microservice to obtain some information regarding users, and request the addition/removal of users to/from projects.
 
 ## Table of Contents
 
