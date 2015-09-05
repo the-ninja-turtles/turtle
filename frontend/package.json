@@ -15,9 +15,11 @@
   "license": "ISC",
   "dependencies": {
     "auth0-lock": "^7.8.1",
+    "axios": "^0.5.4",
     "babel-runtime": "^5.8.20",
     "ejs": "^2.3.3",
     "express": "~4.13.3",
+    "lodash": "^3.10.1",
     "react": "^0.13.3",
     "react-router": "^0.13.3",
     "reflux": "^0.2.12"

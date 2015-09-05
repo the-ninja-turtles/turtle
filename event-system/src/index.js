@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import auth from './auth.js';
 import publish from './publish.js';
@@ -8,6 +9,7 @@ import normalize from './normalize.js';
 let publicApp = express();
 let privateApp = express();
 
+publicApp.use(cors());
 publicApp.use(normalize);
 publicApp.use(auth);
 publicApp.use(subscribe);

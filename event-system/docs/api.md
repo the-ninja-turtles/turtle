@@ -12,9 +12,9 @@ and adding an event listener for the task:change event.
 
 ```javascript
 let source = new EventSource('/subscribe/projects/0/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9');
-source.on('task:change', (e) => {
+source.addEventListener('task:change', (e) => {
   console.log(e.data);
-});
+}, false);
 ```
 
 Event System architecture
@@ -78,9 +78,9 @@ The event system responds by sending a keep-alive message to keep the connection
 
   ```javascript
   let source = new EventSource('/subscribe/projects/0/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9');
-  source.on('task:change', (e) => {
+  source.addEventListener('task:change', (e) => {
     console.log(e.data);
-  });
+  }, false);
   ```
 
 * **Notes:**

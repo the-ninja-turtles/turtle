@@ -16,6 +16,7 @@
   "dependencies": {
     "babel-runtime": "^5.8.20",
     "body-parser": "^1.13.3",
+    "cors": "^2.7.1",
     "express": "^4.13.3",
     "express-jwt": "^3.0.1",
     "morgan": "^1.6.1",

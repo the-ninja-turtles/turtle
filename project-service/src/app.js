@@ -1,5 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 
 import auth from './routes/auth';
@@ -12,6 +13,7 @@ let app = express();
 
 // middleware for http request logging
 app.use(morgan('dev'));
+app.use(cors());
 
 // middlewares will parse incoming request bodies and populate req.body
 app.use(bodyParser.urlencoded({extended: true}));
