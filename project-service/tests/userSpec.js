@@ -46,6 +46,28 @@ test('Public API should create a new user for any new valid Authorization header
     });
 });
 
+test('Public API should not create another user for the same Authorization header', (t) => {
+  let params = {
+    where: {
+      auth0Id: profile(1).user_id
+    }
+  };
+
+  return models.User.findAll(params)
+    .then((users) => {
+      t.equal(users.length, 1, 'Confirm that user is already in database');
+      return request(app)
+        .get('/')
+        .set('Authorization', authorization(1));
+    })
+    .then(() => {
+      return models.User.findAll(params);
+    })
+    .then((users) => {
+      t.equal(users.length, 1, 'There should still only be one user in database');
+    });
+});
+
 after('After', (t) => {
   return models.sequelize.sync({
     force: true
