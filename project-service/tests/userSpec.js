@@ -1,8 +1,8 @@
 import request from 'supertest-as-promised';
 import test from 'blue-tape';
-import authorization, { profiles } from '../fixtures';
-import app from '../../src/app';
-import models from '../../src/models';
+import {authorization, profile} from '../../tests/fakeauth';
+import app from '../src/app';
+import models from '../src/models';
 
 const before = test;
 const after = test;
@@ -14,9 +14,9 @@ before('Before', (t) => {
   })
   .then(() => { // create test user #0
     return models.User.create({
-      auth0Id: profiles[0].user_id,
-      email: profiles[0].email,
-      username: profiles[0].nickname
+      auth0Id: profile(0).user_id,
+      email: profile(0).email,
+      username: profile(0).nickname
     });
   });
 });
@@ -24,7 +24,7 @@ before('Before', (t) => {
 test('Public API should create a new user for any new valid Authorization headers', (t) => {
   let params = {
     where: {
-      auth0Id: profiles[1].user_id
+      auth0Id: profile(1).user_id
     }
   };
 
@@ -35,7 +35,7 @@ test('Public API should create a new user for any new valid Authorization header
       // send a get request with valid Authorization jwt
       return request(app)
         .get('/')
-        .set('Authorization', authorization[1]);
+        .set('Authorization', authorization(1));
     })
     // confirm creation of user
     .then(() => {

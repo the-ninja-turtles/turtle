@@ -6,7 +6,7 @@ import bodyparser from 'body-parser';
 import EventSource from 'eventsource';
 import request from 'supertest-as-promised';
 import redis from './redis.js';
-import {fakeauth, profile, token, authorization} from './auth.js';
+import {fakeauth, profile, token, authorization} from '../../tests/fakeauth.js';
 import normalize from '../src/normalize.js';
 import subscribe from '../src/subscribe.js';
 

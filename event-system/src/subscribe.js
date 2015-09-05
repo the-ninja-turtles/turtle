@@ -6,6 +6,7 @@ let router = express.Router();
 
 router.get('/subscribe/:namespace/:room', (req, res) => {
   let client = redis.createClient();
+  req.socket.setTimeout(Number.MAX_SAFE_INTEGER);
 
   res.set('Content-Type', 'text/event-stream')
     .set('Cache-Control', 'no-cache')

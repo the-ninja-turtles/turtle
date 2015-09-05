@@ -1,9 +1,10 @@
 import request from 'supertest-as-promised';
 import test from 'blue-tape';
 import R from 'ramda';
-import authorization, { profiles, projects as testProjects, sprints as testSprints, tasks as testTasks } from '../fixtures';
-import app from '../../src/app';
-import models from '../../src/models';
+import {authorization, profile} from '../../tests/fakeauth';
+import { projects as testProjects, sprints as testSprints, tasks as testTasks } from '../../tests/fixtures';
+import app from '../src/app';
+import models from '../src/models';
 
 const before = test;
 const after = test;
@@ -20,9 +21,9 @@ before('Before', (t) => {
   })
   .then(() => { // create test user #0
     return models.User.create({
-      auth0Id: profiles[0].user_id,
-      email: profiles[0].email,
-      username: profiles[0].nickname
+      auth0Id: profile(0).user_id,
+      email: profile(0).email,
+      username: profile(0).nickname
     });
   })
   .then((user) => { // create a sample project associated with user #0
@@ -52,7 +53,7 @@ before('Before', (t) => {
 test("GET /projects/:projectId/sprints should respond with project's sprints", (t) => {
   return request(app)
     .get('/projects/'+projectId+'/sprints')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
       t.pass('200 OK');
@@ -64,7 +65,7 @@ test("GET /projects/:projectId/sprints should respond with project's sprints", (
 test('POST /projects/:projectId/sprints should create a new sprint', (t) => {
   return request(app)
     .post('/projects/'+projectId+'/sprints')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(testSprints[1])
     .expect(201)
     .then((res) => {
@@ -76,7 +77,7 @@ test('POST /projects/:projectId/sprints should create a new sprint', (t) => {
 test('GET /projects/:projectId/sprints/:sprintId should respond with 404 when sprintId is invalid', (t) => {
   return request(app)
     .get('/projects/'+projectId+'/sprints/12345')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(404)
     .then((res) => {
       t.pass('404 NOT FOUND');
@@ -86,7 +87,7 @@ test('GET /projects/:projectId/sprints/:sprintId should respond with 404 when sp
 test('GET /projects/:projectId/sprints/:sprintId should respond with sprint details', (t) => {
   return request(app)
     .get('/projects/'+projectId+'/sprints/'+sprintIds[1])
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
       t.pass('200 OK');
@@ -111,7 +112,7 @@ test('PUT /projects/:projectId/sprints/:sprintId should modify sprint', (t) => {
 
   return request(app)
     .put('/projects/'+projectId+'/sprints/'+sprintIds[0])
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(params)
     .expect(200)
     .then((res) => {
@@ -142,14 +143,14 @@ test('DELETE /projects/:projectId/sprints/:sprintId should delete a sprint witho
       numTasks = project.tasks.length;
       return request(app)
         .delete('/projects/'+projectId+'/sprints/'+sprintIds[1])
-        .set('Authorization', authorization[0])
+        .set('Authorization', authorization(0))
         .expect(204);
     })
     .then((res) => { // confirm 204; request the deleted sprint and expect 404
       t.pass('204 NO CONTENT');
       return request(app)
         .get('/projects/'+projectId+'/sprints/'+sprintIds[1])
-        .set('Authorization', authorization[0])
+        .set('Authorization', authorization(0))
         .expect(404);
     })
     .then((res) => { // confirm 404; request project details
@@ -199,7 +200,7 @@ test('PUT /projects/:projectId/sprints/:sprintId/tasks should add/remove tasks t
       numTasks = sprint.tasks.length;
       return request(app)
         .put('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/tasks')
-        .set('Authorization', authorization[0])
+        .set('Authorization', authorization(0))
         .send({add: taskIds})
         .expect(204);
     })
@@ -211,7 +212,7 @@ test('PUT /projects/:projectId/sprints/:sprintId/tasks should add/remove tasks t
       t.equal(sprint.tasks.length, numTasks + taskIds.length, 'Tasks should be assigned to sprint');
       return request(app)
         .put('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/tasks')
-        .set('Authorization', authorization[0])
+        .set('Authorization', authorization(0))
         .send({remove: taskIds})
         .expect(204);
     })

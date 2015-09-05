@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import test from 'blue-tape';
 import request from 'supertest-as-promised';
-import {authorization} from './auth.js';
+import {authorization} from '../../tests/fakeauth.js';
 import {publicApi, privateApi} from '../src/index.js';
 
 const after = test;

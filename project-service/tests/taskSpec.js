@@ -1,9 +1,10 @@
 import request from 'supertest-as-promised';
 import test from 'blue-tape';
 import R from 'ramda';
-import authorization, { profiles, projects as testProjects, sprints as testSprints, tasks as testTasks } from '../fixtures';
-import app from '../../src/app';
-import models from '../../src/models';
+import {authorization, profile} from '../../tests/fakeauth';
+import { projects as testProjects, sprints as testSprints, tasks as testTasks } from '../../tests/fixtures';
+import app from '../src/app';
+import models from '../src/models';
 
 const before = test;
 const after = test;
@@ -22,9 +23,9 @@ before('Before', (t) => {
   })
   .then(() => { // create test user #0
     return models.User.create({
-      auth0Id: profiles[0].user_id,
-      email: profiles[0].email,
-      username: profiles[0].nickname
+      auth0Id: profile(0).user_id,
+      email: profile(0).email,
+      username: profile(0).nickname
     });
   })
   .then((user) => { // create a sample project associated with user #0
@@ -60,7 +61,7 @@ before('Before', (t) => {
 test("GET /project/:projectId/tasks should respond with project's tasks", (t) => {
   return request(app)
     .get('/projects/'+projectId+'/tasks')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
       t.pass('200 OK');
@@ -79,7 +80,7 @@ test("GET /project/:projectId/tasks should respond with project's tasks", (t) =>
 test('POST /project/:projectId/tasks should create a new task', (t) => {
   return request(app)
     .post('/projects/'+projectId+'/tasks')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(testTasks[3])
     .expect(201)
     .then((res) => {
@@ -95,7 +96,7 @@ test('POST /project/:projectId/tasks should accept optional userId and sprintId 
 
   return request(app)
     .post('/projects/'+projectId+'/tasks')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(params)
     .expect(201)
     .then((res) => {
@@ -111,7 +112,7 @@ test('POST /project/:projectId/tasks should return 404 for invalid userId or spr
 
   return request(app)
     .post('/projects/'+projectId+'/tasks')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(params)
     .expect(404)
     .then((res) => {
@@ -122,7 +123,7 @@ test('POST /project/:projectId/tasks should return 404 for invalid userId or spr
 test('GET /project/:projectId/tasks/:taskId should respond with 404 when taskId is invalid', (t) => {
   return request(app)
     .get('/projects/'+projectId+'/tasks/1337')
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(404)
     .then((res) => {
       t.pass('404 NOT FOUND');
@@ -132,7 +133,7 @@ test('GET /project/:projectId/tasks/:taskId should respond with 404 when taskId 
 test('GET /project/:projectId/tasks/:taskId should respond with task details', (t) => {
   return request(app)
     .get('/projects/'+projectId+'/tasks/'+taskIds[0])
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
       t.pass('200 OK');
@@ -156,7 +157,7 @@ test('PUT /project/:projectId/tasks/:taskId should modify task', (t) => {
 
   return request(app)
     .put('/projects/'+projectId+'/tasks/'+taskIds[0])
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(params)
     .expect(200)
     .then((res) => {
@@ -180,7 +181,7 @@ test('PUT /project/:projectId/tasks/:taskId should respond with 404 if userId or
 
   return request(app)
     .put('/projects/'+projectId+'/tasks/'+taskIds[0])
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .send(params)
     .expect(404)
     .then((res) => {
@@ -191,13 +192,13 @@ test('PUT /project/:projectId/tasks/:taskId should respond with 404 if userId or
 test('DELETE /project/:projectId/tasks/:taskId should delete a task and respond with 204', (t) => {
   return request(app)
     .delete('/projects/'+projectId+'/tasks/'+taskIds[0])
-    .set('Authorization', authorization[0])
+    .set('Authorization', authorization(0))
     .expect(204)
     .then((res) => {
       t.pass(204);
       return request(app)
         .get('/projects/'+projectId+'/tasks/'+taskIds[0])
-        .set('Authorization', authorization[0])
+        .set('Authorization', authorization(0))
         .expect(404);
     })
     .then((res) => {

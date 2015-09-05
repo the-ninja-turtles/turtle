@@ -3,7 +3,7 @@ import path from 'path';
 import Sequelize from 'sequelize';
 import configs from '../config.js';
 
-let env = process.env.NODE_ENV || 'development';
+let env = process.env.NODE_ENV || 'test';
 let config = configs[env];
 
 let sequelize = new Sequelize(
