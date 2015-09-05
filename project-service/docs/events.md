@@ -31,7 +31,7 @@ Project level changes. If there are changes in which users belong to the current
 - **Event Name**
   + `project:change`
 - **Data Parameters**
-  + OPTIONAL
+  + When Applicable
     * `name=[string]`
     * `users=[array]`
 - **Example Data**
@@ -71,7 +71,7 @@ New sprint added to current project.
 - **Event Name**
   + `sprint:add`
 -  **Data Parameters**
-  +  ALWAYS
+  +  Always
     *  `id=[number]`
     +  `name=[string]`
     +  `status=[string]`
@@ -100,9 +100,9 @@ Change in a sprint's details for current project.
 - **Event Name**
   + `sprint:change`
 - **Data Parameters**
-  + ALWAYS
+  + Always
     * `id=[number]`
-  + OPTIONAL
+  + When Applicable
     *  `name=[string]`
     *  `status=[string]`
     *  `startDate=[date]`
@@ -128,7 +128,7 @@ Sprint deleted from current project.
 - **Event Name**
   + `sprint:delete`
 - **Data Parameters**
-  + ALWAYS
+  + Always
     * `id=[number]`
 - **Example Data**
 
@@ -152,7 +152,7 @@ New task added to current project.
 - **Event Name**
   + `task:add`
 -  **Data Parameters**
-  +  ALWAYS
+  +  Always
     *  `id=[number]`
     +  `name=[string]`
     +  `description=[string]`
@@ -187,9 +187,9 @@ Change in a tasks's details for current project.
 - **Event Name**
   + `task:change`
 - **Data Parameters**
-  + ALWAYS
+  + Always
     * `id=[number]`
-  + OPTIONAL
+  + When Applicable
     *  `name=[string]`
     *  `description=[string]`
     *  `status=[string]`
@@ -219,7 +219,7 @@ Task deleted from current project.
 - **Event Name**
   + `task:delete`
 - **Data Parameters**
-  + ALWAYS
+  + Always
     * `id=[number]`
 - **Example Data**
 
