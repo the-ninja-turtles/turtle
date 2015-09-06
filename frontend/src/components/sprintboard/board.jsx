@@ -1,11 +1,11 @@
-import sprintColumns from '../../mock-data/sprint-columns';
-import mockSprintData from '../../mock-data/mock-sprint';
-
+import {mockSprints} from '../../../tests/utils/fake.js';
 import React from 'react/addons';
 // import Reflux from 'reflux';
 // import Actions from '../../actions/actions';
 
 import SprintColumn from './column.jsx';
+
+let sprint = mockSprints(1, 3)[0];
 
 let SprintBoard = React.createClass({
   // mixins: [
@@ -14,8 +14,8 @@ let SprintBoard = React.createClass({
 
   getInitialState() {
     return {
-      sprint: mockSprintData,
-      sprintColumns: sprintColumns
+      sprint: sprint,
+      sprintColumns: ['Backlog', 'Ready', 'In Progress', 'Done']
     };
   },
 
