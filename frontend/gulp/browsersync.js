@@ -1,15 +1,16 @@
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
 
-gulp.task('frontend:watch', () => {
+gulp.task('frontend:watch', ['watchify'], () => {
   browserSync({
     proxy: {
       target: 'localhost:8080'
-    }
+    },
+    port: 3100,
+    ui: false
   });
 
   gulp.watch(global.paths.styles, ['frontend:watch:css']);
-  gulp.watch(global.paths.js, ['frontend:watch:js']);
   gulp.watch(global.paths.images, ['frontend:watch:img']);
 });
 
@@ -20,5 +21,4 @@ let reload = () => {
 };
 
 gulp.task('frontend:watch:css', ['frontend:build:css'], reload);
-gulp.task('frontend:watch:js', ['frontend:build:js'], reload);
 gulp.task('frontend:watch:img', ['frontend:build:img'], reload);

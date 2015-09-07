@@ -32,6 +32,7 @@
     "csswring": "~3.0.7",
     "ejsify": "^1.0.0",
     "gulp-imagemin": "~2.3.0",
+    "gulp-notify": "~2.2.0",
     "gulp-postcss": "~6.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.5.2",
@@ -43,6 +44,7 @@
     "postcss-normalize": "~0.1.1",
     "requiredir": "^1.0.7",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.4.0"
   }
 }

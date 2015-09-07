@@ -5,6 +5,9 @@ import babelify from 'babelify';
 import ejsify from 'ejsify';
 import brfs from 'brfs';
 import packageify from 'packageify';
+import watchify from 'watchify';
+import notify from 'gulp-notify';
+import browserSync from 'browser-sync';
 
 import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
@@ -44,11 +47,11 @@ let mapError = (err) => {
 
 
 gulp.task('browserify', () => {
-  return browserify(global.paths.jsEntry, { debug: true })
-    .transform(babelify)
-    .transform(ejsify)
-    .transform(brfs)
-    .transform(packageify)
+  return browserify({
+    entries: [global.paths.jsEntry],
+    transform: [babelify, ejsify, brfs, packageify],
+    debug: true
+  })
     .bundle()
     .on('error', mapError.bind(this))
     .pipe(source(global.paths.jsEntry))
@@ -58,6 +61,33 @@ gulp.task('browserify', () => {
     .pipe(uglify())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(global.paths.public));
+});
+
+gulp.task('watchify', () => {
+
+  let watcher  = watchify(browserify({
+    entries: [global.paths.jsEntry],
+    transform: [babelify, ejsify, brfs, packageify],
+    debug: true,
+    cache: {}, packageCache: {}, fullPaths: true
+  }));
+
+  let bundle = () => {
+    return watcher.bundle()
+      .on('error', mapError.bind(this))
+      .pipe(source(global.paths.jsEntry))
+      .pipe(buffer())
+      .pipe(rename('app.min.js'))
+      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(global.paths.public))
+      .pipe(notify('Watchify has finished rebuilding script bundle'))
+      .pipe(browserSync.reload({ stream: true }));
+  };
+
+  watcher.on('update', bundle);
+
+  return bundle();
 });
 
 gulp.task('frontend:build:js', ['browserify']);
