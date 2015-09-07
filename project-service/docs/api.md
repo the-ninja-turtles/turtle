@@ -485,9 +485,9 @@ Delete an existing sprint. tasks that belong to this sprint are **not** deleted.
 Add/remove an array of tasks to a sprint by attaching an array of task IDs with the request. Tasks that don't exist or don't need to be changed will be ignored.
 
 - **URL**
-  + `/projects/:projectId/sprints/:sprintId/tasks`
+  + `/projects/:projectId/sprints/:sprintId/assigntasks`
 - **Method**
-  + `PUT`
+  + `POST`
 - **Query Params**
   + None
 - **Data Params**

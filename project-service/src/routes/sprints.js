@@ -43,10 +43,9 @@ router.param('sprintId', (req, res, next, sprintId) => {
 });
 
 // Add/Remove Tasks to/from Sprint
-/* === /projects/:projectId/sprints/:sprintId/tasks === */
+/* === /projects/:projectId/sprints/:sprintId/assigntasks === */
 
-// router.put('/:projectId/sprints/:sprintId/tasks', (req, res, next) => {
-router.put('/:sprintId/tasks', (req, res, next) => {
+router.post('/:sprintId/assigntasks', (req, res, next) => {
   if (!(req.body.add || req.body.remove)) {
     return res.status(400).json(msg.task[400]);
   }

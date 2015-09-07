@@ -162,7 +162,7 @@ test('DELETE /projects/:projectId/sprints/:sprintId should delete a sprint witho
     });
 });
 
-test('PUT /projects/:projectId/sprints/:sprintId/tasks should add/remove tasks to/from sprint', (t) => {
+test('POST /projects/:projectId/sprints/:sprintId/assigntasks should add/remove tasks to/from sprint', (t) => {
   let taskIds = [];
   let numTasks;
 
@@ -199,7 +199,7 @@ test('PUT /projects/:projectId/sprints/:sprintId/tasks should add/remove tasks t
     .then((sprint) => { // track starting number of tasks in sprint; send request to add tasks
       numTasks = sprint.tasks.length;
       return request(app)
-        .put('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/tasks')
+        .post('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/assigntasks')
         .set('Authorization', authorization(0))
         .send({add: taskIds})
         .expect(204);
@@ -211,7 +211,7 @@ test('PUT /projects/:projectId/sprints/:sprintId/tasks should add/remove tasks t
     .then((sprint) => { // confirm # tasks in sprint, and send request to remove tasks
       t.equal(sprint.tasks.length, numTasks + taskIds.length, 'Tasks should be assigned to sprint');
       return request(app)
-        .put('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/tasks')
+        .post('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/assigntasks')
         .set('Authorization', authorization(0))
         .send({remove: taskIds})
         .expect(204);
