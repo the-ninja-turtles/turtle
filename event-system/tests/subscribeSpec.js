@@ -59,7 +59,7 @@ test('GET /subscribe/:namespace/:room should receive events published to namespa
       t.assert(spy.calledWith(sinon.match({data: '23'})), 'Event was received');
       _.invoke([app, es], 'close');
       resolve();
-    }, 200);
+    }, 300);
   });
 });
 
@@ -84,7 +84,7 @@ test('GET /subscribe/:namespace/:room should not send events if user is not in a
       t.pass('Event was not sent');
       _.invoke([app, es], 'close');
       resolve();
-    }, 200);
+    }, 300);
   });
 });
 
