@@ -1,5 +1,7 @@
 frontend:
   build: frontend
+  volumes:
+   - frontend:/app
   ports:
     - "8080:80"
   links:
@@ -8,6 +10,8 @@ frontend:
 
 projectservice:
   build: project-service
+  volumes:
+   - project-service:/app
   ports:
    - "3000:80"
   links:
@@ -21,6 +25,8 @@ projectservice:
 
 eventsystem:
   build: event-system
+  volumes:
+   - event-system:/app
   ports:
     - "4000:80"
   links:

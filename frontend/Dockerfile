@@ -1,6 +1,6 @@
 FROM debian
 
-RUN apt-get update && apt-get -y install curl
+RUN apt-get update && apt-get -y install curl git
 
 # gpg keys listed at https://github.com/nodejs/io.js
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys \
