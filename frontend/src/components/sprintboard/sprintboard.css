@@ -1,10 +1,10 @@
-.sprintBoard{
+.sprint-board{
   background: silver;
   width: 100%;
   height: 100%;
 }
 
-.sprintColumn{
+.sprint-column{
   display: inline-block;
   vertical-align: top;
   margin: 0 0.5em;
@@ -14,7 +14,7 @@
   text-align: center;
 }
 
-.sprintTask{
+.sprint-task{
   background: yellow;
   width: 90%;
   margin: auto;

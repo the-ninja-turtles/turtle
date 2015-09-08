@@ -2,12 +2,14 @@ import test from 'blue-tape';
 // import React from 'react/addons';
 // import Reflux from 'reflux';
 import createComponent from '../utils/create-component';
-import SprintBoard from '../../src/components/sprintboard/board.jsx';
+import {__RewireAPI__ as testmodule} from '../../src/components/sprintboard/board.jsx';
+let SprintBoard =  testmodule.__GetDependency__('SprintBoard');
 
 let sprintBoard = createComponent(SprintBoard);
 
+// console.log('methods', SprintBoard.prototype);
 // console.log('component', sprintBoard);
-// console.log('props', component.props);
+// console.log('props', sprintBoard.props);
 // console.log('props children', sprintBoard.props.children);
 
 test('Sprint board is a div', (assert) => {
@@ -16,8 +18,8 @@ test('Sprint board is a div', (assert) => {
   assert.end();
 });
 
-test('Sprint board has a class "sprintBoard"', (assert) => {
-  assert.equal(sprintBoard.props.className, 'sprintBoard',
+test('Sprint board has a class "sprint-board"', (assert) => {
+  assert.equal(sprintBoard.props.className, 'sprint-board',
     'Sprint board should have a class "sprintBoard"');
   assert.end();
 });

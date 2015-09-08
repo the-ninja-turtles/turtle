@@ -1,46 +1,51 @@
-import {mockSprints} from '../../../tests/utils/fake.js';
+import _ from 'lodash';
 import React from 'react/addons';
-// import Reflux from 'reflux';
-// import Actions from '../../actions/actions';
+import Reflux from 'reflux';
+import {SprintActions} from '../../actions/actions';
+import SprintStore from '../../stores/sprintStore';
+
+import {DragDropContext} from 'react-dnd';
+import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 
 import SprintColumn from './column.jsx';
 
-let sprint = mockSprints(1, 3)[0];
-
 let SprintBoard = React.createClass({
-  // mixins: [
-  //   Reflux.listenTo(HelloStore, 'onStoreUpdate')
-  // ],
+  mixins: [
+    Reflux.ListenerMixin
+  ],
 
   getInitialState() {
     return {
-      sprint: sprint,
-      sprintColumns: ['Backlog', 'Ready', 'In Progress', 'Done']
+      sprint: {},
+      sprintColumns: ['To Do', 'In Progress', 'Review', 'Done']
     };
   },
 
-  // onStoreUpdate(addressee) {
-  //   this.setState({
-  //     addressee: addressee
-  //   });
-  // },
+  componentDidMount() {
+    this.listenTo(SprintStore, this.onStoreUpdate);
+    SprintActions.fetchSprint();
+  },
 
-  // magicFunction() {
-  //   Actions.addresseeUpdate();
-  // },
+  onStoreUpdate(sprint) {
+    this.setState({
+      sprint: sprint
+    });
+  },
 
   render() {
     let sprintColumns = this.state.sprintColumns.map((column) => {
+      let columnTasks = _.where(this.state.sprint.tasks, {status: column});
       return (
         <SprintColumn
+          key={column}
           columnName={column}
-          tasks={this.state.sprint.tasks}
+          tasks={columnTasks}
         />
       );
     });
 
     return (
-      <div className='sprintBoard'>
+      <div className='sprint-board'>
         {sprintColumns}
       </div>
     );
@@ -48,4 +53,4 @@ let SprintBoard = React.createClass({
 
 });
 
-export default SprintBoard;
+export default DragDropContext(HTML5Backend)(SprintBoard);

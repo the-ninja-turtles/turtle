@@ -4,6 +4,9 @@ import createComponent from '../utils/create-component';
 import SprintColumn from '../../src/components/sprintboard/column.jsx';
 import Task from '../../src/components/sprintboard/task.jsx';
 
+console.log('column', SprintColumn.DecoratedComponent);
+console.log('column', SprintColumn.prototype);
+
 // mock tasks that are going to be provided as a property of a column
 let tasks = [
   {name: 'task1', description: 'description1', user: 'user1', status: 'Test'},
@@ -20,7 +23,7 @@ test('Sprint column is a div', (assert) => {
   assert.end();
 });
 
-test('Sprint column has a class "sprintColumn"', (assert) => {
+test('Sprint column has a class "sprint-column"', (assert) => {
   assert.equal(sprintColumn.props.className, 'sprintColumn',
     'Sprint column should have a class "sprintColumn"');
   assert.end();
