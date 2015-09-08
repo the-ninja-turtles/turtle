@@ -1,0 +1,70 @@
+.project-view {
+  width: 850px;
+  margin: 30px auto;
+}
+
+.btn {
+  width: 150px;
+  float: right;
+}
+
+h1 {
+  float: left;
+}
+
+hr {
+  margin: 20px 0;
+}
+.backlog-task {
+  margin: 10px 25px 0 25px;
+  padding: 10px;
+  border: solid 1px #333;
+  border-radius: 2px;
+  line-height: 50px;
+
+  .title {
+    margin-right: 5px;
+    font-weight: bold;
+  }
+  .circle {
+    border: solid 1px black;
+    border-radius: 50px;
+    width: 50px;
+    height: 50px;
+    display: inline;
+    text-align: center;
+    float: right;
+    margin: 0 5px;
+  }
+}
+
+.create-sprint {
+  label {
+    float: left;
+    margin-right: 5px;
+    font-weight: bold;
+  }
+  input {
+    font-weight: normal;
+    border-radius: 5px;
+    border: 1px solid black;
+    display: block;
+    padding: 5px;
+  }
+  div {
+    margin-bottom: 10px;
+  }
+  .points {
+    float: right;
+    .points-count {
+      font-weight: normal;
+    }
+  }
+  .drop-area {
+    margin-top: 10px;
+    border-radius: 5px;
+    border: solid 1px black;
+    height: 150px;
+    width: 850px;
+  }
+}

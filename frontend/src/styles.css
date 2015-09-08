@@ -1,13 +1,33 @@
-html, body{
+* {
+  box-sizing: border-box;
+}
+
+html, body {
   height: 100%;
 }
 
-.app{
+.app {
   height: 100%;
 }
 
-.appContainer{
-  height: 100%;
+.clearfix {
+  clear: both;
+}
+
+.btn {
+  background: #277DB3;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+h1 {
+  margin-bottom: 10px;
 }
 
 @import "components/sprintboard/sprintboard.css";
+@import "components/project/project.css"

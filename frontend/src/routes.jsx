@@ -4,6 +4,7 @@ import App from './components/app.jsx';
 import Home from './components/home/home.jsx';
 import Dashboard from './components/dashboard/dashboard.jsx';
 import SprintBoard from './components/sprintboard/board.jsx';
+import Project from './components/project/project.jsx';
 
 
 let Route = Router.Route;
@@ -16,6 +17,7 @@ let routes = (
     <DefaultRoute handler={Home} />
     <Route name='dashboard' handler={Dashboard} />
     <Route name='sprint' handler={SprintBoard} />
+    <Route name='project' handler={Project} />
   </Route>
 );
 
