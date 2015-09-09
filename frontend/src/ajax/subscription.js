@@ -9,7 +9,7 @@ export default class Subscription {
 
       this.close();
 
-      let url = origin(4000) + '/subscribe/' + namespace + '/' + room + '/' + localStorage.getItem('userToken');
+      let url = origin('events', 4000) + '/subscribe/' + namespace + '/' + room + '/' + localStorage.getItem('userToken');
       this._eventSource = new EventSource(url);
     }
   }

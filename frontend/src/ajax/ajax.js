@@ -1,8 +1,13 @@
+import _ from 'lodash';
 import axios from 'axios';
 
-export let origin = (port) => {
-  return window.location.protocol + '//' + window.location.hostname + ':' + port;
-};
+export let origin = _.memoize((sub, port) => {
+  let domain = window.location.hostname;
+  if (domain !== 'localhost') {
+    domain = sub + '.' + domain;
+  }
+  return window.location.protocol + '//' + domain + ':' + port;
+});
 
 export let request = (method, url, data) => {
   let options = {
@@ -25,6 +30,6 @@ export let request = (method, url, data) => {
 
 axios.interceptors.request.use((config) => {
   config.headers.Authorization = 'Bearer ' + localStorage.getItem('userToken');
-  config.url = origin(3000) + config.url;
+  config.url = origin('api', 3000) + config.url;
   return config;
 });
