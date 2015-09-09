@@ -29,5 +29,7 @@ h1 {
   margin-bottom: 10px;
 }
 
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "components/sprintboard/sprintboard.css";
-@import "components/project/project.css"
+@import "components/project/project.css";
+@import "components/dashboard/dashboard.css";

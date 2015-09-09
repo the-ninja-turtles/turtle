@@ -5,7 +5,7 @@ let Backlog = React.createClass({
 
   render() {
     let tasks = this.props.tasks.map((task) => {
-      return (<Task name={task.name} description={task.description} score={task.score} />);
+      return (<Task key={task.id} id={task.id} name={task.name} description={task.description} score={task.score} />);
     });
 
     return (
