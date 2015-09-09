@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import axios from 'axios';
+import auth from '../auth/auth.js';
 
 export let origin = _.memoize((sub, port) => {
   let domain = window.location.hostname;
@@ -29,7 +30,9 @@ export let request = (method, url, data) => {
 };
 
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = 'Bearer ' + localStorage.getItem('userToken');
-  config.url = origin('api', 3000) + config.url;
-  return config;
+  return auth().token().then((token) => {
+    config.headers.Authorization = 'Bearer ' + token;
+    config.url = origin('api', 3000) + config.url;
+    return config;
+  });
 });

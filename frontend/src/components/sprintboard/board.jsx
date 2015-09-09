@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react/addons';
+import React from 'react';
 import Reflux from 'reflux';
 import {SprintActions} from '../../actions/actions';
 import SprintStore from '../../stores/sprintStore';

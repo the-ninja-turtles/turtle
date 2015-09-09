@@ -1,4 +1,4 @@
-import React from 'react/addons';
+import React from 'react';
 import {Navigation} from 'react-router';
 import Reflux from 'reflux';
 import Item from './item.jsx';

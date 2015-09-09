@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {request} from './ajax.js';
-import Subscription from './subscription.js';
+import subscription from './subscription.js';
 
 // A resource has a name and sub resources
 let Resource = function(name, resources) {
@@ -78,9 +78,6 @@ Model.prototype._path = function() {
   return this.parent._path() + '/' + this.id;
 };
 
-
-// subscriptions
-let subscription = new Subscription();
 
 let on = (collection, event, callback) => {
   subscription.on(collection + ':' + event, callback);

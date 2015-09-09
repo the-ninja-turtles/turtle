@@ -1,4 +1,4 @@
-import React from 'react/addons';
+import React from 'react';
 import {SprintActions} from '../../actions/actions';
 import Task from './task.jsx';
 

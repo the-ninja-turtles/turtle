@@ -1,4 +1,4 @@
-import React from 'react/addons';
+import React from 'react';
 import {Modal} from 'react-bootstrap';
 import Member from './member.jsx';
 import {DashboardActions as Actions} from '../../actions/actions.js';

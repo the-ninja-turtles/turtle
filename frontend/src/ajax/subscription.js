@@ -1,6 +1,7 @@
 import {origin} from './ajax.js';
+import auth from '../auth/auth.js';
 
-export default class Subscription {
+class Subscription {
 
   subscribe(namespace, room) {
     if (this.namespace !== namespace && this.room !== room) {
@@ -9,18 +10,28 @@ export default class Subscription {
 
       this.close();
 
-      let url = origin('events', 4000) + '/subscribe/' + namespace + '/' + room + '/' + localStorage.getItem('userToken');
-      this._eventSource = new EventSource(url);
+      this._sub = auth().token().then((token) => {
+        let url = origin('events', 4000) + '/subscribe/' + namespace + '/' + room + '/' + token;
+        return new EventSource(url);
+      });
     }
   }
 
-  on(event, cb) {
-    this._eventSource.addEventListener(event, cb, false);
+  on(event, callback) {
+    if (this._sub) {
+      this._sub.then((es) => {
+        es.addEventListener(event, callback, false);
+      });
+    }
   }
 
   close() {
-    if (this._eventSource && this._eventSource.close) {
-      this._eventSource.close();
+    if (this._sub) {
+      this._sub.then((es) => {
+        es.close();
+      });
     }
   }
 }
+
+export default new Subscription();

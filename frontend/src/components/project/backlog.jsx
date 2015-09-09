@@ -1,4 +1,4 @@
-import React from 'react/addons';
+import React from 'react';
 import Task from './task.jsx';
 
 let Backlog = React.createClass({

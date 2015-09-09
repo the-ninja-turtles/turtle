@@ -1,4 +1,4 @@
-import React from 'react/addons';
+import React from 'react';
 import Backlog from './backlog.jsx';
 import CreateSprint from './createSprint.jsx';
 import {mockProjects} from '../../../tests/utils/fake.js';
