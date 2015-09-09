@@ -1,9 +1,6 @@
 import Reflux from 'reflux';
 
-
-const Actions = Reflux.createActions({
-  // user actions
-  'loggedIn': {}
+export const DashboardActions = Reflux.createActions({
+  'fetchProjects': {asyncResult: true},
+  'createProject': {asyncResult: true}
 });
-
-export default Actions;

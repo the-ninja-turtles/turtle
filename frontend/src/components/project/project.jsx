@@ -11,6 +11,11 @@ let Project = React.createClass({
     };
   },
 
+  componentDidMount() {
+    let id = this.props.params.id;
+    // conduct fetch for project details using this projectId
+  },
+
   render() {
     let tasks = this.state.project.tasks;
     return (

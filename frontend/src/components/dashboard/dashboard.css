@@ -1,0 +1,78 @@
+.dashboard {
+  text-align: center;
+  width: 850px;
+  margin: 30px auto;
+}
+
+.item {
+  cursor: pointer;
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  line-height: 200px;
+  border: 1px solid black;
+  border-radius: 4px;
+  margin: 20px;
+  .name {
+    display: inline-block;
+    line-height: 20px;
+    vertical-align: middle;
+  }
+}
+
+.project-create {
+  color: #aaa;
+  border: 1px solid #cdcdcd;
+}
+
+.modal-header {
+  text-align: center;
+}
+
+.modal-body {
+  text-align: center;
+  padding: 0 15%;
+}
+
+.create-name {
+  height: 70px;
+}
+
+.create-invite {
+  padding: 0 16px;
+  margin: 10px auto;
+  height: 80px;
+  input {
+    width: 55%;
+    float: left;
+  }
+}
+
+.create-invitees {
+  padding: 10px 16px 0px;
+  margin: 10px auto 10px auto;
+  max-height: 215px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  ul {
+    padding: 0;
+  }
+  .member {
+    display: block;
+    list-style-type: none;
+    overflow: auto;
+    clear: both;
+    margin: 4px 0;
+    .email {
+      float: left;
+    }
+  }
+}
+
+.modal-footer {
+  text-align: center;
+  .btn {
+    float: none;
+  }
+}

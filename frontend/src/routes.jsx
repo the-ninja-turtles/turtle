@@ -17,7 +17,7 @@ let routes = (
     <DefaultRoute handler={Home} />
     <Route name='dashboard' handler={Dashboard} />
     <Route name='sprint' handler={SprintBoard} />
-    <Route name='project' handler={Project} />
+    <Route name='project' path='project/:id' handler={Project} />
   </Route>
 );
 
