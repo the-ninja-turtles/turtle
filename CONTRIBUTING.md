@@ -163,12 +163,23 @@ no problem getting your changes merged in.
 ## Merge pull request into develop
 
 To avoid unnecessary merge commits in our git history, we merge pull requests
-manually and push to the develop branch.
+manually and push to the `develop` branch. The local `develop` branch is used only
+for pulling upstream `develop` branch and for pushing to the upstream `develop`.
 
 ``` bash
 git checkout develop
-git pull --rebase --ff-only https://github.com/contributor/turtle
+git pull upstream develop
+git pull --ff-only <git path to contributor’s branch>
 git push upstream develop
+```
+
+The merge can also be done with a detached HEAD like so:
+
+```bash
+git fetch upstream develop
+git checkout upstream/develop
+git pull --ff-only <git path to contributor’s branch>
+git push upstream HEAD:develop
 ```
 
 ## Merge develop branch into master
@@ -178,8 +189,18 @@ develop branch into master.
 
 ``` bash
 git checkout master
+git pull upstream master
 git merge --ff-only develop
 git push upstream master
+```
+
+An alternative process, done with a detached HEAD, is:
+
+```bash
+git fetch upstream master
+git checkout upstream/master
+git pull --ff-only upstream/develop
+git push upstream HEAD:master
 ```
 
 
