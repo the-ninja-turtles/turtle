@@ -47,6 +47,8 @@ let mapError = (err) => {
 
 
 gulp.task('browserify', () => {
+  process.env.BABEL_ENV = 'production';
+
   return browserify({
     entries: [global.paths.jsEntry],
     transform: [babelify, ejsify, brfs, packageify],
@@ -64,6 +66,7 @@ gulp.task('browserify', () => {
 });
 
 gulp.task('watchify', () => {
+  process.env.BABEL_ENV = 'production';
 
   let watcher  = watchify(browserify({
     entries: [global.paths.jsEntry],
