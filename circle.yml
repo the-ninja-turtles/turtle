@@ -1,9 +1,23 @@
 machine:
   node:
     version: iojs-v2.3.1
+  services:
+    - docker
 dependencies:
   post:
     - npm install -g gulp
 test:
   pre:
     - gulp install
+deployment:
+  master:
+    branch: develop
+    commands:
+      - gulp build
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker build -t theninjaturtles/turtle-eventsystem event-system
+      - docker build -t theninjaturtles/turtle-projectservice project-service
+      - docker build -t theninjaturtles/turtle-frontend frontend
+      - docker push theninjaturtles/turtle-eventsystem
+      - docker push theninjaturtles/turtle-projectservice
+      - docker push theninjaturtles/turtle-frontend
