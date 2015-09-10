@@ -11,3 +11,11 @@ export const SprintActions = Reflux.createActions({
   'updateTaskRankLocally': {},
   'updateTaskRankOnServer': {asyncResult: true}
 });
+
+export const ProjectActions = Reflux.createActions({
+  'fetchProject': {asyncResult: true},
+  'addTaskToNextSprintLocally': {},
+  'addTaskToNextSprintOnServer': {asyncResult: true},
+  'updateTaskRankLocally': {},
+  'updateTaskRankOnServer': {asyncResult: true}
+});
