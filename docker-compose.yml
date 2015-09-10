@@ -10,8 +10,11 @@ frontend:
 
 projectservice:
   build: project-service
+  command: ../node_modules/gulp/bin/gulp.js project-service:watch
   volumes:
    - project-service:/app
+   - node_modules:/node_modules
+   - gulp:/gulp
   ports:
    - "3000:80"
   links:
@@ -25,8 +28,11 @@ projectservice:
 
 eventsystem:
   build: event-system
+  command: ../node_modules/gulp/bin/gulp.js event-system:watch
   volumes:
    - event-system:/app
+   - node_modules:/node_modules
+   - gulp:/gulp
   ports:
     - "4000:80"
   links:

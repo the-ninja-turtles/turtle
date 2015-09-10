@@ -4,7 +4,7 @@
   "description": "Invitation service for the fastest agile project management app",
   "readme": " ",
   "repository": {},
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "test": "gulp invitation-service:test"
