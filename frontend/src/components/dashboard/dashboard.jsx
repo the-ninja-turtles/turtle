@@ -3,8 +3,8 @@ import {Navigation} from 'react-router';
 import Reflux from 'reflux';
 import Item from './item.jsx';
 import CreateProject from './createProject.jsx';
-import {DashboardActions as Actions} from '../../actions/actions';
-import dashboardStore from '../../stores/dashboardStore';
+import {DashboardActions} from '../../actions/actions';
+import DashboardStore from '../../stores/dashboardStore';
 
 let Dashboard = React.createClass({
   // `ListenerMixin` will unsubscribe components from stores upon unmounting
@@ -18,8 +18,8 @@ let Dashboard = React.createClass({
   },
 
   componentDidMount() {
-    this.listenTo(dashboardStore, this.onStoreUpdate);
-    Actions.fetchProjects();
+    this.listenTo(DashboardStore, this.onStoreUpdate);
+    DashboardActions.fetchProjects();
   },
 
   onStoreUpdate(projects) {
@@ -31,7 +31,7 @@ let Dashboard = React.createClass({
   },
 
   close() {
-    Actions.fetchProjects();
+    DashboardActions.fetchProjects();
     this.setState({showModal: false});
   },
 
