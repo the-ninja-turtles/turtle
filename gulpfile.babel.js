@@ -9,6 +9,7 @@ try {
   require('./frontend/gulpfile.babel.js');
   require('./event-system/gulpfile.babel.js');
   require('./project-service/gulpfile.babel.js');
+  require('./invitation-service/gulpfile.babel.js');
 } catch(err) {
   console.log('please run gulp install first');
 }
@@ -34,6 +35,6 @@ gulp.task('install', () => {
 
 gulp.task('test', test.bind(null, '**'));
 
-gulp.task('build', ['frontend:build', 'event-system:build', 'project-service:build']);
+gulp.task('build', ['frontend:build', 'event-system:build', 'project-service:build', 'invitation-service:build']);
 
 gulp.task('default', ['lint', 'test']);

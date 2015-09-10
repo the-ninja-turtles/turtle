@@ -1,0 +1,21 @@
+{
+  "name": "turtle-invittion-service",
+  "version": "1.0.0",
+  "description": "Invitation service for the fastest agile project management app",
+  "readme": " ",
+  "repository": {},
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "gulp invitation-service:test"
+  },
+  "author": "Andrey, David, Wesley",
+  "license": "ISC",
+  "dependencies": {
+    "babel-runtime": "^5.8.20",
+    "body-parser": "^1.13.3",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "express-jwt": "^3.0.1"
+  }
+}
