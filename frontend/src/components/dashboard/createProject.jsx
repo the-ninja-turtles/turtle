@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal} from 'react-bootstrap';
+import {Modal, Input} from 'react-bootstrap';
 import Member from './member.jsx';
 import {DashboardActions as Actions} from '../../actions/actions.js';
 
@@ -28,7 +28,9 @@ let CreateProject = React.createClass({
   },
 
   invite() {
-    let email = React.findDOMNode(this.refs.inviteeEmail).value;
+    // let email = React.findDOMNode(this.refs.inviteeEmail).value;
+    let email = this.refs.inviteeEmail.getValue();
+    console.log(email);
     if (email) {
       let invitees = this.state.invitees.slice();
       invitees.push({email: email});
@@ -53,57 +55,92 @@ let CreateProject = React.createClass({
   createProject() {
     let name = React.findDOMNode(this.refs.projectName).value;
     if (name) {
-      Actions.createProject(name);
-      this.props.close();
+      Actions.createProject(name, (response) => { // check `response.error` for error
+        this.close();
+      });
     }
   },
 
+  close() {
+    this.props.close();
+    this.setState(this.getInitialState());
+  },
+
   render() {
-    let nameSection = (
-      <section className='create-name'>
-        <h3>Project Name</h3>
-        <input type='text' ref='projectName' placeholder='Ex. Turtle' onChange={this.checkName} />
-      </section>
-    );
-
-    let inviteSection = (
-      <section className='create-invite'>
-        <h3>Team Members</h3>
-        <form>
-          <input type='email' ref='inviteeEmail' placeholder='somebody@turtle.com' onChange={this.checkEmail} value={this.state.inviteeEmail} />
-          <button className='btn' onClick={this.invite} disabled={this.state.disableInvite}>Invite</button>
-        </form>
-      </section>
-    );
-
     let inviteeList = (
-      <section className='create-invitees'>
+      <div className='members'>
         <ul>
           {
             this.state.invitees.map((invitee, idx) => {
-              return <Member key={idx} idx={idx} email={invitee.email} remove={this.removeInvite} />;
+              return (
+                <Member
+                  key={idx}
+                  idx={idx}
+                  email={invitee.email}
+                  remove={this.removeInvite}
+                />
+              );
             })
           }
         </ul>
-      </section>
+      </div>
+    );
+
+    const inviteButton = (
+      <button
+        className='btn'
+        onClick={this.invite}
+        disabled={this.state.disableInvite}
+      >
+        Invite
+      </button>
     );
 
     return (
-      <Modal show={this.props.showModal} onHide={this.props.close}>
+      <Modal show={this.props.showModal} onHide={this.close} bsSize='md'>
         <Modal.Header closeButton>
           <Modal.Title>Create a New Project</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          {nameSection}
-          {inviteSection}
-          {(() => {
-            return this.state.invitees.length ? inviteeList : undefined;
-          })()}
+          <div className='create-project'>
+            <form>
+              <input
+                type='text'
+                className='name'
+                ref='projectName'
+                placeholder='Title'
+                onChange={this.checkName}
+              />
+            </form>
+
+            <form>
+              <label className='team'>Team Members</label>
+              <Input
+                type='email'
+                className='invitee'
+                ref='inviteeEmail'
+                placeholder='Email address'
+                onChange={this.checkEmail}
+                value={this.state.inviteeEmail}
+                buttonAfter={inviteButton}
+              />
+            </form>
+
+            {(() => {
+              return this.state.invitees.length ? inviteeList : undefined;
+            })()}
+          </div>
         </Modal.Body>
 
         <Modal.Footer>
-          <button className='btn' onClick={this.createProject} disabled={this.state.disableCreate}>Create</button>
+          <button
+            className='btn'
+            onClick={this.createProject}
+            disabled={this.state.disableCreate}
+          >
+            Create
+          </button>
         </Modal.Footer>
       </Modal>
     );

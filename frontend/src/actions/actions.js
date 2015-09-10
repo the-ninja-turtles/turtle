@@ -5,6 +5,14 @@ export const DashboardActions = Reflux.createActions({
   'createProject': {asyncResult: true}
 });
 
+export const ProjectActions = Reflux.createActions({
+  'fetchProject': {asyncResult: true}
+});
+
+export const CreateTaskActions = Reflux.createActions({
+  'createTask': {asyncResult: true}
+});
+
 export const SprintActions = Reflux.createActions({
   'fetchSprint': {asyncResult: true},
   'updateTaskStatus': {asyncResult: true},

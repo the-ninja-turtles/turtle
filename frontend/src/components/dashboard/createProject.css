@@ -1,0 +1,39 @@
+.create-project {
+  .name {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .invitee {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .team {
+    margin-top: 15px;
+  }
+
+  .members {
+    margin: 14px 0;
+    padding: 0 10px;
+    max-height: 215px;
+    overflow: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    ul {
+      padding: 0;
+    }
+  }
+
+  .member {
+    display: block;
+    list-style-type: none;
+    clear:both;
+    overflow: auto;
+    margin: 4px 0;
+    line-height: 30px;
+    .email {
+      float: left;
+    }
+  }
+}

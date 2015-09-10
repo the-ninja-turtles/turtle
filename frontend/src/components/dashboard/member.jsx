@@ -10,7 +10,7 @@ let Member = React.createClass({
     return (
       <li className='member'>
         <span className='email'>{this.props.email}</span>
-        <button className='btn' onClick={this.handleClick}>Remove</button>
+        <button className='btn btn-sm' onClick={this.handleClick}>Remove</button>
       </li>
     );
   }

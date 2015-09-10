@@ -10,7 +10,7 @@ let Item = React.createClass({
   render() {
     let classes = classNames({
       'item': true,
-      'project-create': this.props.isCreateProject
+      'new-project': this.props.isCreateProject
     });
     return (
       <li className={classes} onClick={this.handleClick}>

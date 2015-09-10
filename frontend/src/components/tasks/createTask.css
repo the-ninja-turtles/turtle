@@ -1,0 +1,28 @@
+.create-task {
+  .name {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .description {
+    width: 100%;
+    max-width: 100%;
+    margin: 10px 0;
+  }
+
+  .assignment {
+    text-align: left;
+    width: 140px;
+    float:left;
+    margin: 10px 0;
+  }
+
+  .score {
+    width: 50px;
+    float: right;
+    margin: 10px 0;
+    input {
+      margin: 0;
+    }
+  }
+}
