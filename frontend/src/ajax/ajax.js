@@ -6,8 +6,10 @@ export let origin = _.memoize((sub, port) => {
   let domain = window.location.hostname;
   if (domain !== 'localhost') {
     domain = sub + '.' + domain;
+  } else {
+    domain = domain + ':' + port;
   }
-  return window.location.protocol + '//' + domain + ':' + port;
+  return window.location.protocol + '//' + domain;
 });
 
 export let request = (method, url, data) => {
