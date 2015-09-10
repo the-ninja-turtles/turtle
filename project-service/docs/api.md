@@ -575,7 +575,7 @@ Get all existing tasks for a project. Tasks are ordered ascending by `rank`.
 <a name="external-tasks-create"/>
 ### Create Task for Project
 
-Create a new task for a project.
+Create a new task for a project. Empty string is allowed for `description`.
 
 - **URL**
   + `/projects/:projectId/tasks`
