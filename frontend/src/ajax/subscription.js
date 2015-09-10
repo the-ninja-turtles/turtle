@@ -1,26 +1,23 @@
+import _ from 'lodash';
 import {origin} from './ajax.js';
 import auth from '../auth/auth.js';
 
-class Subscription {
+export default class Subscription {
 
-  subscribe(namespace, room) {
-    if (this.namespace !== namespace && this.room !== room) {
-      this.namespace = namespace;
-      this.room = room;
-
-      this.close();
-
-      this._sub = auth().token().then((token) => {
-        let url = origin('events', 4000) + '/subscribe/' + namespace + '/' + room + '/' + token;
-        return new EventSource(url);
-      });
-    }
+  constructor(namespace) {
+    this._sub = auth().token().then((token) => {
+      let url = origin('events', 4000) + '/subscribe/' + namespace + '/' + token;
+      return new EventSource(url);
+    });
   }
 
-  on(event, callback) {
+  on(resource, event, callback, filter) {
+    filter = filter || _.identity;
     if (this._sub) {
       this._sub.then((es) => {
-        es.addEventListener(event, callback, false);
+        es.addEventListener(resource + ':' + event, (e) => {
+          filter(e.data) && callback(e.data);
+        }, false);
       });
     }
   }
@@ -33,5 +30,3 @@ class Subscription {
     }
   }
 }
-
-export default new Subscription();

@@ -1,10 +1,16 @@
 import _ from 'lodash';
 import {request} from './ajax.js';
-import subscription from './subscription.js';
+import Subscription from './subscription.js';
 
-// A resource has a name and sub resources
-let Resource = function(name, resources) {
+
+let subscription = _.once(() => {
+  return new Subscription('projects');
+});
+
+
+let Resource = function(name, singular, resources) {
   this.name = name;
+  this.singular = singular;
   this.resources = resources || [];
   this.actions = {};
 };
@@ -13,6 +19,7 @@ Resource.prototype.define = function(name, method) {
   this.actions[name] = method;
   return this;
 };
+
 
 let Collection = function(resource, parent) {
   this.resource = resource;
@@ -36,6 +43,13 @@ Collection.prototype._path = function() {
   return path + '/' + this.resource.name;
 };
 
+Collection.prototype.on = function(event, callback) {
+  let self = this;
+  subscription().on(self.resource.singular, event, callback, (data) => {
+    return !self.parent || self.parent.id === data[self.parent.singular + '_id'];
+  });
+};
+
 
 let Model = function(parent, id) {
   let self = this;
@@ -49,7 +63,6 @@ let Model = function(parent, id) {
       }
     });
   });
-
 
   _.each(parent.resource.actions, (method, name) => {
     if (_.isString(method)) {
@@ -78,30 +91,16 @@ Model.prototype._path = function() {
   return this.parent._path() + '/' + this.id;
 };
 
-
-let on = (collection, event, callback) => {
-  subscription.on(collection + ':' + event, callback);
+Model.prototype.on = function(event, callback) {
+  let self = this;
+  subscription().on(self.parent.resource.singular, event, callback, (data) => {
+    return self.id === data.id;
+  });
 };
 
-// resources
-let tasks = new Resource('tasks');
-let sprints = new Resource('sprints').define('assigntasks', 'POST');
-let projects = new Resource('projects', [tasks, sprints]).define('on', on.bind(null, 'project'));
 
-let root = new Collection(projects);
+let tasks = new Resource('tasks', 'task');
+let sprints = new Resource('sprints', 'sprint').define('assigntasks', 'POST');
+let projects = new Resource('projects', 'project', [tasks, sprints]);
 
-root.id = function(id) {
-  subscription.subscribe(this.resource.name, id);
-  return Collection.prototype.id.call(this, id);
-};
-root.on = undefined;
-export default root;
-
-
-Collection.prototype.on = function(event, callback) {
-  let events = {
-    'tasks': 'task',
-    'sprints': 'sprint'
-  };
-  on(events[this.resource.name], event, callback);
-};
+export default new Collection(projects);

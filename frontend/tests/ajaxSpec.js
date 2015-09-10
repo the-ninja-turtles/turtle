@@ -5,7 +5,6 @@ import projects from '../src/ajax/projects.js';
 
 let beforeEach = () => {
   let spy = sinon.spy();
-  projects.__Rewire__('subscription', {subscribe: _.identity, on: _.identity});
   projects.__Rewire__('request', spy);
   return spy;
 };
@@ -137,33 +136,31 @@ test('Assigning task to sprint should POST /projects/:id/sprints/:id/assigntasks
   });
 });
 
-test('Selecting a project should subscribe to events', (t) => {
-  return new Promise((resolve) => {
-    let spy = sinon.spy();
-    projects.__Rewire__('subscription', {subscribe: spy, on: _.identity});
-
-    projects.id(0);
-    t.ok(spy.calledWith('projects', 0), 'Subscribed to project');
-
-    resolve();
-  });
-});
 
 test('Using on on a collection should register a callback to the event', (t) => {
   return new Promise((resolve) => {
     let spy = sinon.spy();
-    projects.__Rewire__('subscription', {subscribe: _.identity, on: spy});
+    projects.__Rewire__('subscription', () => {
+      return {on: spy};
+    });
 
-    t.equals(projects.on, undefined, 'Projects should not have a on method');
+    projects.on('change', _.identity);
+    t.ok(spy.calledWith('project', 'change', _.identity), 'Added event handler to project');
 
     projects.id(0).on('change', _.identity);
-    t.ok(spy.calledWith('project:change', _.identity), 'Added event handler to project');
+    t.ok(spy.calledWith('project', 'change', _.identity), 'Added event handler to project');
 
     projects.id(0).sprints.on('change', _.identity);
-    t.ok(spy.calledWith('sprint:change', _.identity), 'Added event handler to sprints');
+    t.ok(spy.calledWith('sprint', 'change', _.identity), 'Added event handler to sprints');
+
+    projects.id(0).sprints.id(0).on('change', _.identity);
+    t.ok(spy.calledWith('sprint', 'change', _.identity), 'Added event handler to sprints');
 
     projects.id(0).tasks.on('change', _.identity);
-    t.ok(spy.calledWith('task:change', _.identity), 'Added event handler to tasks');
+    t.ok(spy.calledWith('task', 'change', _.identity), 'Added event handler to tasks');
+
+    projects.id(0).tasks.id(0).on('change', _.identity);
+    t.ok(spy.calledWith('task', 'change', _.identity), 'Added event handler to tasks');
 
     resolve();
   });
