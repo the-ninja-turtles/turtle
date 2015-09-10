@@ -7,11 +7,11 @@ http header in case the connection is lost. Reconnecting and setting `Last-Event
 is handled automatically by the browser and requires no special handling on the
 client.
 
-Example of a client subscribing to a project feed `/subscribe/projects/0/:jwt`
+Example of a client subscribing to a project feed `/subscribe/projects/:jwt`
 and adding an event listener for the task:change event.
 
 ```javascript
-let source = new EventSource('/subscribe/projects/0/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9');
+let source = new EventSource('/subscribe/projects/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9');
 source.addEventListener('task:change', (e) => {
   console.log(e.data);
 }, false);
@@ -20,27 +20,27 @@ source.addEventListener('task:change', (e) => {
 Event System architecture
 ===
 
-When a client subscribes `/subscribe/:namespace/:room/:jwt`:
+When a client subscribes `/subscribe/:namespace/:jwt`:
   - Normalize request for express-jwt middleware
   - Check user authorization
   - Respond with 200 text/event-stream, keep-alive \n
-  - Subscribe to {namespace}:{room}
+  - Subscribe to {namespace}
   - When an event is received
     - if userId is in acl
       - send event to client
 
   - if Last-Event-ID header is set
     - get all events between Last-Event-ID and current-event-id (MGET)
-    - filter by {namespace}:{room} and acl
+    - filter by {namespace} and acl
     - send events to client
 
   - When client disconnects
     - Close subscription
 
-When a service publishes an event `POST /publish/:namespace/:room`:
+When a service publishes an event `POST /publish/:namespace`:
   - Increment the current event id (INCR current-event-id)
-  - Create an event (SETEX eventId 300 "{event, acl, data, namespace:room}")
-  - Publish event to all instances (PUBLISH {namespace}:{room} "{event, acl, data, namespace:room}")
+  - Create an event (SETEX eventId 300 "{event, acl, data, namespace}")
+  - Publish event to all instances (PUBLISH {namespace} "{event, acl, data, namespace}")
 
 
 API Reference
@@ -49,12 +49,12 @@ API Reference
 **Subscribe**
 ---
 
-Clients receive push notifications by opening a connection to `/subscribe/:namespace/:room/:jwt`.
+Clients receive push notifications by opening a connection to `/subscribe/:namespace/:jwt`.
 The event system responds by sending a keep-alive message to keep the connection open.
 
 * **Url:**
 
-  `/subscribe/:namespace/:room/:jwt`
+  `/subscribe/:namespace/:jwt`
 
 * **Method:**
 
@@ -77,7 +77,7 @@ The event system responds by sending a keep-alive message to keep the connection
 * **Sample Call:**
 
   ```javascript
-  let source = new EventSource('/subscribe/projects/0/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9');
+  let source = new EventSource('/subscribe/projects/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9');
   source.addEventListener('task:change', (e) => {
     console.log(e.data);
   }, false);
@@ -99,7 +99,7 @@ passed, in that case the event is only sent to the users contained within the ac
 
 * **Url:**
 
-  `/publish/:namespace/:room`
+  `/publish/:namespace`
 
 * **Method:**
 
@@ -141,4 +141,4 @@ passed, in that case the event is only sent to the users contained within the ac
     **Content:** `{ "error": "Try again later" }`
 
 * **Example request:**
-  `curl -H "Content-Type: application/json" -X POST -d '{"event":"task:change"}'  http://127.0.0.1:4001/publish/n/r`
+  `curl -H "Content-Type: application/json" -X POST -d '{"event":"task:change"}'  http://127.0.0.1:4001/publish/n`

@@ -4,7 +4,7 @@ import redis from './redis.js';
 
 let router = express.Router();
 
-router.get('/subscribe/:namespace/:room', (req, res) => {
+router.get('/subscribe/:namespace', (req, res) => {
   let client = redis.createClient();
   req.socket.setTimeout(Number.MAX_SAFE_INTEGER);
 
@@ -14,9 +14,7 @@ router.get('/subscribe/:namespace/:room', (req, res) => {
     .write('\n');
 
   let subscriber = redis.createClient();
-  let channel = req.params.namespace + ':' + req.params.room;
-
-  subscriber.subscribe(channel);
+  subscriber.subscribe(req.params.namespace);
 
   subscriber.on('message', (channel, message) => {
     let event = JSON.parse(message);
@@ -35,7 +33,7 @@ router.get('/subscribe/:namespace/:room', (req, res) => {
       }).then((events) => {
         return _.filter(events, (event) => {
           if (event) {
-            return event.channel === channel && isAuthorized(event.acl);
+            return event.channel === req.params.namespace && isAuthorized(event.acl);
           }
         });
       }).then((events) => {

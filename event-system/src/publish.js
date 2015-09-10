@@ -4,9 +4,8 @@ import redis from './redis.js';
 
 let router = express.Router();
 
-router.post('/publish/:namespace/:room', (req, res) => {
+router.post('/publish/:namespace', (req, res) => {
   let client = redis.createClient();
-  let channel = req.params.namespace + ':' + req.params.room;
   let acl = req.body.acl || ['*'];
 
   if (!_.isString(req.body.event) || !_.isArray(acl)) {
@@ -16,11 +15,11 @@ router.post('/publish/:namespace/:room', (req, res) => {
   let event = {
     event: req.body.event,
     data: req.body.data,
-    channel: channel,
+    channel: req.params.namespace,
     acl: acl
   };
 
-  client.publish(channel, JSON.stringify(event)).then(() => {
+  client.publish(req.params.namespace, JSON.stringify(event)).then(() => {
     return client.incr('current-event-id');
   }).then((id) => {
     event.id = id - 1;
@@ -33,7 +32,7 @@ router.post('/publish/:namespace/:room', (req, res) => {
   });
 });
 
-router.all('/publish/:namespace/:room', (req, res) => {
+router.all('/publish/:namespace', (req, res) => {
   res.status(405).json({error: 'Use POST to publish an event'});
 });
 

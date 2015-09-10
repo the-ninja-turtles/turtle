@@ -15,27 +15,27 @@ const beforeEach = (dbName) => {
   return app;
 };
 
-test('POST /publish should respond with 400 when event property is missing', (t) => {
+test('POST /publish/:namespace should respond with 400 when event property is missing', (t) => {
   let app = beforeEach();
 
   return request(app)
-    .post('/publish/namespace/room')
+    .post('/publish/namespace')
     .expect(400)
     .then(() => {
       t.pass('400 BAD REQUEST');
     });
 });
 
-test('POST /publish publish event and respond with 201', (t) => {
+test('POST /publish/:namespace publish event and respond with 201', (t) => {
   let app = beforeEach('publish');
   let spy = sinon.spy();
   let client = redis.createClient('publish');
 
-  client.subscribe('namespace:room');
+  client.subscribe('namespace');
   client.on('message', spy);
 
   return request(app)
-    .post('/publish/namespace/room')
+    .post('/publish/namespace')
     .send({event: 'task:change'})
     .expect(201)
     .then(() => {
@@ -45,12 +45,12 @@ test('POST /publish publish event and respond with 201', (t) => {
     });
 });
 
-test('POST /publish increments current event id and writes the event data to redis', (t) => {
+test('POST /publish/:namespace increments current event id and writes the event data to redis', (t) => {
   let app = beforeEach('increment');
   let client = redis.createClient('increment');
 
   return request(app)
-    .post('/publish/namespace/room')
+    .post('/publish/namespace')
     .send({event: 'task:change'})
     .then(() => {
       return client.get('current-event-id');
@@ -62,16 +62,16 @@ test('POST /publish increments current event id and writes the event data to red
     .then((value) => {
       t.equal(value.id, 0, 'ID is set to correct value');
       t.equal(value.event, 'task:change', 'Event name is stored');
-      t.equal(value.channel, 'namespace:room', 'Event channel is set');
+      t.equal(value.channel, 'namespace', 'Event channel is set');
       t.equal(value.acl[0], '*', 'Event ACL is set to default');
     });
 });
 
-test('/publish should respond with 405 when using wrong HTTP method', (t) => {
+test('/publish/:namespace should respond with 405 when using wrong HTTP method', (t) => {
   let app = beforeEach();
 
   return request(app)
-    .get('/publish/namespace/room')
+    .get('/publish/namespace')
     .expect(405)
     .then(() => {
       t.pass('405 METHOD NOT ALLOWED');
