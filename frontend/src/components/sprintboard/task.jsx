@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react/addons';
 import {SprintActions} from '../../actions/actions';
-import {ItemTypes} from './constants';
+import {ItemTypes} from '../../constants/dragAndDropConstants';
 import {DragSource, DropTarget} from 'react-dnd';
 
 const taskSource = {

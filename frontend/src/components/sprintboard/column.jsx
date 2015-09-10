@@ -2,7 +2,7 @@ import React from 'react';
 import {SprintActions} from '../../actions/actions';
 import Task from './task.jsx';
 
-import {ItemTypes} from './constants';
+import {ItemTypes} from '../../constants/dragAndDropConstants';
 import {DropTarget} from 'react-dnd';
 
 const columnTarget = {

@@ -4,7 +4,8 @@ import Task from './task.jsx';
 let Backlog = React.createClass({
 
   render() {
-    let tasks = this.props.tasks.map((task) => {
+    let tasks = this.props.tasks || [];
+    tasks = tasks.map((task) => {
       return (<Task key={task.id} id={task.id} name={task.name} description={task.description} score={task.score} />);
     });
 
