@@ -1,7 +1,9 @@
 {
   "name": "turtle-frontend",
-  "description": "Frontend for the fastest agile project management app",
   "version": "1.0.0",
+  "description": "Frontend for the fastest agile project management app",
+  "readme": " ",
+  "repository": {},
   "main": "server/server.js",
   "directories": {
     "doc": "docs",

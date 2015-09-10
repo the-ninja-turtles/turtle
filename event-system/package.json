@@ -2,6 +2,8 @@
   "name": "turtle-event-system",
   "version": "1.0.0",
   "description": "Event system for the fastest agile project management app",
+  "readme": " ",
+  "repository": {},
   "main": "src/index.js",
   "directories": {
     "doc": "docs",

@@ -2,6 +2,8 @@
   "name": "turtle-project-service",
   "version": "1.0.0",
   "description": "Project service for the fastest agile project management app",
+  "readme": " ",
+  "repository": {},
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
@@ -9,10 +11,6 @@
   },
   "author": "Andrey, David, Wesley",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/the-ninja-turtles/turtle/issues"
-  },
-  "homepage": "https://github.com/the-ninja-turtles/turtle#readme",
   "dependencies": {
     "babel-runtime": "^5.8.20",
     "body-parser": "^1.13.3",
