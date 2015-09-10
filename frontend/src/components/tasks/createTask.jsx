@@ -2,8 +2,8 @@ import React from 'react';
 import Reflux from 'reflux';
 import _ from 'lodash';
 import {Modal, Input} from 'react-bootstrap';
-import {CreateTaskActions as Actions} from '../../actions/actions';
-import createTaskStore from '../../stores/createTaskStore';
+import {CreateTaskActions} from '../../actions/actions';
+import CreateTaskStore from '../../stores/createTaskStore';
 
 let CreateTask = React.createClass({
   mixins: [Reflux.ListenerMixin],
@@ -34,7 +34,7 @@ let CreateTask = React.createClass({
   },
 
   componentDidMount() {
-    this.listenTo(createTaskStore, this.onStoreUpdate);
+    this.listenTo(CreateTaskStore, this.onStoreUpdate);
   },
 
   onStoreUpdate(response) {
@@ -44,7 +44,7 @@ let CreateTask = React.createClass({
   },
 
   createTask() {
-    Actions.createTask(this.props.projectId, this.state.taskProperties);
+    CreateTaskActions.createTask(this.props.projectId, this.state.taskProperties);
   },
 
   handleChanges(e) {

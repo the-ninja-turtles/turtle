@@ -11,9 +11,22 @@ let DashboardStore = Reflux.createStore({
     });
   },
   onCreateProject(name, cb) {
-    projects.create({name: name}).then((response) => {
-      cb(response);
-    });
+    projects.create({name: name})
+      .then((response) => {
+        if (!response.error) {
+          return projects.id(response.id).sprints.create({
+            name: 'Upcoming',
+            status: 'Not Started',
+            startDate: new Date(),
+            endDate: new Date()
+          });
+        }
+      })
+      .then((response) => {
+        if (!response.error) {
+          cb(response);
+        }
+      });
   }
 });
 
