@@ -53,7 +53,7 @@ router.get('/subscribe/:namespace', (req, res) => {
   let sendEvent = (id, event, data) => {
     res.write('id: ' + id + '\n');
     res.write('event: ' + event + '\n');
-    res.write('data: ' + data + '\n\n');
+    res.write('data: ' + JSON.stringify(data) + '\n\n');
   };
 
   req.on('close', () => {

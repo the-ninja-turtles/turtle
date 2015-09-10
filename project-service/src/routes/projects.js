@@ -1,6 +1,7 @@
 import express from 'express';
 import R from 'ramda';
 import models from '../models';
+import publish from '../publish.js';
 
 // for URLs
 // /projects/
@@ -138,6 +139,7 @@ router.post('/', (req, res, next) => {
   })
   .then((project) => {
     res.status(201).json(project.dataValues);
+    publish('project:add', ['*'], project.dataValues);
   });
 });
 
