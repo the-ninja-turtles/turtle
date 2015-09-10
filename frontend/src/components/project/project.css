@@ -37,7 +37,7 @@ hr {
   }
 }
 
-.create-sprint {
+.next-sprint-info {
   label {
     float: left;
     margin-right: 5px;
@@ -59,11 +59,13 @@ hr {
       font-weight: normal;
     }
   }
-  .drop-area {
-    margin-top: 10px;
-    border-radius: 5px;
-    border: solid 1px black;
-    height: 150px;
-    width: 850px;
-  }
+}
+
+.drop-area {
+  margin-top: 10px;
+  border-radius: 5px;
+  border: solid 1px black;
+  min-height: 150px;
+  padding-bottom: 1em;
+  width: 850px;
 }

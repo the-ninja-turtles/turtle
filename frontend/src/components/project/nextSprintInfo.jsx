@@ -1,10 +1,10 @@
 import React from 'react';
 
-let CreateSprint = React.createClass({
+let NextSprintInfo = React.createClass({
 
   render() {
     return (
-      <div className='create-sprint'>
+      <div className='next-sprint-info'>
         <h1>Create a new sprint</h1>
         <label className='points'>Points <span className='points-count'>70</span></label>
         <div className='clearfix'></div>
@@ -19,11 +19,10 @@ let CreateSprint = React.createClass({
         </label>
         <button className='btn'>Start sprint</button>
         <div className='clearfix'></div>
-        <div className='drop-area'></div>
       </div>
     );
   }
 
 });
 
-export default CreateSprint;
+export default NextSprintInfo;

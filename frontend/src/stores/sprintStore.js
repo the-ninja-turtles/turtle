@@ -3,7 +3,7 @@ import Reflux from 'reflux';
 import {SprintActions} from '../actions/actions';
 // import {mockSprints} from '../../tests/utils/fake.js';
 // let mockSprint = mockSprints(1, 3)[0];
-import mockSprint from './mock-sprint-data';
+import {MockSprint as mockSprint} from './mock-data';
 
 let cachedSprint;
 
