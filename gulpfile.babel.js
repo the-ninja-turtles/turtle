@@ -22,7 +22,7 @@ gulp.task('lint', () => {
 });
 
 gulp.task('install', () => {
-  return Promise.all(glob.sync('**/package.json', {ignore: '**/node_modules/**/*.json'}).map((file) => {
+  return Promise.all(glob.sync('*/package.json', {ignore: '**/node_modules/**/*.json'}).map((file) => {
     return new Promise((resolve) => {
       let dir = path.dirname(path.resolve(file));
       npm.load(() => {

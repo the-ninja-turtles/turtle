@@ -4,11 +4,8 @@ machine:
   services:
     - docker
 dependencies:
-  post:
-    - npm install -g gulp
-test:
   pre:
-    - gulp install
+    - npm install -g gulp
 deployment:
   master:
     branch: develop
