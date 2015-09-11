@@ -8,35 +8,51 @@ The project service will also expose internal API to allow the **invitation syst
 
 - [External API](#external-api)
   - [Projects](#external-projects)
-    + [Fetch](#external-projects-fetch)
-    + [Create](#external-projects-create)
-    + [Details](#external-projects-details)
-    + [Modify](#external-projects-modify)
-    + [Delete](#external-projects-delete)
+    + `/projects`
+      + [Fetch](#external-projects-fetch)
+      + [Create](#external-projects-create)
+    - `/projects/:projectId`
+      + [Details](#external-projects-details)
+      + [Modify](#external-projects-modify)
+      + [Delete](#external-projects-delete)
+    - `/projects/:projectId/positions`
+      + [Position](#external-projects-position)
   - [Sprints](#external-sprints)
-    + [Fetch](#external-sprints-fetch)
-    + [Create](#external-sprints-create)
-    + [Details](#external-sprints-details)
-    + [Modify](#external-sprints-modify)
-    + [Delete](#external-sprints-delete)
-    + [Bulk Add/Remove Tasks](#external-projects-tasks)
+    - `/projects/:projectId/startsprint`
+      + [Start](#external-sprint-start)
+    - `/projects/:projectId/endsprint`
+      + [End](#external-sprint-end)
+    + `/projects/:projectId/sprints`
+      + [Fetch](#external-sprints-fetch)
+    - `/projects/:projectId/sprints/:sprintId`
+      + [Details](#external-sprints-details)
+      + [Modify](#external-sprints-modify)
+      + [Delete](#external-sprints-delete)
+    - `/projects/:projectId/sprints/:sprintId/positions`
+      + [Position](#external-projects-position)
+    - `/projects/:projectId/sprints/:sprintId/assigntasks`
+      + [Bulk Add/Remove Tasks](#external-projects-tasks)
   - [Tasks](#external-tasks)
-    + [Fetch](#external-tasks-fetch)
-    + [Create](#external-tasks-create)
-    + [Details](#external-tasks-details)
-    + [Modify](#external-tasks-modify)
-    + [Delete](#external-tasks-delete)
+    + `/projects/:projectId/tasks`
+      + [Fetch](#external-tasks-fetch)
+      + [Create](#external-tasks-create)
+    - `/projects/:projectId/tasks/:taskId`
+      + [Details](#external-tasks-details)
+      + [Modify](#external-tasks-modify)
+      + [Delete](#external-tasks-delete)
 
 - [Internal API](#internal-api)
   - [Projects](#internal-projects)
-    + [Add User](#internal-projects-user-add)
-    + [Remove User](#internal-projects-user-remove)
+    + `/projects/:projectId/users`
+      + [Add/Remove User](#internal-projects-users)
 
 <a name="external-api"/>
 # Project Service External API
 
 <a name="external-projects"/>
 ## Projects
+
+- `length` - This is the duration of each sprint.
 
 <a name="external-projects-fetch"/>
 ### Fetch a User's Projects
@@ -59,10 +75,12 @@ Get all existing projects for a user (as identified through JWT).
 [
   {
     "id": 0,
-    "name": "greenfield"
+    "name": "greenfield",
+    "length": 7,
   }, {
     "id": 1,
-    "name": "legacy"
+    "name": "legacy",
+    "length": 7,
   }
 ]
 ```
@@ -84,7 +102,9 @@ Get all existing projects for a user (as identified through JWT).
 <a name="external-projects-create"/>
 ### Create Project for User
 
-Create a new project for a user (as identified through JWT).
+Create a new project for a user (as identified through JWT). Valid emails that correspond to existing users will be sent to the invitation service for handling.
+
+The `length` is the duration of each sprint, defaults to 7 days.
 
 - **URL**
   + `/projects`
@@ -95,6 +115,9 @@ Create a new project for a user (as identified through JWT).
 - **Data Params**
   + Required
     * `name=[string]`
+    * `emails=[array]`
+  + Optional
+    * `length=[number]`
 - **Success Response**
   + Code: `201 CREATED`
   + Content:
@@ -103,6 +126,7 @@ Create a new project for a user (as identified through JWT).
 {
   "id": 1,
   "name": "thesis",
+  "length": 7,
   "createdAt": "2004-10-19 10:23:54+02"
 }
 ```
@@ -119,7 +143,9 @@ Create a new project for a user (as identified through JWT).
 <a name="external-projects-details"/>
 ### Fetch Project
 
-Get a project's users, sprints and tasks. Tasks are ordered ascending by `rank`.
+Get a project's users, sprints and tasks. Tasks are placed in `currentSprint`, `nextSprint`, or `backlog` depending on where they reside. Tasks are ordered by the last provided positioning (see `positions` endpoint for how to reorder tasks).
+
+If there is no current ongoing sprint, `currentSprint` will not be in the response.
 
 - **URL**
   + `/projects/:projectId`
@@ -137,42 +163,89 @@ Get a project's users, sprints and tasks. Tasks are ordered ascending by `rank`.
 {
   "id": 0,
   "name": "greenfield",
+  "length": 7,
   "users": [
     {
       "id": 1,
       "email": "something@turtle.com",
-      "username": "wesley"
-    }
-  ],
-  "sprints": [
-    {
-      "id": 1,
-      "name": "mvp",
-      "status": "Started",
-      "startDate": "2004-10-19 10:23:54+02",
-      "endDate": "2004-10-19 10:23:54+02"
-    }
-  ],
-  "tasks": [
-    {
-      "id": 1,
-      "name": "win",
-      "description": "save the princess",
-      "status": "In Progress",
-      "score": 40,
-      "rank": 2,
-      "userId": 1,
-      "sprintId": 1
-    },
-    {
+      "username": "wesley",
+      "picture": "https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png"
+    }, {
       "id": 2,
-      "name": "celebrate",
-      "description": "throw a party",
-      "status": "Ready",
+      "email": "another@turtly.co",
+      "username": "jsonp",
+      "picture": "https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png"
+    }
+  ],
+  "currentSprint": {
+    "id": 1,
+    "name": "mvp",
+    "status": 1,
+    "startDate": "2015-09-10 10:23:54+02",
+    "endDate": null,
+    "tasks": [
+      {
+        "id": 1,
+        "name": "win",
+        "description": "save the princess",
+        "status": 1,
+        "score": 40,
+        "userId": 1,
+        "sprintId": 1
+      }, {
+        "id": 2,
+        "name": "celebrate",
+        "description": "throw a party",
+        "status": 2,
+        "score": 80,
+        "userId": 2,
+        "sprintId": 1
+      }
+    ]
+  },
+  "nextSprint": {
+    "id": 3,
+    "name": "amazing",
+    "status": 0,
+    "startDate": null,
+    "endDate": null,
+    "tasks": [
+      {
+        "id": 3,
+        "name": "add css",
+        "description": "do some css stuff for once",
+        "status": 0,
+        "score": 40,
+        "userId": 1,
+        "sprintId": 3
+      }, {
+        "id": 4,
+        "name": "add feature",
+        "description": "such feature",
+        "status": 0,
+        "score": 80,
+        "userId": 2,
+        "sprintId": 3
+      }
+    ]
+  },
+  "backlog": [
+    {
+      "id": 7,
+      "name": "wow",
+      "description": "impress someone",
+      "status": 0,
+      "score": 30,
+      "userId": null,
+      "sprintId": null
+    }, {
+      "id": 9,
+      "name": "impressive",
+      "description": "wow someone",
+      "status": 0,
       "score": 80,
-      "rank": 5,
-      "userId": 2,
-      "sprintId": 1
+      "userId": 1,
+      "sprintId": null
     }
   ]
 }
@@ -190,7 +263,7 @@ Get a project's users, sprints and tasks. Tasks are ordered ascending by `rank`.
 <a name="external-projects-modify"/>
 ### Modify Project
 
-Edit an existing project.
+Edit an existing project. Adding or removing users are handled through the [internal API](#internal-api).
 
 - **URL**
   + `/projects/:projectId`
@@ -201,6 +274,7 @@ Edit an existing project.
 - **Data Params**
   + Optional
     * `name=[string]`
+    * `length=[number]`
 - **Success Response**
   + Code: `200 OK`
   + Content:
@@ -209,6 +283,7 @@ Edit an existing project.
 {
   "id": 1,
   "name": "turtle",
+  "length": 10,
   "createdAt": "2004-10-19 10:23:54+02",
   "updatedAt": "2004-10-19 10:23:54+02"
 }
@@ -243,7 +318,63 @@ Delete an existing project. **All sprints and tasks for the project are also del
   + None
 - **Success Response**
   + Code: `204 NO CONTENT`
+  + Content: None
+- **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+
+  OR
+
+  * Code: `401 UNAUTHORIZED`
+  * Content: `{ "error": "You are unauthorized to make this request." }`
+
+<a name="external-projects-position">
+### Reorder Backlog Tasks
+
+Reorder the tasks in the project backlog by attaching an array of task IDs that represent the tasks' relative ranking. Task IDs that do not correspond to tasks in the project backlog are ignored.
+
+- **URL**
+  + `/projects/:projectId/positions`
+- **Method**
+  + `POST`
+- **Query Params**
+  + None
+- **Data Params**
+  + `positions=[array]`
+- **Success Response**
+  + Code: `200 OK`
   + Content:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "win",
+    "description": "save the princess",
+    "status": 0,
+    "score": 40,
+    "userId": 1,
+    "sprintId": null
+  }, {
+    "id": 5,
+    "name": "celebrate",
+    "description": "throw a party",
+    "status": 0,
+    "score": 80,
+    "userId": 2,
+    "sprintId": null
+  }, {
+    "id": 2,
+    "name": "something",
+    "description": "going crazy",
+    "status": 0,
+    "score": 50,
+    "userId": null,
+    "sprintId": null
+  }
+]
+```
+
 - **Error Response**
   * Code: `404 NOT FOUND`
   * Content: `{ "error": "Project doesn't exist." }`
@@ -256,10 +387,90 @@ Delete an existing project. **All sprints and tasks for the project are also del
 <a name="external-sprints"/>
 ## Sprints
 
+Sprints currently have three possible statuses:
+
+0 - **Planning**. Sprint has not started. A new sprint with this status is created automatically every time a sprint is started. A sprint in planning will also have the following properties:
+  - `status = 0`
+  - `startDate = null` - not defined until the sprint is started
+  - `endDate = null` - not defined until the sprint is ended
+
+1 - **Ongoing**. Sprint is currently in progress. Use the `startsprint` endpoint to change the **Planning** sprint to **Ongoing**. An ongoing sprint will have the following properties:
+  - `status = 1`
+  - `startDate = [date]` - whenever the user initiated the sprint using the `startsprint` endpoint
+  - `endDate = null` - not defined until the sprint is ended
+
+2 - **Complete**. Sprint is completed. Use the `endsprint` endpoint to change a sprint from **Ongoing** to **Complete**. All incomplete tasks (`status < 3`) will be transferred to the project backlog. A complete sprint will also have the following properties:
+  - `status = 2`
+  - `startDate = [date]` - whenever the user initiated the sprint using the `startsprint` endpoint
+  - `endDate = [date]` - whenever the user ended the sprint using the `endsprint` endpoint
+
+<a name="external-sprint-start"/>
+### Start Sprint for Project
+
+Starts the sprint that is currently with `status = 0` (planning) and sets `status = 1` (ongoing). There must be no currently ongoing sprints for a success response. The `startDate` of the sprint is automatically set to the date that this method is called.
+
+This will also automatically create a new sprint with `status = 0` (planning).
+
+- **URL**
+  + `/projects/:projectId/startsprint`
+- **Method**
+  + `POST`
+- **Query Params**
+  + None
+- **Data Params**
+  + None
+- **Success Response**
+  + Code: `204 NO CONTENT`
+  + Content: None
+- **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+  
+  OR
+
+  + Code: `400 BAD REQUEST`
+  + Content: `{ "error": "There is already an ongoing sprint." }`
+
+  OR
+
+  * Code: `401 UNAUTHORIZED`
+  * Content: `{ "error": "You are unauthorized to make this request." }`
+
+
+<a name="external-sprint-end"/>
+### End Current Sprint of Project
+
+Ends the current sprint with `status = 1` (ongoing). There must be an ongoing sprint for a success response. The `endDate` of the sprint is automatically set to the date that this method is called.
+
+- **URL**
+  + `/projects/:projectId/endsprint`
+- **Method**
+  + `POST`
+- **Query Params**
+  + None
+- **Data Params**
+  + None
+- **Success Response**
+  + Code: `204 NO CONTENT`
+  + Content: None
+- **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+  
+  OR
+
+  + Code: `400 BAD REQUEST`
+  + Content: `{ "error": "There is no ongoing sprint." }`
+
+  OR
+
+  * Code: `401 UNAUTHORIZED`
+  * Content: `{ "error": "You are unauthorized to make this request." }`
+
 <a name="external-sprints-fetch"/>
 ### Fetch a Project's Sprints 
 
-Get all existing sprints for a project.
+Get all existing sprints for a project. There will _always_ be one sprint with `status = 0` (planning) and at most one sprint with `status = 1` (ongoing).
 
 - **URL**
   + `/projects/:projectId/sprints`
@@ -278,15 +489,15 @@ Get all existing sprints for a project.
   {
     "id": 1,
     "name": "mvp",
-    "status": "Started",
+    "status": 1,
     "startDate": "2004-10-19 10:23:54+02",
-    "endDate": "2004-10-19 10:23:54+02"
+    "endDate": null
   }, {
     "id": 2,
     "name": "profit",
-    "status": "Not Started",
-    "startDate": "2004-10-19 10:23:54+02",
-    "endDate": "2004-10-19 10:23:54+02"
+    "status": 0,
+    "startDate": null,
+    "endDate": null
   }
 ]
 ```
@@ -300,56 +511,10 @@ Get all existing sprints for a project.
   * Code: `401 UNAUTHORIZED`
   * Content: `{ "error": "You are unauthorized to make this request." }`
 
-<a name="external-sprints-create"/>
-### Create Sprint for Project
-
-Create a new sprint for a project.
-
-- **URL**
-  + `/projects/:projectId/sprints`
-- **Method**
-  + `POST`
-- **Query Params**
-  + None
-- **Data Params**
-  + Required
-    * `name=[string]`
-    * `status=[string]`
-    * `startDate=[date]`
-    * `endDate=[date]`
-- **Success Response**
-  + Code: `201 CREATED`
-  + Content:
-
-```json
-{
-  "id": 1,
-  "name": "extra features",
-  "status": "Not Started",
-  "startDate": "2004-10-19 10:23:54+02",
-  "endDate": "2004-10-19 10:23:54+02",
-  "createdAt": "2004-10-19 10:23:54+02"
-}
-```
-
-- **Error Response**
-  * Code: `400 BAD REQUEST`
-  * Content: `{ "error": "Invalid data parameters." }`
-
-  OR
-
-  * Code: `404 NOT FOUND`
-  * Content: `{ "error": "Project doesn't exist." }`
-
-  OR
-
-  * Code: `401 UNAUTHORIZED`
-  * Content: `{ "error": "You are unauthorized to make this request." }`
-
 <a name="external-sprints-details"/>
 ### Fetch Sprint
 
-Get a sprint's tasks, including basic user information. Tasks are ordered ascending by `rank`.
+Get a sprint's tasks, including basic user information. Tasks are ordered by the last provided positioning (see `positions` endpoint for how to reorder tasks).
 
 - **URL**
   + `/projects/:projectId/sprints/:sprintId`
@@ -367,31 +532,31 @@ Get a sprint's tasks, including basic user information. Tasks are ordered ascend
 {
   "id": 1,
   "name": "mvp",
-  "status": "Started",
+  "status": 1,
   "startDate": "2004-10-19 10:23:54+02",
-  "endDate": "2004-10-19 10:23:54+02",
+  "endDate": null,
   "tasks": [
     {
-      "id": 1,
+      "id": 5,
       "name": "do a task",
       "description": "some description",
-      "status": "Ready",
+      "status": 0,
       "score": 10,
-      "rank": 3,
       "user": {
         "id": 2,
-        "username": "mario"
+        "username": "mario",
+        "picture": "https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png"
       }
     }, {
       "id": 2,
       "name": "do another task",
       "description": "some more description",
-      "status": "In Progress",
+      "status": 1,
       "score": 20,
-      "rank": 5,
       "user": {
         "id": 3,
-        "username": "boo"
+        "username": "boo",
+        "picture": "https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png"
       }
     }
   ]
@@ -399,6 +564,11 @@ Get a sprint's tasks, including basic user information. Tasks are ordered ascend
 ```
 
 - **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+
+  OR
+
   * Code: `404 NOT FOUND`
   * Content: `{ "error": "Sprint doesn't exist." }`
 
@@ -419,11 +589,8 @@ Edit an existing sprint.
 - **Query Params**
   + None
 - **Data Params**
-  + Optional
+  + Required
     * `name=[string]`
-    * `status=[string]`
-    * `startDate=[date]`
-    * `endDate=[date]`
 - **Success Response**
   + Code: `200 OK`
   + Content:
@@ -432,22 +599,28 @@ Edit an existing sprint.
 {
   "id": 1,
   "name": "extra features",
-  "status": "Started",
+  "status": 1,
   "startDate": "2004-10-19 10:23:54+02",
-  "endDate": "2004-10-19 10:23:54+02",
+  "endDate": null,
   "createdAt": "2004-10-19 10:23:54+02",
   "updatedAt": "2004-10-19 10:23:54+02"
 }
 ```
 
 - **Error Response**
-  * Code: `400 BAD REQUEST`
-  * Content: `{ "error": "Invalid data parameters." }`
+
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
 
   OR
 
   * Code: `404 NOT FOUND`
   * Content: `{ "error": "Sprint doesn't exist." }`
+
+  OR
+
+  * Code: `400 BAD REQUEST`
+  * Content: `{ "error": "Invalid data parameters." }`
 
   OR
 
@@ -479,10 +652,71 @@ Delete an existing sprint. tasks that belong to this sprint are **not** deleted.
   * Code: `401 UNAUTHORIZED`
   * Content: `{ "error": "You are unauthorized to make this request." }`
 
+<a name="external-sprints-position">
+### Reorder Tasks in a Sprint
+
+Reorder the tasks in the sprintboard by attaching an array of task IDs that represents the tasks' relative ranking. Task IDs that do not correspond to tasks in this sprint are ignored.
+
+- **URL**
+  + `/projects/:projectId/sprints/:sprintId/positions`
+- **Method**
+  + `POST`
+- **Query Params**
+  + None
+- **Data Params**
+  + `positions=[array]`
+- **Success Response**
+  + Code: `200 OK`
+  + Content:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "win",
+    "description": "save the princess",
+    "status": 0,
+    "score": 40,
+    "userId": 1,
+    "sprintId": 2
+  }, {
+    "id": 5,
+    "name": "celebrate",
+    "description": "throw a party",
+    "status": 0,
+    "score": 80,
+    "userId": 2,
+    "sprintId": 2
+  }, {
+    "id": 2,
+    "name": "something",
+    "description": "going crazy",
+    "status": 0,
+    "score": 50,
+    "userId": null,
+    "sprintId": 2
+  }
+]
+```
+
+- **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+
+  OR
+
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Sprint doesn't exist." }`
+
+  OR
+
+  * Code: `401 UNAUTHORIZED`
+  * Content: `{ "error": "You are unauthorized to make this request." }`
+
 <a name="external-sprints-tasks"/>
 ### Bulk Add/Remove Tasks to/from Sprint
 
-Add/remove an array of tasks to a sprint by attaching an array of task IDs with the request. Tasks that don't exist or don't need to be changed will be ignored.
+Add/remove tasks to/from a sprint by attaching an array of task IDs with the request. Tasks that don't exist or don't need to be changed will be ignored. Tasks that are "done" (`status = 3`) cannot be removed from a sprint. All other removed tasks will be added to the project backlog.
 
 - **URL**
   + `/projects/:projectId/sprints/:sprintId/assigntasks`
@@ -513,13 +747,17 @@ Add/remove an array of tasks to a sprint by attaching an array of task IDs with 
 <a name="external-tasks"/>
 ## Tasks
 
+Tasks can have the following statuses: 0, 1, 2 or 3. The label for each status is up to the front end microservice, but the largest status (in this case 3) always indicates that the task is done.
+
 <a name="external-tasks-fetch"/>
 ### Fetch a Project's Tasks
 
-Get all existing tasks for a project. Tasks are ordered ascending by `rank`.
+Get all existing tasks for a project. Tasks are ordered by the last provided positioning (see `positions` endpoint for how to reorder tasks).
+
+If there is no sprint with `status = 1` (ongoing), `currentSprint` will not be included in the response.
 
 - **URL**
-  + `projects/:projectId/tasks/`
+  + `projects/:projectId/tasks`
 - **Method**
   + `GET`
 - **Query Params**
@@ -531,36 +769,60 @@ Get all existing tasks for a project. Tasks are ordered ascending by `rank`.
   + Content:
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "do a task",
-    "description": "some description",
-    "status": "Ready",
-    "score": 40,
-    "rank": 2,
-    "userId": 2,
-    "sprintId": 4
-  }, {
-    "id": 2,
-    "name": "do another task",
-    "description": "some description",
-    "status": "In Progress",
-    "score": 30,
-    "rank": 10,
-    "userId": 3,
-    "sprintId": 4
-  }, {
-    "id": 4,
-    "name": "do yet another task",
-    "description": "some description",
-    "status": "Done",
-    "score": 10,
-    "rank": 15,
-    "userId": null,
-    "sprintId": null
-  }
-]
+{
+  "currentSprint": [
+    {
+      "id": 6,
+      "name": "bacon",
+      "description": "sandwich",
+      "status": 2,
+      "score": 30,
+      "userId": 2,
+      "sprintId": 2
+    }, {
+      "id": 7,
+      "name": "ham",
+      "description": "sandwich",
+      "status": 3,
+      "score": 60,
+      "userId": 1,
+      "sprintId": 2
+    }
+  ],
+  "nextSprint": [
+    {
+      "id": 8,
+      "name": "lorem",
+      "description": "ipsum stuff",
+      "status": 0,
+      "score": 20,
+      "userId": 1,
+      "sprintId": 3
+    }
+  ],
+  "backlog": [
+    {
+      "id": 4,
+      "name": "do yet another task",
+      "description": "some description",
+      "status": 0,
+      "score": 10,
+      "userId": null,
+      "sprintId": null
+    }
+  ],
+  "completed": [
+    {
+      "id": 2,
+      "name": "do another task",
+      "description": "some description",
+      "status": 3,
+      "score": 30,
+      "userId": 3,
+      "sprintId": 1
+    }
+  ]
+}
 ```
 
 - **Error Response**
@@ -577,6 +839,8 @@ Get all existing tasks for a project. Tasks are ordered ascending by `rank`.
 
 Create a new task for a project. Empty string is allowed for `description`.
 
+By default, new tasks are assigned `status = 0` and are ordered below existing tasks. See `positions` endpoint for how to reorder tasks.
+
 - **URL**
   + `/projects/:projectId/tasks`
 - **Method**
@@ -587,9 +851,7 @@ Create a new task for a project. Empty string is allowed for `description`.
   + Required
     * `name=[string]`
     * `description=[string]`
-    * `status=[string]`
     * `score=[integer]`
-    * `rank=[integer]`
   + Optional
     * `userId=[number]`
     * `sprintId=[number]`
@@ -602,9 +864,8 @@ Create a new task for a project. Empty string is allowed for `description`.
   "id": 5,
   "name": "the final task",
   "description": "vague description",
-  "status": "Ready",
+  "status": 0,
   "score": 25,
-  "rank": 5,
   "userId": 4,
   "sprintId": 2
 }
@@ -656,25 +917,30 @@ Get a task's user and sprint information.
   "id": 5,
   "name": "the final task",
   "description": "vague description",
-  "status": "Ready",
+  "status": 0,
   "score": 30,
-  "rank": 10,
   "user": {
     "id": 1,
     "username": "bowser",
-    "email": "kingkoopa@turtle.com"
+    "email": "kingkoopa@turtle.com",
+    "picture": "https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png"
   },
   "sprint": {
-    "id": 1,
+    "id": 3,
     "name": "mvp",
-    "status": "Started",
+    "status": 1,
     "startDate": "2004-10-19 10:23:54+02",
-    "endDate": "2004-10-19 10:23:54+02"
+    "endDate": null
   }
 }
 ```
 
 - **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+  
+  OR
+
   * Code: `404 NOT FOUND`
   * Content: `{ "error": "Task doesn't exist." }`
 
@@ -686,7 +952,7 @@ Get a task's user and sprint information.
 <a name="external-tasks-modify"/>
 ### Modify Task
 
-Edit an existing task.
+Edit an existing task. The `status` must be a number 0, 1, 2 or 3.
 
 - **URL**
   + `/projects/:projectId/tasks/:taskId`
@@ -698,9 +964,8 @@ Edit an existing task.
   + Optional
     * `name=[string]`
     * `description=[string]`
-    * `status=[string]`
-    * `score=[integer]`
-    * `rank=[integer]`
+    * `status=[number]`
+    * `score=[number]`
     * `userId=[number]`
     * `sprintId=[number]`
 - **Success Response**
@@ -712,15 +977,19 @@ Edit an existing task.
   "id": 1,
   "name": "do a task",
   "description": "jump and hit the flag",
-  "status": "Done",
+  "status": 3,
   "score": 15,
-  "rank": 1,
   "userId": 1,
   "sprintId": null
 }
 ```
 
 - **Error Response**
+  * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+  
+  OR
+
   * Code: `400 BAD REQUEST`
   * Content: `{ "error": "Invalid data parameters." }`
 
@@ -761,6 +1030,11 @@ Delete an existing task.
   + Code: `204 NO CONTENT`
 - **Error Response**
   * Code: `404 NOT FOUND`
+  * Content: `{ "error": "Project doesn't exist." }`
+
+  OR
+
+  * Code: `404 NOT FOUND`
   * Content: `{ "error": "Task doesn't exist." }`
 
   OR
@@ -776,10 +1050,10 @@ Delete an existing task.
 <a name="internal-projects"/>
 ## Projects
 
-<a name="internal-projects-user-add"/>
-### Add User to Project
+<a name="internal-projects-users"/>
+### Add/Remove Users to/from Project
 
-Add a user to a project via user's email address.
+Add or remove users to/from a project via users' id.
 
 - **URL**
   + `/projects/:projectId/users`
@@ -788,57 +1062,15 @@ Add a user to a project via user's email address.
 - **Query Params**
   + None
 - **Data Params**
-  + Required
-    * `email=[string]`
-- **Success Response**
-  + Code: `200 OK`
-  + Content:
-
-```json
-{
-  "id": 1,
-  "username": "kirby",
-  "email": "pink@turtle.com"
-}
-```
-
-- **Error Response**
-  * Code: `404 NOT FOUND`
-  * Content: `{ "error": "Project doesn't exist." }`
-
-  OR
-
-  * Code: `404 NOT FOUND`
-  * Content: `{ "error": "User doesn't exist." }`
-
-  OR
-
-  * Code: `401 UNAUTHORIZED`
-  * Content: `{ "error": "You are unauthorized to make this request." }`
-
-<a name="internal-projects-user-remove"/>
-### Remove User from Project
-
-Remove a user from a project.
-
-- **URL**
-  + `/projects/:projectId/users/:userId`
-- **Method**
-  + `DELETE`
-- **Query Params**
-  + None
-- **Data Params**
-  + None
+  + Required (one or both)
+    * `add=[array]`
+    * `remove=[array]`
 - **Success Response**
   + Code: `204 NO CONTENT`
+  + Content: None
 - **Error Response**
   * Code: `404 NOT FOUND`
   * Content: `{ "error": "Project doesn't exist." }`
-
-  OR
-
-  * Code: `404 NOT FOUND`
-  * Content: `{ "error": "User doesn't exist." }`
 
   OR
 
