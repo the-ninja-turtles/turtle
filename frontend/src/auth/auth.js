@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import jwt from 'jwt-decode';
+import {UserActions} from '../actions/actions.js';
 
 class Auth {
 
@@ -18,9 +19,8 @@ class Auth {
   token() {
     // https://auth0.com/docs/libraries/lock/types-of-applications#single-page-app
     return new Promise((resolve, reject) => {
-      let token = localStorage.getItem('userToken');
-      if (token && jwt(token).exp * 1000 > Date.now()) {
-        return resolve(token);
+      if (this.isLoggedin()) {
+        return resolve(localStorage.getItem('userToken'));
       }
       this.auth0Lock.show(this.options, (err, profile, token) => {
         if (err) {
@@ -28,12 +28,26 @@ class Auth {
           reject(err);
         } else {
           localStorage.setItem('userToken', token);
+          UserActions.loggedIn(token);
           resolve(token);
         }
       });
     });
   }
 
+  isLoggedin() {
+    let token = localStorage.getItem('userToken');
+    return !!(token && jwt(token).exp * 1000 > Date.now());
+  }
+
+  login() {
+    this.token();
+  }
+
+  logout() {
+    localStorage.removeItem('userToken');
+    Actions.loggedOut();
+  }
 }
 
 export default _.once(() => {

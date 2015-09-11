@@ -23,3 +23,8 @@ export const ProjectActions = Reflux.createActions({
   'updateTaskRankLocally': {},
   'updateTaskRankOnServer': {asyncResult: true}
 });
+
+export const UserActions = Reflux.createActions({
+  'loggedIn': {},
+  'loggedOut': {}
+});
