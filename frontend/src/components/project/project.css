@@ -14,6 +14,11 @@ h1 {
 hr {
   margin: 20px 0;
 }
+
+.backlog {
+  min-height: 200px;
+}
+
 .backlog-task {
   margin: 10px 25px 0 25px;
   padding: 10px;

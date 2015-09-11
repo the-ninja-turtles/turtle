@@ -1,7 +1,30 @@
 import React from 'react';
 import Task from './task.jsx';
 import CreateTask from '../tasks/createTask.jsx';
-import {ProjectActions as Actions} from '../../actions/actions.js';
+import {ProjectActions} from '../../actions/actions.js';
+
+import {ItemTypes} from '../../constants/dragAndDropConstants';
+import {DropTarget} from 'react-dnd';
+
+const backlogTarget = {
+  hover(props, monitor) {
+    const taskId = monitor.getItem().id;
+    if (monitor.isOver({ shallow: true })) {
+      ProjectActions.addTaskToBacklogLocally(taskId);
+    }
+  },
+
+  drop(props, monitor) {
+    const taskId = monitor.getItem().id;
+    ProjectActions.addTaskToBacklogOnServer(taskId);
+  }
+};
+
+let collect = (connect, monitor) => {
+  return {
+    connectDropTarget: connect.dropTarget()
+  };
+};
 
 let Backlog = React.createClass({
   propTypes: {
@@ -31,7 +54,8 @@ let Backlog = React.createClass({
       return (<Task key={task.id} id={task.id} name={task.name} description={task.description} score={task.score} />);
     });
 
-    return (
+    const {connectDropTarget} = this.props;
+    return connectDropTarget(
       <div className='backlog'>
         <CreateTask
           showModal={this.state.showModal}
@@ -52,4 +76,4 @@ let Backlog = React.createClass({
 
 });
 
-export default Backlog;
+export default DropTarget(ItemTypes.PROJECTTASK, backlogTarget, collect)(Backlog);

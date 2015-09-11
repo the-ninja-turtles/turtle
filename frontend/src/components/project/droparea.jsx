@@ -10,7 +10,9 @@ const dropareaTarget = {
   // over the droparea
   hover(props, monitor) {
     const taskId = monitor.getItem().id;
-    ProjectActions.addTaskToNextSprintLocally(taskId);
+    if (monitor.isOver({ shallow: true })) {
+      ProjectActions.addTaskToNextSprintLocally(taskId);
+    }
   },
 
   drop(props, monitor) {

@@ -44,22 +44,17 @@ let Project = React.createClass({
 
   onStoreUpdate(project) {
     // we may also want to keep track of 'done tasks'; not doing it at the moment
-    console.log('in component - hear that store updated');
-    let currentSprint = _.findWhere(project.sprints, {status: 'In Progress'});
-    let nextSprint = _.findWhere(project.sprints, {status: 'Not Started'});
     let tasksInCurrentSprint;
-    if (currentSprint) {
-      tasksInCurrentSprint = _.where(project.tasks, {sprintId: currentSprint.id});
+    if (project.currentSprint) {
+      tasksInCurrentSprint = project.currentSprint.tasks;
     }
-    // let tasksForNextSprint = _.where(project.tasks, {sprintId: nextSprint.id});
-    let tasksInBacklog = _.where(project.tasks, {sprintId: null});
     this.setState({
       project: project,
-      currentSprint: currentSprint,
-      nextSprint: nextSprint,
+      currentSprint: project.currentSprint,
+      nextSprint: project.nextSprint,
       tasksInCurrentSprint : tasksInCurrentSprint,
-      // tasksForNextSprint: tasksForNextSprint,
-      tasksInBacklog: tasksInBacklog
+      tasksForNextSprint: project.nextSprint.tasks,
+      tasksInBacklog: project.backlog
     });
   },
 

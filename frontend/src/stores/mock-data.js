@@ -42,72 +42,66 @@ export const MockProject = {
       'username': 'wesley'
     }
   ],
-  'sprints': [
+  currentSprint: {
+    'id': 1,
+    'name': 'mvp',
+    'length': 7,
+    'startDate': '2004-10-19 10:23:54+02',
+    tasks: [
+      {
+        'id': 2,
+        'name': 'kill enemies',
+        'description': 'jump on turtles',
+        'status': 0,
+        'score': 10,
+        'sprintId': 1,
+        'userId': 1
+      },
+      {
+        'id': 1,
+        'name': 'start the game',
+        'description': 'click that green button',
+        'status': 0,
+        'score': 1,
+        'sprintId': 1,
+        'userId': 1
+      }
+    ]
+  },
+  nextSprint: {
+    'id': 2,
+    'name': 'greenfield',
+    'length': 7,
+    tasks: [
+      {
+        'id': 0,
+        'name': 'finish the game',
+        'description': 'do not let the time run out',
+        'status': 0,
+        'score': 15,
+        'sprintId': 2,
+        'userId': 1
+      }
+    ]
+  },
+  backlog: [
     {
-      'id': 1,
-      'name': 'mvp',
-      'status': 'Closed',
-      'startDate': '2004-10-19 10:23:54+02',
-      'endDate': '2004-10-19 10:23:54+02'
-    },
-    {
-      'id': 2,
-      'name': 'greenfield',
-      'status': 'Not Started',
-      'startDate': '',
-      'endDate': ''
-    }
-  ],
-  'tasks': [
-    {
-      'id': 1,
-      'name': 'start the game',
-      'description': 'click that green button',
-      'status': 'To Do',
-      'score': 1,
-      'rank': 1,
-      'userId': 1,
-      'sprintId': 2
-    },
-    {
-      'id': 2,
-      'name': 'kill enemies',
-      'description': 'jump on turtles',
-      'status': 'To Do',
-      'score': 10,
-      'rank': 2,
-      'userId': 1,
-      'sprintId': null
-    },
-    {
-      'id': 3,
-      'name': 'finish the game',
-      'description': 'do not let the time run out',
-      'status': 'To Do',
-      'score': 15,
-      'rank': 3,
-      'userId': 1,
-      'sprintId': null
-    },
-    {
-      'id': 4,
+      'id': 8,
       'name': 'win',
       'description': 'save the princess',
-      'status': 'To Do',
+      'status': 0,
       'score': 15,
-      'rank': 4,
-      'userId': 1,
-      'sprintId': null
+      'sprintId': null,
+      'userId': 1
     },
     {
       'id': 5,
       'name': 'celebrate',
       'description': 'throw a party',
-      'status': 'To Do',
+      'status': 0,
       'score': 10,
-      'rank': 5,
-      'userId': 2,
-      'sprintId': null
+      'sprintId': null,
+      'userId': 2
     }
   ]
 };

@@ -20,8 +20,10 @@ export const ProjectActions = Reflux.createActions({
   'fetchProject': {asyncResult: true},
   'addTaskToNextSprintLocally': {},
   'addTaskToNextSprintOnServer': {asyncResult: true},
-  'updateTaskRankLocally': {},
-  'updateTaskRankOnServer': {asyncResult: true}
+  'addTaskToBacklogLocally': {},
+  'addTaskToBacklogOnServer': {asyncResult: true},
+  'moveTask': {},
+  'updateTaskPositionOnServer': {asyncResult: true}
 });
 
 export const UserActions = Reflux.createActions({

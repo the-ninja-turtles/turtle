@@ -15,7 +15,7 @@ const taskTarget = {
   hover(props, monitor) {
     const draggedId = monitor.getItem().id;
     if (draggedId !== props.id) {
-      ProjectActions.updateTaskRankLocally({
+      ProjectActions.moveTask({
         draggedTaskId: draggedId,
         targetTaskId: props.id
       });
@@ -25,7 +25,7 @@ const taskTarget = {
   // on dropping a task card on another task card, a message should be sent to the server
   drop(props, monitor) {
     const draggedId = monitor.getItem().id;
-    ProjectActions.updateTaskRankOnServer({
+    ProjectActions.updateTaskPositionOnServer({
       draggedTaskId: draggedId,
       targetTaskId: props.id
     });
