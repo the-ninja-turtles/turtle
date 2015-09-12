@@ -4,6 +4,7 @@ import Router from 'react-router';
 import {Navbar, Nav, NavItem, CollapsibleNav} from 'react-bootstrap';
 import auth from '../auth/auth.js';
 import AppStore from '../stores/appStore.js';
+import Notifications from './notifications/notifications.jsx';
 
 let RouteHandler = Router.RouteHandler;
 
@@ -60,6 +61,7 @@ let App = React.createClass({
             <Nav navbar right>{authNav()}</Nav>
           </CollapsibleNav>
         </Navbar>
+        <Notifications />
         <RouteHandler/>
       </div>
     );

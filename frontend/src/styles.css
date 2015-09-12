@@ -74,3 +74,4 @@ textarea {
 @import "components/dashboard/dashboard.css";
 @import "components/dashboard/createProject.css";
 @import "components/tasks/createTask.css";
+@import "components/notifications/notification.css";

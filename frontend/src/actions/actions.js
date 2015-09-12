@@ -30,3 +30,7 @@ export const UserActions = Reflux.createActions({
   'loggedIn': {},
   'loggedOut': {}
 });
+
+export const EventActions = Reflux.createActions({
+  'notify': {}
+});

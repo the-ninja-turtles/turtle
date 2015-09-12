@@ -31,7 +31,6 @@ let Dashboard = React.createClass({
   },
 
   close() {
-    DashboardActions.fetchProjects();
     this.setState({showModal: false});
   },
 

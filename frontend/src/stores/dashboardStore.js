@@ -1,15 +1,26 @@
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
-import {DashboardActions as Actions} from '../actions/actions';
+import {DashboardActions as Actions, EventActions} from '../actions/actions';
 
 let DashboardStore = Reflux.createStore({
   listenables: Actions,
 
-  onFetchProjects() {
-    projects.fetch().then((projects) => {
-      this.trigger(projects);
+  init() {
+    this.projects = [];
+    projects.on('add', (data) => {
+      this.projects.push(data);
+      this.trigger(this.projects);
+      EventActions.notify('project:add');
     });
   },
+
+  onFetchProjects() {
+    projects.fetch().then((projects) => {
+      this.projects = projects;
+      this.trigger(this.projects);
+    });
+  },
+
   onCreateProject(name, cb) {
     projects.create({name: name})
       .then((response) => {
