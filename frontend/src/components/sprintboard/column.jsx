@@ -33,7 +33,7 @@ let SprintColumn = React.createClass({
             name={task.name}
             description={task.description}
             score={task.score}
-            assignedUser={task.user}
+            user={task.user}
           />
         );
       }

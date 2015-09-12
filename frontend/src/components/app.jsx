@@ -37,7 +37,7 @@ let App = React.createClass({
 
   render() {
     let project = () => {
-      if (this.getParams().id) {
+      if (this.isActive('sprint')) {
         return (<NavItem onClick={this.goToProject}>Project</NavItem>);
       }
     };
@@ -51,7 +51,7 @@ let App = React.createClass({
 
     return (
       <div className='app'>
-        <Navbar brand='Turtle' toggleNavKey={0}>
+        <Navbar brand='Turtle' inverse toggleNavKey={0}>
           <CollapsibleNav eventKey={0}>
             <Nav navbar>
               <NavItem onClick={this.goToDashboard}>Dashboard</NavItem>

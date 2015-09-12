@@ -58,9 +58,9 @@ let Task = React.createClass({
         opacity: isDragging ? 0.5 : 1,
         cursor: 'move'
       }}>
-        <p>{this.props.name}</p>
-        <p>Description: {this.props.description}</p>
-        <p>Assigned to: {this.props.assignedUser}</p>
+        <span className='task-name'>{this.props.name}</span>
+        <span className='task-description'>{this.props.description}</span>
+        <span>{this.props.user.name}</span>
       </div>
     ));
   }

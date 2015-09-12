@@ -1,7 +1,8 @@
 .dashboard {
   text-align: center;
-  width: 850px;
+  max-width: 850px;
   margin: 30px auto;
+  font-size: 18px;
 }
 
 .item {
@@ -10,7 +11,8 @@
   width: 200px;
   height: 200px;
   line-height: 200px;
-  border: 1px solid black;
+  background: #F8F8F8;
+  border: 1px solid #ccc;
   border-radius: 4px;
   margin: 20px;
   .name {
@@ -21,6 +23,7 @@
 }
 
 .new-project {
-  color: #aaa;
-  border-color: #aaa;
+  color: #bbb;
+  background: #FBFBFB;
+  border-color: #ddd;
 }
