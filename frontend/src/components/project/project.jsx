@@ -64,39 +64,34 @@ let Project = React.createClass({
   },
 
   render() {
-    if (this.state.currentSprint) {
-      return (
-        <div className='project-view'>
+    let sprint = () => {
+      if (this.state.currentSprint) {
+        return (
           <CurrentSprintInfo
             sprint={this.state.currentSprint}
-            tasks={this.state.tasksInCurrentSprint}
-          />
-          <Droparea tasks={this.state.tasksForNextSprint} />
-          <hr />
-          <Backlog
-            projectId={this.state.id}
-            users={this.state.project.users}
-            tasks={this.state.tasksInBacklog}
-          />
-        </div>
-      );
-    } else {
+            tasks={this.state.tasksInCurrentSprint} />
+        );
+      }
       return (
-        <div className='project-view'>
-          <NextSprintInfo
-            sprint={this.state.nextSprint}
-            tasks={this.state.tasksForNextSprint}
-          />
-          <Droparea tasks={this.state.tasksForNextSprint} />
-          <hr />
-            <Backlog
-              projectId={this.state.id}
-              users={this.state.project.users}
-              tasks={this.state.tasksInBacklog}
-            />
-        </div>
+        <NextSprintInfo
+          project={this.state.id}
+          sprint={this.state.nextSprint}
+          tasks={this.state.tasksForNextSprint} />
       );
-    }
+    };
+
+    return (
+      <div className='project-view'>
+        {sprint()}
+        <Droparea tasks={this.state.tasksForNextSprint} />
+        <hr />
+        <Backlog
+          projectId={this.state.id}
+          users={this.state.project.users}
+          tasks={this.state.tasksInBacklog}
+        />
+      </div>
+    );
   }
 });
 

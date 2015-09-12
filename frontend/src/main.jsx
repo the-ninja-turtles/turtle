@@ -11,8 +11,8 @@ let DefaultRoute = Router.DefaultRoute;
 let routes = (
   <Route name='app' path='/' handler={App}>
     <DefaultRoute handler={Dashboard} />
-    <Route name='sprint' handler={SprintBoard} />
     <Route name='project' path='project/:id' handler={Project} />
+    <Route name='sprint' path='/project/:id/sprint' handler={SprintBoard} />
   </Route>
 );
 

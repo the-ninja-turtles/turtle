@@ -1,22 +1,32 @@
-.sprint-board{
-  background: silver;
+.sprint-board {
   width: 100%;
   height: 100%;
+  background-color: #EEE;
 }
 
-.sprint-column{
+.sprint-column {
   display: inline-block;
   vertical-align: top;
-  margin: 0 0.5em;
-  background: gray;
-  width: 20%;
+  width: 25%;
+  padding: 0 5px;
   height: 100%;
   text-align: center;
+  border-left: solid #AAA 2px;
+  border-right: solid #AAA 2px;
 }
 
-.sprint-task{
-  background: yellow;
+.sprint-task {
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 1px 1px 1px;
   width: 90%;
   margin: auto;
+  margin-bottom: 10px;
   padding: 0.2em;
+}
+
+.column-name {
+  font-size: 18px;
+  padding: 10px;
+  margin: 0;
 }

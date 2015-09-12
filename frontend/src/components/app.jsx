@@ -36,7 +36,7 @@ let App = React.createClass({
     };
 
     return (
-      <div>
+      <div className='app'>
         <Navbar brand='Turtle' toggleNavKey={0}>
           <CollapsibleNav eventKey={0}>
             <Nav navbar>

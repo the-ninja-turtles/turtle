@@ -41,7 +41,7 @@ let SprintColumn = React.createClass({
     const {connectDropTarget} = this.props;
     return connectDropTarget(
       <div className='sprint-column'>
-        <p className='columnName'>{this.props.columnName}</p>
+        <p className='column-name'>{this.props.columnName}</p>
         {tasks}
       </div>
     );

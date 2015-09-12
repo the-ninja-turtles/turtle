@@ -1,6 +1,14 @@
 import React from 'react';
+import Reflux from 'reflux';
+import {Navigation} from 'react-router';
 
 let NextSprintInfo = React.createClass({
+
+  mixins: [Navigation, Reflux.ListenerMixin],
+
+  startSprint() {
+    this.transitionTo('sprint', {id: this.props.project});
+  },
 
   render() {
     return (
@@ -17,7 +25,7 @@ let NextSprintInfo = React.createClass({
         <label>End
           <input type='text' />
         </label>
-        <button className='btn'>Start sprint</button>
+        <button className='btn' onClick={this.startSprint}>Start sprint</button>
         <div className='clearfix'></div>
       </div>
     );
