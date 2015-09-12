@@ -7,32 +7,24 @@ const taskSource = {
   beginDrag(props) {
     // when drag starts, this object will be returned
     // (it contains the task id, so that the dragged task can be identified and updated)
-    return {id: props.id};
+    return {
+      id: props.id,
+      status: props.status
+    };
   }
 };
 
-// for dropping task on a task (sorting within columns)
 const taskTarget = {
-  // on hovering a dragged task card over another task card, they should adjust their
-  // positions, but not send a message to the server (because hover is triggering events
-  // very frequently)
+  // on hovering a dragged task over another task
+  // fire an action that will change their positions in the column array
   hover(props, monitor) {
     const draggedId = monitor.getItem().id;
     if (draggedId !== props.id) {
-      SprintActions.updateTaskRankLocally({
+      SprintActions.reorderTasksLocally({
         draggedTaskId: draggedId,
         targetTaskId: props.id
       });
     }
-  },
-
-  // on dropping a task card on another task card, a message should be sent to the server
-  drop(props, monitor) {
-    const draggedId = monitor.getItem().id;
-    SprintActions.updateTaskRankOnServer({
-      draggedTaskId: draggedId,
-      targetTaskId: props.id
-    });
   }
 };
 
