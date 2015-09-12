@@ -9,9 +9,8 @@ export const MockSprint = {
       id: 1,
       name: 'do a task',
       description: 'some description',
-      status: 'Review',
+      status: 0,
       score: 10,
-      rank: 50,
       user: {
         id: 2,
         username: 'mario',
@@ -21,9 +20,8 @@ export const MockSprint = {
       id: 2,
       name: 'do another task',
       description: 'some more description',
-      status: 'In Progress',
+      status: 1,
       score: 8,
-      rank: 51,
       user: {
         id: 3,
         username: 'boo',

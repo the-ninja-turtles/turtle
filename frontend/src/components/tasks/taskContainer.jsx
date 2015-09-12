@@ -6,15 +6,21 @@ import {TaskContainerActions} from '../../actions/actions.js';
 
 const target = {
   hover(props, monitor) {
-    const taskId = monitor.getItem().id;
+    let drag = {
+      taskId: monitor.getItem().id,
+      tasks: props.tasks
+    };
     if (monitor.isOver({ shallow: true })) {
-      TaskContainerActions.addTaskToContainerLocally(taskId);
+      TaskContainerActions.addTaskToContainerLocally(drag);
     }
   },
 
   drop(props, monitor) {
-    const taskId = monitor.getItem().id;
-    TaskContainerActions.addTaskToContainerOnServer(taskId);
+    let drag = {
+      taskId: monitor.getItem().id,
+      tasks: props.tasks
+    };
+    TaskContainerActions.addTaskToContainerOnServer(drag);
   }
 };
 

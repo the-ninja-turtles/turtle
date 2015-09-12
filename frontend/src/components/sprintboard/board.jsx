@@ -16,8 +16,10 @@ let SprintBoard = React.createClass({
 
   getInitialState() {
     return {
-      sprint: {},
-      sprintColumns: ['To Do', 'In Progress', 'Review', 'Done']
+      sprint: {
+        columns: [],
+        tasksByColumn: {}
+      }
     };
   },
 
@@ -33,11 +35,13 @@ let SprintBoard = React.createClass({
   },
 
   render() {
-    let sprintColumns = this.state.sprintColumns.map((column) => {
-      let columnTasks = _.where(this.state.sprint.tasks, {status: column});
-      return (
+    let sprintColumns = [];
+    _.forEach(this.state.sprint.columns, (column, key) => {
+      let columnTasks = this.state.sprint.tasksByColumn[key];
+      sprintColumns.push(
         <SprintColumn
           key={column}
+          id={key}
           columnName={column}
           tasks={columnTasks}
         />

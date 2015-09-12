@@ -1,30 +1,43 @@
 import React, {PropTypes} from 'react/addons';
 import {DragSource, DropTarget} from 'react-dnd';
-import {TaskActions} from '../../actions/actions.js';
+import {TaskActions, SprintActions} from '../../actions/actions.js';
 
 const taskSource = {
   beginDrag(props) {
-    return {id: props.id};
+    // when drag starts, this object will be returned
+    // (it contains the task id, so that the dragged task can be identified and updated)
+    return {
+      id: props.id,
+      status: props.status
+    };
   }
 };
 
 const taskTarget = {
   hover(props, monitor) {
     const draggedId = monitor.getItem().id;
+    let drag = {
+      draggedTaskId: draggedId,
+      targetTaskId: props.id
+    };
     if (draggedId !== props.id) {
-      TaskActions.updateTaskPosLocally({
-        draggedTaskId: draggedId,
-        targetTaskId: props.id
-      });
+      if (props.isOnSprintboard) {
+        SprintActions.reorderTasksLocally(drag);
+      } else {
+        TaskActions.updateTaskPosLocally(drag);
+      }
     }
   },
 
   drop(props, monitor) {
     const draggedId = monitor.getItem().id;
-    TaskActions.updateTaskPosOnServer({
+    let drag = {
       draggedTaskId: draggedId,
       targetTaskId: props.id
-    });
+    };
+    if (!props.isOnSprintboard) {
+      TaskActions.updateTaskPosOnServer(drag);
+    }
   }
 };
 
