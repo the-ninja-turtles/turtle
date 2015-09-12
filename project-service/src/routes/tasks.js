@@ -1,6 +1,7 @@
 import express from 'express';
 import R from 'ramda';
 import models from '../models';
+import publish from '../publish.js';
 
 // for URLs
 // /projects/:projectId/tasks
@@ -192,7 +193,9 @@ router.post('/', (req, res, next) => {
       sprintId: req.body.sprintId || null // optional parameter
     })
     .then((task) => {
-      res.status(201).json(R.prop('dataValues')(task));
+      let data = R.prop('dataValues')(task);
+      res.status(201).json(data);
+      publish('task:add', ['*'], data);
     });
   });
 });

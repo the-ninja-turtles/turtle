@@ -19,16 +19,18 @@ router.post('/publish/:namespace', (req, res) => {
     acl: acl
   };
 
-  client.publish(req.params.namespace, JSON.stringify(event)).then(() => {
-    return client.incr('current-event-id');
-  }).then((id) => {
+  client.incr('current-event-id').then((id) => {
     event.id = id - 1;
-    return client.setex(event.id, 300, JSON.stringify(event));
+    let message = JSON.stringify(event);
+    return Promise.all([
+      client.publish(req.params.namespace, message),
+      client.setex(event.id, 300, message)
+    ]);
   }).then(() => {
-    res.status(201).send();
+    res.status(201).send({message: 'Published event'});
   }).catch((error) => {
     console.error(error);
-    res.status(500).json({error: 'try again later'});
+    res.status(500).json({error: 'Try again later'});
   });
 });
 

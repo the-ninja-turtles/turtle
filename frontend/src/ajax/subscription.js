@@ -16,7 +16,8 @@ export default class Subscription {
     if (this._sub) {
       this._sub.then((es) => {
         es.addEventListener(resource + ':' + event, (e) => {
-          filter(e.data) && callback(e.data);
+          let data = JSON.parse(e.data);
+          filter(data) && callback(data);
         }, false);
       });
     }
