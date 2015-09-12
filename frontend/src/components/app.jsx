@@ -9,7 +9,7 @@ let RouteHandler = Router.RouteHandler;
 
 let App = React.createClass({
 
-  mixins: [Reflux.ListenerMixin],
+  mixins: [Reflux.ListenerMixin, Router.State, Router.Navigation],
 
   getInitialState() {
     return {
@@ -27,7 +27,21 @@ let App = React.createClass({
     this.setState(data);
   },
 
+  goToDashboard() {
+    this.transitionTo('dashboard');
+  },
+
+  goToProject() {
+    this.transitionTo('project', {id: this.getParams().id});
+  },
+
   render() {
+    let project = () => {
+      if (this.getParams().id) {
+        return (<NavItem onClick={this.goToProject}>Project</NavItem>);
+      }
+    };
+
     let authNav = () => {
       if (this.state.isLoggedIn) {
         return (<NavItem onClick={auth().logout}>Sign out</NavItem>);
@@ -40,7 +54,8 @@ let App = React.createClass({
         <Navbar brand='Turtle' toggleNavKey={0}>
           <CollapsibleNav eventKey={0}>
             <Nav navbar>
-              <NavItem href='/'>Dashboard</NavItem>
+              <NavItem onClick={this.goToDashboard}>Dashboard</NavItem>
+              {project()}
             </Nav>
             <Nav navbar right>{authNav()}</Nav>
           </CollapsibleNav>
