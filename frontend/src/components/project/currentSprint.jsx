@@ -1,6 +1,6 @@
 import React from 'react';
 
-let CurrentSprintInfo = React.createClass({
+let CurrentSprint = React.createClass({
 
   render() {
     return (
@@ -12,4 +12,4 @@ let CurrentSprintInfo = React.createClass({
 
 });
 
-export default CurrentSprintInfo;
+export default CurrentSprint;

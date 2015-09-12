@@ -1,8 +1,9 @@
 import React from 'react';
 import Reflux from 'reflux';
 import {Navigation} from 'react-router';
+import TaskContainer from '../tasks/taskContainer.jsx';
 
-let NextSprintInfo = React.createClass({
+let NextSprint = React.createClass({
 
   mixins: [Navigation, Reflux.ListenerMixin],
 
@@ -27,10 +28,11 @@ let NextSprintInfo = React.createClass({
         </label>
         <button className='btn' onClick={this.startSprint}>Start sprint</button>
         <div className='clearfix'></div>
+        <TaskContainer tasks={this.props.tasks} users={this.props.users} />
       </div>
     );
   }
 
 });
 
-export default NextSprintInfo;
+export default NextSprint;

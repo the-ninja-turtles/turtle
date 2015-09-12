@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import Reflux from 'reflux';
-import {SprintActions} from '../actions/actions';
+import {SprintActions, TaskActions} from '../actions/actions';
 // import {mockSprints} from '../../tests/utils/fake.js';
 // let mockSprint = mockSprints(1, 3)[0];
 import {MockSprint as mockSprint} from './mock-data';
@@ -8,7 +8,7 @@ import {MockSprint as mockSprint} from './mock-data';
 let cachedSprint;
 
 const SprintStore = Reflux.createStore({
-  listenables: SprintActions,
+  listenables: [SprintActions, TaskActions],
 
   onFetchSprint() {
     // simulating asynchronous nature of fetching a sprint
@@ -25,20 +25,34 @@ const SprintStore = Reflux.createStore({
     this.trigger(sprint);
   },
 
-  onUpdateTaskRankLocally(params) {
+  onUpdateTaskPosLocally(params) {
     let sprint = cachedSprint;
+
+    if (!sprint) {
+      return;
+    }
+
     let draggedTask = _.findWhere(sprint.tasks, {id: params.draggedTaskId});
     let targetTask = _.findWhere(sprint.tasks, {id: params.targetTaskId});
-    draggedTask.status = targetTask.status;
-    // remove the dragged task from its previous place in the tasks array
-    sprint.tasks.splice(sprint.tasks.indexOf(draggedTask), 1);
-    // and then insert the dragged task before the target task
-    sprint.tasks.splice(sprint.tasks.indexOf(targetTask), 0, draggedTask);
-    this.trigger(sprint);
+
+    if (draggedTask && targetTask) {
+      draggedTask.status = targetTask.status;
+
+      // remove the dragged task from its previous place in the tasks array
+      sprint.tasks.splice(sprint.tasks.indexOf(draggedTask), 1);
+
+      // and then insert the dragged task before the target task
+      sprint.tasks.splice(sprint.tasks.indexOf(targetTask), 0, draggedTask);
+
+      this.trigger(sprint);
+    }
   },
 
-  onUpdateTaskRankOnServer(params) {
+  onUpdateTaskPosOnServer(params) {
     let sprint = cachedSprint;
+    if (!sprint) {
+      return;
+    }
     let draggedTask = _.findWhere(sprint.tasks, {id: params.draggedTaskId});
     let targetTask = _.findWhere(sprint.tasks, {id: params.targetTaskId});
     draggedTask.rank = targetTask.rank;

@@ -1,9 +1,7 @@
 import React from 'react';
-import {SprintActions} from '../../actions/actions';
-import Task from './task.jsx';
-
-import {ItemTypes} from '../../constants/dragAndDropConstants';
 import {DropTarget} from 'react-dnd';
+import {SprintActions} from '../../actions/actions';
+import Task from '../tasks/task.jsx';
 
 const columnTarget = {
   drop(props, monitor) {
@@ -49,4 +47,4 @@ let SprintColumn = React.createClass({
 
 });
 
-export default DropTarget(ItemTypes.SPRINTTASK, columnTarget, collect)(SprintColumn);
+export default DropTarget('task', columnTarget, collect)(SprintColumn);

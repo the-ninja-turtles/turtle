@@ -1,18 +1,14 @@
-import _ from 'lodash';
 import React from 'react';
 import Reflux from 'reflux';
 import {Navigation} from 'react-router';
-// import CreateSprint from './createSprint.jsx';
-// import {mockProjects} from '../../../tests/utils/fake.js';
 import {ProjectActions} from '../../actions/actions';
 import ProjectStore from '../../stores/projectStore';
 
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 
-import CurrentSprintInfo from './currentSprintInfo.jsx';
-import NextSprintInfo from './nextSprintInfo.jsx';
-import Droparea from './droparea.jsx';
+import CurrentSprint from './currentSprint.jsx';
+import NextSprint from './nextSprint.jsx';
 import Backlog from './backlog.jsx';
 
 let Project = React.createClass({
@@ -26,14 +22,14 @@ let Project = React.createClass({
       id: parseInt(this.props.params.id),
       project: {
         users: [],
-        sprints: [],
-        tasks: []
-      },
-      currentSprint: {},
-      nextSprint: {},
-      tasksInCurrentSprint : [],
-      tasksForNextSprint: [],
-      tasksInBacklog: []
+        currentSprint: {
+          tasks: []
+        },
+        nextSprint: {
+          tasks: []
+        },
+        backlog: []
+      }
     };
   },
 
@@ -43,48 +39,18 @@ let Project = React.createClass({
   },
 
   onStoreUpdate(project) {
-    // we may also want to keep track of 'done tasks'; not doing it at the moment
-    let tasksInCurrentSprint;
-    if (project.currentSprint) {
-      tasksInCurrentSprint = project.currentSprint.tasks;
-    }
-    this.setState({
-      project: project,
-      currentSprint: project.currentSprint,
-      nextSprint: project.nextSprint,
-      tasksInCurrentSprint : tasksInCurrentSprint,
-      tasksForNextSprint: project.nextSprint.tasks,
-      tasksInBacklog: project.backlog
-    });
+
+    this.setState({project});
   },
 
   render() {
-    let sprint = () => {
-      if (this.state.currentSprint) {
-        return (
-          <CurrentSprintInfo
-            sprint={this.state.currentSprint}
-            tasks={this.state.tasksInCurrentSprint} />
-        );
-      }
-      return (
-        <NextSprintInfo
-          project={this.state.id}
-          sprint={this.state.nextSprint}
-          tasks={this.state.tasksForNextSprint} />
-      );
-    };
-
     return (
       <div className='project-view'>
-        {sprint()}
-        <Droparea tasks={this.state.tasksForNextSprint} />
+        <CurrentSprint project={this.state.id} sprint={this.state.currentSprint} />
         <hr />
-        <Backlog
-          projectId={this.state.id}
-          users={this.state.project.users}
-          tasks={this.state.tasksInBacklog}
-        />
+        <NextSprint project={this.state.id} tasks={this.state.project.nextSprint.tasks} users={this.state.project.users} />
+        <hr />
+        <Backlog project={this.state.id} tasks={this.state.project.backlog} users={this.state.project.users} />
       </div>
     );
   }

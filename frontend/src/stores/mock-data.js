@@ -14,7 +14,8 @@ export const MockSprint = {
       rank: 50,
       user: {
         id: 2,
-        username: 'mario'
+        username: 'mario',
+        picture: 'https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png'
       }
     }, {
       id: 2,
@@ -25,7 +26,8 @@ export const MockSprint = {
       rank: 51,
       user: {
         id: 3,
-        username: 'boo'
+        username: 'boo',
+        picture: 'https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png'
       }
     }
   ]
@@ -39,7 +41,8 @@ export const MockProject = {
     {
       'id': 1,
       'email': 'something@turtle.com',
-      'username': 'wesley'
+      'username': 'wesley',
+      picture: 'https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png'
     }
   ],
   currentSprint: {

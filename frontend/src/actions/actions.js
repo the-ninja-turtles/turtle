@@ -11,19 +11,13 @@ export const CreateTaskActions = Reflux.createActions({
 
 export const SprintActions = Reflux.createActions({
   'fetchSprint': {asyncResult: true},
-  'updateTaskStatus': {asyncResult: true},
-  'updateTaskRankLocally': {},
-  'updateTaskRankOnServer': {asyncResult: true}
+  'updateTaskStatus': {asyncResult: true}
+
 });
 
 export const ProjectActions = Reflux.createActions({
   'fetchProject': {asyncResult: true},
-  'addTaskToNextSprintLocally': {},
-  'addTaskToNextSprintOnServer': {asyncResult: true},
-  'addTaskToBacklogLocally': {},
-  'addTaskToBacklogOnServer': {asyncResult: true},
-  'moveTask': {},
-  'updateTaskPositionOnServer': {asyncResult: true}
+  'moveTask': {}
 });
 
 export const UserActions = Reflux.createActions({
@@ -33,4 +27,14 @@ export const UserActions = Reflux.createActions({
 
 export const EventActions = Reflux.createActions({
   'notify': {}
+});
+
+export const TaskActions = Reflux.createActions({
+  'updateTaskPosLocally': {},
+  'updateTaskPosOnServer': {asyncResult: true}
+});
+
+export const TaskContainerActions = Reflux.createActions({
+  'addTaskToContainerLocally': {},
+  'addTaskToContainerOnServer': {asyncResult: true}
 });

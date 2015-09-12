@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
-import {ProjectActions} from '../actions/actions';
+import {ProjectActions, TaskActions} from '../actions/actions';
 import {MockProject as mockProject} from './mock-data';
 
 let cachedProject;
 let switchedTask;
 
 const ProjectStore = Reflux.createStore({
-  listenables: ProjectActions,
+  listenables: [ProjectActions, TaskActions],
 
   onFetchProject(id) {
     // // simulating asynchronous nature of fetching a project
@@ -22,45 +22,47 @@ const ProjectStore = Reflux.createStore({
     // });
   },
 
-  onAddTaskToNextSprintLocally(id) {
+  onUpdateTaskPosLocally(params) {
     let project = cachedProject;
-    let draggedTaskInfo = this.findTask(id);
-    let draggedTask = draggedTaskInfo.task;
-    let draggedTaskContainer = draggedTaskInfo.container;
-    if (_.isEqual(draggedTaskContainer, project.backlog)) {
-      draggedTaskContainer.splice(draggedTaskContainer.indexOf(draggedTask), 1);
-      project.nextSprint.tasks.push(draggedTask);
+
+    if (!project) {
+      return;
+    }
+
+    let findTask = (taskId) => {
+      let task = _.findWhere(project.backlog, {id: taskId});
+      if (task) {
+        task.container = project.backlog;
+        return task;
+      }
+      task = _.findWhere(project.nextSprint.tasks, {id: taskId});
+      if (task) {
+        task.container = project.nextSprint.tasks;
+        return task;
+      }
+    };
+
+    let draggedTask = findTask(params.draggedTaskId);
+    let targetTask = findTask(params.targetTaskId);
+
+    if (draggedTask && targetTask) {
+      // remove the dragged task from its previous place in the tasks array
+      draggedTask.container.splice(draggedTask.container.indexOf(draggedTask), 1);
+
+      // and then insert the dragged task before the target task
+      targetTask.container.splice(targetTask.container.indexOf(targetTask), 0, draggedTask);
+
       this.trigger(project);
     }
   },
 
-  onAddTaskToNextSprintOnServer(id) {
-    let project = cachedProject;
-    let draggedTask = this.findTask(id).task;
+  onUpdateTaskPosOnServer(params) {
+    /*let project = cachedProject;
+    let draggedTask = this.findTask(params.taskId).task;
     if (!draggedTask.sprintId) {
       draggedTask.sprintId = project.nextSprint.id;
       // send ajax request to server to update either the project or all project’s tasks; cache the result
-    }
-  },
-
-  onAddTaskToBacklogLocally(id) {
-    let project = cachedProject;
-    let draggedTaskInfo = this.findTask(id);
-    let draggedTask = draggedTaskInfo.task;
-    let draggedTaskContainer = draggedTaskInfo.container;
-    if (_.isEqual(draggedTaskContainer, project.nextSprint.tasks)) {
-      draggedTaskContainer.splice(draggedTaskContainer.indexOf(draggedTask), 1);
-      project.backlog.unshift(draggedTask);
-      this.trigger(project);
-    }
-  },
-
-  onAddTaskToBacklogOnServer(id) {
-    let draggedTask = this.findTask(id).task;
-    if (draggedTask.sprintId) {
-      draggedTask.sprintId = null;
-      // send ajax request to server
-    }
+    }*/
   },
 
   onMoveTask(params) {
@@ -89,27 +91,6 @@ const ProjectStore = Reflux.createStore({
     // targetTask.rank = temp;
     // // send ajax request to server to update either the project or all project’s tasks; cache the result
     // this.trigger(project);
-  },
-
-  findTask(id) {
-    let project = cachedProject;
-    let task;
-    // check whether the task is in the next sprint
-    task = _.findWhere(project.nextSprint.tasks, {id: id});
-    if (task) {
-      return {
-        task: task,
-        container: project.nextSprint.tasks
-      };
-    }
-    // otherwise it must be in the backlog (but check that with an if, just in case)
-    task = _.findWhere(project.backlog, {id: id});
-    if (task) {
-      return {
-        task: task,
-        container: project.backlog
-      };
-    }
   }
 
 });
