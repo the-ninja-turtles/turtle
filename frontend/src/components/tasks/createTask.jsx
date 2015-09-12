@@ -127,7 +127,7 @@ let CreateTask = React.createClass({
 
         <Modal.Footer>
           <button
-            className='btn'
+            className='btn primary'
             disabled={this.state.disableCreate}
             onClick={this.createTask}
           >

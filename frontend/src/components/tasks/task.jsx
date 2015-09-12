@@ -64,7 +64,7 @@ let Task = React.createClass({
     };
 
     return connectDragSource(connectDropTarget(
-      <div className='sprint-task' style={taskStyle}>
+      <div className='task' style={taskStyle}>
         <span className='task-name'>{this.props.name}</span>
         <span className='task-description'>{this.props.description}</span>
         <span className='task-score'>{this.props.score}</span>

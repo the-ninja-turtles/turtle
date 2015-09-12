@@ -32,8 +32,10 @@ let Backlog = React.createClass({
             projectId={this.props.project}
             users={this.props.users}
           />
-        <h1>Backlog</h1>
-        <button className='btn' onClick={this.open}>+ New Task</button>
+        <h1 className='left'>Backlog</h1>
+        <div className='btn-container right'>
+          <button className='btn primary' onClick={this.open}>+ New Task</button>
+        </div>
         <div className='clearfix'></div>
         <TaskContainer tasks={this.props.tasks} users={this.props.users} />
       </div>

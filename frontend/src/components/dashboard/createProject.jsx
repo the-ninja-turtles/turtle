@@ -88,7 +88,7 @@ let CreateProject = React.createClass({
 
     const inviteButton = (
       <button
-        className='btn'
+        className='btn primary'
         onClick={this.invite}
         disabled={this.state.disableInvite}
       >
@@ -135,7 +135,7 @@ let CreateProject = React.createClass({
 
         <Modal.Footer>
           <button
-            className='btn'
+            className='btn primary'
             onClick={this.createProject}
             disabled={this.state.disableCreate}
           >

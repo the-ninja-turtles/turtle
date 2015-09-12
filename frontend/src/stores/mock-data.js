@@ -43,6 +43,12 @@ export const MockProject = {
       'email': 'something@turtle.com',
       'username': 'wesley',
       picture: 'https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png'
+    },
+    {
+      'id': 2,
+      'email': 'something@turtle.com',
+      'username': 'wesley',
+      picture: 'https://secure.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fte.png'
     }
   ],
   currentSprint: {

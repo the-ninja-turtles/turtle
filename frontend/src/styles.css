@@ -20,20 +20,44 @@ html, body {
   margin-bottom: 0;
 }
 
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
 .clearfix {
   clear: both;
 }
 
 .btn {
-  color: white;
-  background: #277DB3;
+  display: block;
+  width: 100%;
   border-radius: 5px;
 }
 
-.btn:hover,
-.btn:focus {
+.primary {
+  color: white;
+  background: #277DB3;
+}
+
+.primary:hover,
+.primary:focus {
   color: white;
   background: #17466C;
+}
+
+.danger {
+  color: white;
+  background: #801515;
+}
+
+.danger:hover,
+.danger:focus {
+  color: white;
+  background: #550000;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,14 +88,14 @@ textarea {
 .modal-footer {
   clear: both;
   text-align: center;
-  .btn {
-    float: none;
-  }
+  padding-left: 15%;
+  padding-right: 15%;
 }
 
 @import "components/sprintboard/sprintboard.css";
 @import "components/project/project.css";
 @import "components/dashboard/dashboard.css";
 @import "components/dashboard/createProject.css";
+@import "components/tasks/task.css";
 @import "components/tasks/createTask.css";
 @import "components/notifications/notification.css";

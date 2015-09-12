@@ -1,76 +1,43 @@
 .project-view {
-  width: 850px;
+  max-width: 850px;
   margin: 30px auto;
-}
-
-.btn {
-  float: right;
-}
-
-h1 {
-  float: left;
 }
 
 hr {
   margin: 20px 0;
 }
 
-.backlog {
+.task-container {
   min-height: 200px;
 }
 
-.backlog-task {
-  margin: 10px 25px 0 25px;
-  padding: 10px;
-  border: solid 1px #333;
-  border-radius: 2px;
-  line-height: 50px;
-
-  .title {
-    margin-right: 5px;
-    font-weight: bold;
-  }
-  .circle {
-    border: solid 1px black;
-    border-radius: 50px;
-    width: 50px;
-    height: 50px;
-    display: inline;
-    text-align: center;
-    float: right;
-    margin: 0 5px;
-  }
+.sprint-score {
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.next-sprint-info {
-  label {
-    float: left;
-    margin-right: 5px;
-    font-weight: bold;
-  }
-  input {
-    font-weight: normal;
-    border-radius: 5px;
-    border: 1px solid black;
-    display: block;
-    padding: 5px;
-  }
-  div {
-    margin-bottom: 10px;
-  }
-  .points {
-    float: right;
-    .points-count {
-      font-weight: normal;
-    }
-  }
+.sprint-score-label {
+  margin-right: 5px;
 }
 
-.drop-area {
+.sprint-score-score {
+  font-weight: normal;
+}
+
+.info {
+  width: 200px;
+  margin-top: 25px;
+  margin-left: 100px;
+}
+
+.info .sprint-score {
+  margin-right: 40px;
+}
+
+.progress {
   margin-top: 10px;
-  border-radius: 5px;
-  border: solid 1px black;
-  min-height: 150px;
-  padding-bottom: 1em;
-  width: 850px;
+}
+
+.btn-container .btn {
+  margin-bottom: 5px;
 }

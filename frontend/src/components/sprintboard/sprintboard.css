@@ -15,33 +15,14 @@
   border-right: solid #AAA 2px;
 }
 
-.sprint-task {
-  border: 1px solid #ccc;
-  background: #FFF;
-  width: 90%;
-  margin: auto;
-  margin-bottom: 10px;
-  text-align: left;
-
-  span {
-    padding: 5px 20px;
-    display: block;
-    margin: 0;
-  }
-
-  .task-name {
-    background: #222;
-    color: #EEE;
-  }
-
-  .task-description {
-    margin: 10px 0;
-    color: #222;
-  }
-}
-
 .column-name {
   font-size: 18px;
   padding: 10px;
   margin: 0;
+}
+
+.sprint-column .task {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
