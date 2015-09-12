@@ -46,7 +46,7 @@ class Auth {
 
   logout() {
     localStorage.removeItem('userToken');
-    Actions.loggedOut();
+    UserActions.loggedOut();
   }
 }
 
