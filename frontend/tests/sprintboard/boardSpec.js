@@ -4,6 +4,14 @@ import test from 'blue-tape';
 import createComponent from '../utils/create-component';
 import {__RewireAPI__ as testmodule} from '../../src/components/sprintboard/board.jsx';
 let SprintBoard =  testmodule.__GetDependency__('SprintBoard');
+SprintBoard.prototype.getInitialState = () => {
+  return {
+    sprint: {
+      columns: ['To Do', 'In Progress', 'Review', 'Done'],
+      tasksByColumn: {}
+    }
+  };
+};
 
 let sprintBoard = createComponent(SprintBoard);
 
