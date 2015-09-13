@@ -30,6 +30,10 @@ let Dashboard = React.createClass({
     this.transitionTo('project', {id: id});
   },
 
+  deleteProject(id) {
+    DashboardActions.deleteProject(id);
+  },
+
   close() {
     this.setState({showModal: false});
   },
@@ -47,7 +51,7 @@ let Dashboard = React.createClass({
           <Item id='0' name='+ New Project' click={this.open} isCreateProject='true'/>
           {
             this.state.projects.map((project) => {
-              return <Item key={project.id} id={project.id} name={project.name} click={this.enterProject} />;
+              return <Item key={project.id} id={project.id} name={project.name} click={this.enterProject} delete={this.deleteProject} />;
             })
           }
         </ul>

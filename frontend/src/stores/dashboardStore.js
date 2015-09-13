@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
 import {DashboardActions as Actions, EventActions} from '../actions/actions';
@@ -38,7 +39,17 @@ let DashboardStore = Reflux.createStore({
           cb(response);
         }
       });
+  },
+
+  onDeleteProject(id) {
+    projects.id(id).delete().then(() => {
+      let project = _.findWhere(this.projects, {id: id});
+      let index = _.indexOf(this.projects, project);
+      this.projects.splice(index, 1);
+      this.trigger(this.projects);
+    });
   }
+
 });
 
 export default DashboardStore;

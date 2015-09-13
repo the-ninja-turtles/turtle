@@ -6,6 +6,7 @@
 }
 
 .item {
+  color: #333;
   cursor: pointer;
   display: inline-block;
   width: 200px;
@@ -15,10 +16,17 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 20px;
+  position: relative;
   .name {
     display: inline-block;
     line-height: 20px;
     vertical-align: middle;
+  }
+  .close {
+    top: 8px;
+    right: 13px;
+    position: absolute;
+    display: none;
   }
 }
 
@@ -26,4 +34,18 @@
   color: #bbb;
   background: #FBFBFB;
   border-color: #ddd;
+  .close {
+    display: none !important;
+  }
+}
+
+.item:hover {
+  border-color: #999;
+  .close {
+    display: block;
+  }
+}
+
+.new-project:hover {
+  color: #333;
 }

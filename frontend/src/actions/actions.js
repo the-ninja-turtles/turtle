@@ -2,7 +2,8 @@ import Reflux from 'reflux';
 
 export const DashboardActions = Reflux.createActions({
   'fetchProjects': {asyncResult: true},
-  'createProject': {asyncResult: true}
+  'createProject': {asyncResult: true},
+  'deleteProject': {asyncResult: true}
 });
 
 export const CreateTaskActions = Reflux.createActions({
