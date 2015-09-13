@@ -100,7 +100,12 @@ Model.prototype.on = function(event, callback) {
 
 
 let tasks = new Resource('tasks', 'task');
-let sprints = new Resource('sprints', 'sprint').define('assigntasks', 'POST');
-let projects = new Resource('projects', 'project', [tasks, sprints]);
+let sprints = new Resource('sprints', 'sprint')
+  .define('positions', 'POST')
+  .define('assigntasks', 'POST');
+let projects = new Resource('projects', 'project', [tasks, sprints])
+  .define('startsprint', 'POST')
+  .define('endsprint', 'POST')
+  .define('positions', 'POST');
 
 export default new Collection(projects);

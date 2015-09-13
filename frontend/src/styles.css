@@ -34,8 +34,11 @@ html, body {
 
 .btn {
   display: block;
-  width: 100%;
   border-radius: 5px;
+}
+
+.block {
+  width: 100%;
 }
 
 .primary {

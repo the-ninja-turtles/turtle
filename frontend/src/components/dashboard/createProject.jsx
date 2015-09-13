@@ -30,7 +30,6 @@ let CreateProject = React.createClass({
   invite() {
     // let email = React.findDOMNode(this.refs.inviteeEmail).value;
     let email = this.refs.inviteeEmail.getValue();
-    console.log(email);
     if (email) {
       let invitees = this.state.invitees.slice();
       invitees.push({email: email});
@@ -55,7 +54,7 @@ let CreateProject = React.createClass({
   createProject() {
     let name = React.findDOMNode(this.refs.projectName).value;
     if (name) {
-      Actions.createProject(name, (response) => { // check `response.error` for error
+      Actions.createProject(name, this.state.invitees, (response) => { // check `response.error` for error
         this.close();
       });
     }
@@ -135,11 +134,11 @@ let CreateProject = React.createClass({
 
         <Modal.Footer>
           <button
-            className='btn primary'
+            className='btn block primary'
             onClick={this.createProject}
             disabled={this.state.disableCreate}
           >
-            Create
+            Create project
           </button>
         </Modal.Footer>
       </Modal>
