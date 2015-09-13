@@ -1,7 +1,26 @@
 export default (sequelize, DataTypes) => {
   let Project = sequelize.define('Project', {
     name: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
+    },
+    length: {
+      type: DataTypes.INTEGER,
+      defaultValue: 7,
+      allowNull: false,
+      validate: {
+        min: 1
+      }
+    },
+    columns: {
+      type: DataTypes.INTEGER,
+      defaultValue: 4,
+      allowNull: false,
+      validate: {
+        min: 4
+      }
     }
   }, {
     classMethods: {

@@ -1,10 +1,17 @@
 export default (sequelize, DataTypes) => {
   let Sprint = sequelize.define('Sprint', {
     name: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      defaultValue: '',
+      allowNull: false
     },
     status: {
-      type: DataTypes.STRING
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+      validate: {
+        isIn: [[0, 1, 2]]
+      }
     },
     startDate: {
       type: DataTypes.DATE

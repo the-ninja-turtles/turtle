@@ -102,7 +102,7 @@ Get all existing projects for a user (as identified through JWT).
 <a name="external-projects-create"/>
 ### Create Project for User
 
-Create a new project for a user (as identified through JWT). Valid emails that correspond to existing users will be sent to the invitation service for handling. The `emails` array can be empty if no additional users are to be invited.
+Create a new project for a user (as identified through JWT). Valid emails that correspond to existing users will be sent to the invitation service for handling.
 
 The `length` is the duration of each sprint, defaults to 7 days.
 
@@ -117,8 +117,8 @@ A sprint is created by default with `status = 0` (planning). The sprint will hav
 - **Data Params**
   + Required
     * `name=[string]`
-    * `emails=[array]`
   + Optional
+    * `emails=[array]`
     * `length=[number]`
 - **Success Response**
   + Code: `201 CREATED`

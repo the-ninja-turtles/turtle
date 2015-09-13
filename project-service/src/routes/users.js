@@ -14,7 +14,8 @@ router.use((req, res, next) => {
   .spread((user, created) => { // created = true if a new user was created
     return user.update({
       email: req.user.email,
-      username: req.user.nickname
+      username: req.user.nickname,
+      picture: req.user.picture
     });
   })
   .then((user) => {

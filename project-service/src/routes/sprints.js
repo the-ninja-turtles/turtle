@@ -3,16 +3,21 @@ import R from 'ramda';
 import models from '../models';
 
 // for URLs
+// /projects/:projectId/sprints/start
+// /projects/:projectId/sprints/end
+
 // /projects/:projectId/sprints
 // /projects/:projectId/sprints/:sprintId
-// /projects/:projectId/sprints/:sprintId/tasks
+
+// /projects/:projectId/sprints/:sprintId/positions
+// /projects/:projectId/sprints/:sprintId/assigntasks
 
 let router = express.Router();
 
 let msg = {
   project: { // project level (/projects/:projectId/sprints)
     400: {error: 'Invalid data parameters.'},
-    405: {error: 'Use GET to receive sprints and POST to create a new sprint.'}
+    405: {error: 'Use GET to receive sprints.'}
   },
   sprint: { // sprint level (/projects/:projectId/sprints/:sprintId)
     400: {error: 'Invalid data parameters.'},
@@ -42,49 +47,109 @@ router.param('sprintId', (req, res, next, sprintId) => {
   });
 });
 
-// Add/Remove Tasks to/from Sprint
-/* === /projects/:projectId/sprints/:sprintId/assigntasks === */
+// Fetch Project's Sprints
+/* === /projects/:projectId/sprints === */
 
-router.post('/:sprintId/assigntasks', (req, res, next) => {
-  if (!(req.body.add || req.body.remove)) {
-    return res.status(400).json(msg.task[400]);
-  }
+router.get('/', (req, res, next) => {
+  req.project.getSprints()
+    .then((sprints) => {
+      let currentSprint = R.find(R.propEq('status', 1))(sprints);
+      let nextSprint = R.find(R.propEq('status', 0))(sprints);
 
-  req.body.add = req.body.add || [];
-  req.body.remove = req.body.remove || [];
+      res.status(200).json({
+        currentSprint, // undefined if no ongoing sprint
+        nextSprint
+      });
+    });
+});
 
-  Promise.all([
-    // add tasks in the `add` array to spirnt
-    models.Task.update({
-      sprintId: req.sprint.id
-    }, {
-      where: { // the tasks must be part of the project
-        id: {
-          $in: req.body.add
-        },
-        projectId: req.project.id
-      }
-    }),
-    // remove tasks in the `remove` array from sprint
-    models.Task.update({
-      sprintId: null
-    }, {
-      where: { // the tasks must be part of the project _and_ sprint
-        id: {
-          $in: req.body.remove
-        },
-        sprintId: req.sprint.id,
-        projectId: req.project.id
-      }
-    })
-  ])
-  .then(() => {
-    res.sendStatus(204);
+// Start/End Sprints
+/* === /projects/:projectId/sprints/start === */
+/* === /projects/:projectId/sprints/end === */
+
+router.post('/start', (req, res, next) => {
+  models.Sprint.findAll({
+    where: {
+      $or: [{status: 0}, {status: 1}],
+      projectId: req.project.id
+    }
+  })
+  .then((sprints) => {
+    let currentSprint = R.find(R.propEq('status', 1))(sprints);
+    let nextSprint = R.find(R.propEq('status', 0))(sprints);
+
+    if (currentSprint) {
+      return res.status(400).json({error: 'There is already an ongoing sprint.'});
+    }
+
+    Promise.all([
+      nextSprint.update({
+        status: 1,
+        startDate: new Date()
+      }),
+      req.project.createSprint() // create a new sprint in planning
+    ])
+    .then(() => {
+      res.sendStatus(204);
+    });
   });
 });
 
-router.all('/:sprintId/tasks', (req, res, next) => {
-  res.status(405).json(msg.tasks[405]);
+router.post('/end', (req, res, next) => {
+  models.Sprint.findOne({
+    where: {
+      status: 1,
+      projectId: req.project.id
+    }
+  })
+  .then((sprint) => {
+    if (!sprint) {
+      return res.status(400).json({error: 'There is no ongoing sprint.'});
+    }
+
+    Promise.all([
+      // find all unfinished tasks in sprint
+      models.Task.findAll({
+        where: {
+          projectId: req.project.id,
+          sprintId: sprint.id,
+          status: {$lt: req.project.columns - 1}
+        },
+        order: [['order', 'ASC']]
+      }),
+      // find all backlog tasks
+      models.Task.findAll({
+        where: {
+          projectId: req.project.id,
+          sprintId: null
+        },
+        order: [['order', 'ASC']]
+      }),
+      // update sprint status
+      sprint.update({status: 2, endDate: new Date()})
+    ])
+    .then((results) => {
+      // reorder tasks
+      // - all sprint tasks have lower `order` (higher priority)
+      // - sprint tasks are ordered by `status`, then by relative `order`
+      let unfinishedTasks = results[0].sort((a, b) => {
+        return b.status - a.status || a.order - b.order;
+      });
+      let backlogTasks = results[1];
+
+      let updates = [];
+      let combinedTasks = R.concat(unfinishedTasks, backlogTasks);
+      combinedTasks.forEach((task, index) => {
+        updates.push(new Promise((resolve) => {
+          task.update({sprintId: null, order: index + 1}).then(resolve);
+        }));
+      });
+      return Promise.all(updates);
+    })
+    .then(() => {
+      res.sendStatus(204);
+    });
+  });
 });
 
 // Fetch/Modify/Delete Sprint
@@ -92,9 +157,7 @@ router.all('/:sprintId/tasks', (req, res, next) => {
 
 router.get('/:sprintId', (req, res, next) => {
   models.Sprint.findOne({
-    where: {
-      id: req.sprint.id
-    },
+    where: {id: req.sprint.id},
     include: [{
       model: models.Task,
       as: 'tasks',
@@ -103,14 +166,13 @@ router.get('/:sprintId', (req, res, next) => {
         as: 'user'
       }]
     }],
-    order: [[ // order tasks ascending by `rank`
-      {
-        model: models.Task,
-        as: 'tasks'
-      },
-      'rank',
-      'ASC'
-    ]]
+    order: [
+      [
+        {model: models.Task, as: 'tasks'},
+        'order',
+        'ASC'
+      ]
+    ]
   })
   .then((sprint) => { // route middleware already checks that this is an existing sprint
     sprint = sprint.dataValues;
@@ -126,57 +188,132 @@ router.get('/:sprintId', (req, res, next) => {
 
 router.put('/:sprintId', (req, res, next) => {
   // at least one data parameter must exist
-  if (!(req.body.name || req.body.status || req.body.startDate || req.body.endDate)) {
+  if (!req.body.name) {
     return res.status(400).json(msg.sprint[400]);
   }
 
-  req.sprint.update({
-    name: req.body.name || req.sprint.getDataValue('name'),
-    status: req.body.status || req.sprint.getDataValue('status'),
-    startDate: req.body.startDate || req.sprint.getDataValue('startDate'),
-    endDate: req.body.endDate || req.sprint.getDataValue('endDate')
+  req.sprint.update({name: req.body.name})
+    .then((sprint) => {
+      res.status(200).json(sprint.dataValues);
+    });
+});
+
+// Reorder Tasks
+/* === /projects/:projectId/sprints/:sprintId/positions === */
+
+router.post('/:sprintId/positions', (req, res, next) => {
+  if (!Array.isArray(req.body.positions)) {
+    return res.status(400).json(msg.sprint[400]);
+  }
+
+  // fetch all sprint tasks
+  req.sprint.getTasks()
+    .then((tasks) => {
+
+      // generate tasks hash
+      let tasksHash = tasks.reduce((hash, task) => {
+        hash[task.id] = task;
+        return hash;
+      }, {});
+
+      // generate positions hash
+      //   - the order to be assigned to the task is the index + 1
+      //   - only add to hash if the id corresponds to an existing task
+      let posHash = req.body.positions.reduce((hash, id, idx) => {
+        if (tasksHash[id]) {
+          hash[id] = idx + 1;
+        }
+        return hash;
+      }, {});
+
+      // both hashes should have the same number of tasks, otherwise it means
+      // the `positions` array did not have all the sprint's tasks
+      if (Object.keys(tasksHash).length !== Object.keys(posHash).length) {
+        return res.status(400).json(msg.sprint[400]);
+      }
+
+      // update each task's `order` and send success response
+      Promise.all(req.body.positions.map((id) => {
+        return tasksHash[id].update({order: posHash[id]});
+      }))
+      .then((tasks) => {
+        let data = R.pluck('dataValues')(tasks).sort((a, b) => {
+          return a.order - b.order;
+        });
+        res.status(200).json(data);
+      });
+    });
+});
+
+// Add/Remove Tasks to/from Sprint
+/* === /projects/:projectId/sprints/:sprintId/assigntasks === */
+
+router.post('/:sprintId/assigntasks', (req, res, next) => {
+  req.body.add = req.body.add || [];
+  req.body.remove = req.body.remove || [];
+
+  if (!(Array.isArray(req.body.add) && Array.isArray(req.body.remove))) {
+    return res.status(400).json(msg.task[400]);
+  }
+
+  Promise.all([
+    models.Task.findAll({ // backlog
+      where: {sprintId: null, projectId: req.project.id},
+      order: [['order', 'DESC']]
+    }),
+    models.Task.findAll({ // sprint
+      where: {sprintId: req.sprint.id, projectId: req.project.id},
+      order: [['order', 'DESC']]
+    })
+  ])
+  .then((results) => {
+    let generateHash = (hash, task) => {
+      hash[task.id] = task;
+      return hash;
+    };
+    let backlogTasks = results[0].reduce(generateHash, {});
+    let sprintTasks = results[1].reduce(generateHash, {});
+
+    let backlogMax = backlogTasks[0] ? backlogTasks[0].order : 0;
+    let sprintMax = sprintTasks[0] ? sprintTasks[0].order : 0;
+
+    let updates = [];
+
+    // move each task in `add` from backlog to the sprint
+    // assign `order` to be the greatest order in sprint + 1
+    req.body.add.forEach((id) => {
+      if (backlogTasks[id]) {
+        updates.push(new Promise((resolve) => {
+          backlogTasks[id].update({sprintId: req.sprint.id, order: ++sprintMax}).then(resolve);
+        }));
+      }
+    });
+
+    // move each task in `remove` from sprint to the backlog
+    // assign `order` to be the greatest order in backlog + 1
+    req.body.remove.forEach((id) => {
+      // only move taks out of sprint if the task is not "done"
+      if (sprintTasks[id] && sprintTasks[id].status < req.project.columns - 1) {
+        updates.push(new Promise((resolve) => {
+          sprintTasks[id].update({sprintId: null, order: ++backlogMax}).then(resolve);
+        }));
+      }
+    });
+
+    return Promise.all(updates);
   })
-  .then((sprint) => {
-    res.status(200).json(sprint.dataValues);
+  .then((tasks) => {
+    res.sendStatus(204);
   });
 });
 
-router.delete('/:sprintId', (req, res, next) => {
-  req.sprint.destroy()
-    .then(() => {
-      res.sendStatus(204);
-    });
+// Catch
+router.all('/:sprintId/tasks', (req, res, next) => {
+  res.status(405).json(msg.tasks[405]);
 });
 
 router.all('/:sprintId', (req, res, next) => {
   res.status(405).json(msg.sprint[405]);
-});
-
-// Fetch/Create Project's Sprints
-/* === /projects/:projectId/sprints === */
-
-router.get('/', (req, res, next) => {
-  req.project.getSprints()
-    .then((sprints) => {
-      res.status(200).json(R.pluck('dataValues')(sprints));
-    });
-});
-
-router.post('/', (req, res, next) => {
-  // all data parameters must exist
-  if (!(req.body.name && req.body.status && req.body.startDate && req.body.endDate)) {
-    return res.status(400).json(msg.project[400]);
-  }
-
-  req.project.createSprint({
-    name: req.body.name,
-    status: req.body.status,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate
-  })
-  .then((sprint) => {
-    res.status(201).json(sprint.dataValues);
-  });
 });
 
 router.all('/', (req, res, next) => {

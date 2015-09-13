@@ -23,14 +23,6 @@ let msg = {
   }
 };
 
-let isValidScore = (score) => {
-  return typeof score === 'number' && score >= 0;
-};
-
-let isValidRank = (rank) => {
-  return typeof rank === 'number' && rank >= 0;
-};
-
 // callback triggers for route parameters
 router.param('taskId', (req, res, next, taskId) => {
   models.Task.findOne({
@@ -48,22 +40,104 @@ router.param('taskId', (req, res, next, taskId) => {
   });
 });
 
+// Fetch/Create Project's Tasks
+/* === /projects/:projectId/tasks === */
+
+router.get('/', (req, res, next) => {
+  Promise.all([
+    req.project.getSprints(),
+    models.Task.findAll({
+      where: {projectId: req.project.id},
+      order: [['order', 'ASC']]
+    })
+  ])
+  .then((results) => {
+    let sprints = results[0];
+    let tasks = results[1];
+
+    // determine current ongoing and next (planning) sprints
+    let currentSprint = R.find(R.propEq('status', 1))(sprints);
+    let nextSprint = R.find(R.propEq('status', 0))(sprints);
+
+    let current;
+    if (currentSprint) { // if there is an ongoing sprint at the moment
+      current = R.pluck('dataValues')(R.filter(R.propEq('sprintId', currentSprint.id))(tasks));
+    }
+    let next = R.pluck('dataValues')(R.filter(R.propEq('sprintId', nextSprint.id))(tasks));
+    let backlog = R.pluck('dataValues')(R.filter(R.propEq('sprintId', null))(tasks));
+
+    res.status(200).json({current, next, backlog});
+  });
+});
+
+router.post('/', (req, res, next) => {
+  // check that all required parameters are provided
+  // `description` allowed to be empty
+  req.body.description = req.body.description || '';
+
+  if (!(req.body.name && req.body.score)) {
+    return res.status(400).json(msg.project[400]);
+  }
+
+  Promise.all([
+    // check that user is valid if `userId` provided
+    new Promise((resolve) => {
+      if (!req.body.userId) {
+        return resolve(true);
+      }
+      req.project.hasUser(req.body.userId).then(resolve);
+    }),
+    // check that sprint is valid if `sprintId` provided
+    new Promise((resolve) => {
+      if (!req.body.sprintId) {
+        return resolve(true);
+      }
+      req.project.hasSprint(req.body.sprintId).then(resolve);
+    }),
+    models.Task.findAll({
+      where: {
+        projectId: req.project.id,
+        sprintId: req.body.sprintId || null
+      },
+      order: [['order', 'DESC']]
+    })
+  ])
+  .then((results) => {
+    if (!results[0]) { // user
+      return res.status(404).json(msg.task[404]('User'));
+    }
+
+    if (!results[1]) { // sprint
+      return res.status(404).json(msg.task[404]('Sprint'));
+    }
+
+    let tasks = results[2];
+    let max = tasks.length ? tasks[0].order : 0;
+
+    req.project.createTask({
+      name: req.body.name,
+      description: req.body.description,
+      score: req.body.score,
+      order: max + 1, // set to highest in backlog or sprint, + 1
+      projectId: req.project.id,
+      userId: req.body.userId || null, // optional parameter
+      sprintId: req.body.sprintId || null // optional parameter
+    })
+    .then((task) => {
+      res.status(201).json(R.prop('dataValues')(task));
+    });
+  });
+});
+
 // Fetch/Modify/Delete Task
 /* === /projects/:projectId/tasks/:taskId === */
 
 router.get('/:taskId', (req, res, next) => {
   models.Task.findOne({
-    where: {
-      id: req.task.id
-    },
+    where: {id: req.task.id},
     include: [
-      {
-        model: models.Sprint,
-        as: 'sprint'
-      }, {
-        model: models.User,
-        as: 'user'
-      }
+      {model: models.Sprint, as: 'sprint'},
+      {model: models.User, as: 'user'}
     ]
   })
   .then((task) => { // route middleware already checks that this is an existing task
@@ -76,48 +150,33 @@ router.get('/:taskId', (req, res, next) => {
 
 router.put('/:taskId', (req, res, next) => {
   // check if at least one parameter is provided
-  // `description` allowed to be empty, `score` and `rank` allowed to be 0
-  if (!(req.body.name || req.body.description !== undefined || req.body.status || req.body.score !== undefined || req.body.rank !== undefined || req.body.userId || req.body.sprintId)) {
+  // `description` allowed to be empty
+  if (!(req.body.name || req.body.description !== undefined || req.body.status !== undefined || req.body.score || req.body.userId)) {
     return res.status(400).json(msg.task[400]);
   }
 
-  // check that score and rank are valid if provided
-  if ((req.body.score !== undefined && !isValidScore(req.body.score)) ||
-      (req.body.rank !== undefined && !isValidRank(req.body.rank))) {
+  // if `status` was provided, it needs to be between 0 and project.columns
+  if (req.body.status !== undefined && (req.body.status >= req.project.columns || req.body.status < 0)) {
     return res.status(400).json(msg.task[400]);
   }
 
-  Promise.all([
-    new Promise((resolve) => { // check if user is valid
-      if (!req.body.userId) { // if userId wasn't provided, no need to check
-        return resolve(true);
-      }
-      req.project.hasUser(req.body.userId).then(resolve);
-    }),
-    new Promise((resolve) => { // check if sprint is valid
-      if (!req.body.sprintId) { // if sprintId wasn't provided, no need to check
-        return resolve(true);
-      }
-      req.project.hasSprint(req.body.sprintId).then(resolve);
-    })
-  ])
-  .then((results) => {
-    if (!results[0]) { // user
-      return res.status(404).json(msg.task[404]('User'));
+  new Promise((resolve) => { // if userId provided, it must correspond to a user
+    if (!req.body.userId) {
+      return resolve(true);
     }
-
-    if (!results[1]) { // sprint
-      return res.status(404).json(msg.task[404]('Sprint'));
+    req.project.hasUser(req.body.userId).then(resolve);
+  })
+  .then((results) => {
+    if (!results) { // if no user found with matching id
+      return res.status(404).json(msg.task[404]('User'));
     }
 
     req.task.update({
       name: req.body.name || req.task.getDataValue('name'),
       description: req.body.description !== undefined ? req.body.description : req.task.getDataValue('description'),
-      status: req.body.status || req.task.getDataValue('status'),
-      score: req.body.score !== undefined ? req.body.score : req.task.getDataValue('score'),
-      rank: req.body.rank !== undefined ? req.body.rank : req.task.getDataValue('rank'),
-      userId: req.body.userId || req.task.getDataValue('userId'),
-      sprintId: req.body.sprintId || req.task.getDataValue('sprintId')
+      status: req.body.status !== undefined ? req.body.status : req.task.getDataValue('status'),
+      score: req.body.score || req.task.getDataValue('score'),
+      userId: req.body.userId || req.task.getDataValue('userId')
     })
     .then((task) => {
       res.status(200).json(task.dataValues);
@@ -132,69 +191,9 @@ router.delete('/:taskId', (req, res, next) => {
     });
 });
 
+// Catch
 router.all('/:taskId', (req, res, next) => {
   res.status(405).json(msg.task[405]);
-});
-
-// Fetch/Create Project's Tasks
-/* === /projects/:projectId/tasks === */
-
-router.get('/', (req, res, next) => {
-  req.project.getTasks()
-    .then((tasks) => {
-      res.status(200).json(R.pluck('dataValues')(tasks));
-    });
-});
-
-router.post('/', (req, res, next) => {
-  // check that all required parameters are provided
-  // `description` allowed to be empty, `score` and `rank` allowed to be 0
-  if (!(req.body.name && req.body.description !== undefined && req.body.status && req.body.score !== undefined && req.body.rank !== undefined)) {
-    return res.status(400).json(msg.project[400]);
-  }
-
-  // check that score and rank are valid
-  if (!isValidScore(req.body.score) || !isValidRank(req.body.rank)) {
-    return res.status(400).json(msg.task[400]);
-  }
-
-  Promise.all([
-    new Promise((resolve) => { // check if user is valid
-      if (!req.body.userId) { // if userId wasn't provided, no need to check
-        return resolve(true);
-      }
-      req.project.hasUser(req.body.userId).then(resolve);
-    }),
-    new Promise((resolve) => { // check if sprint is valid
-      if (!req.body.sprintId) { // if sprintId wasn't provided, no need to check
-        return resolve(true);
-      }
-      req.project.hasSprint(req.body.sprintId).then(resolve);
-    })
-  ])
-  .then((results) => {
-    if (!results[0]) { // user
-      return res.status(404).json(msg.task[404]('User'));
-    }
-
-    if (!results[1]) { // sprint
-      return res.status(404).json(msg.task[404]('Sprint'));
-    }
-
-    req.project.createTask({
-      name: req.body.name,
-      description: req.body.description,
-      status: req.body.status,
-      score: req.body.score,
-      rank: req.body.rank,
-      projectId: req.project.id,
-      userId: req.body.userId || null, // optional parameter
-      sprintId: req.body.sprintId || null // optional parameter
-    })
-    .then((task) => {
-      res.status(201).json(R.prop('dataValues')(task));
-    });
-  });
 });
 
 router.all('/', (req, res, next) => {

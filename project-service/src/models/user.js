@@ -1,12 +1,25 @@
 export default (sequelize, DataTypes) => {
   let User = sequelize.define('User', {
     auth0Id: { // unique id (user_id from decoded JWT) provided by Auth0
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
     },
     email: { // email from decoded JWT provided by Auth0
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true,
+      validate: {
+        isEmail: true,
+        notEmpty: true
+      }
     },
-    username: {
+    username: { // nickname from Auth0
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true
+      }
+    },
+    picture: { // picture url from Auth0
       type: DataTypes.STRING
     }
   }, {
