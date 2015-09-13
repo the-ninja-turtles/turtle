@@ -16,7 +16,7 @@ The project service will also expose internal API to allow the **invitation syst
       + [Modify](#external-projects-modify)
       + [Delete](#external-projects-delete)
     - `/projects/:projectId/positions`
-      + [Position](#external-projects-position)
+      + [Positions](#external-projects-positions)
   - [Sprints](#external-sprints)
     - `/projects/:projectId/startsprint`
       + [Start](#external-sprint-start)
@@ -29,7 +29,7 @@ The project service will also expose internal API to allow the **invitation syst
       + [Modify](#external-sprints-modify)
       + [Delete](#external-sprints-delete)
     - `/projects/:projectId/sprints/:sprintId/positions`
-      + [Position](#external-projects-position)
+      + [Positions](#external-sprints-positions)
     - `/projects/:projectId/sprints/:sprintId/assigntasks`
       + [Bulk Add/Remove Tasks](#external-projects-tasks)
   - [Tasks](#external-tasks)
@@ -43,7 +43,7 @@ The project service will also expose internal API to allow the **invitation syst
 
 - [Internal API](#internal-api)
   - [Projects](#internal-projects)
-    + `/projects/:projectId/users`
+    + `/projects/:projectId/assignusers`
       + [Add/Remove User](#internal-projects-users)
 
 <a name="external-api"/>
@@ -102,9 +102,11 @@ Get all existing projects for a user (as identified through JWT).
 <a name="external-projects-create"/>
 ### Create Project for User
 
-Create a new project for a user (as identified through JWT). Valid emails that correspond to existing users will be sent to the invitation service for handling.
+Create a new project for a user (as identified through JWT). Valid emails that correspond to existing users will be sent to the invitation service for handling. The `emails` array can be empty if no additional users are to be invited.
 
 The `length` is the duration of each sprint, defaults to 7 days.
+
+A sprint is created by default with `status = 0` (planning). The sprint will have an empty name. Use the [Modify Sprint](#external-sprints-modify) end point to modify the name.
 
 - **URL**
   + `/projects`
@@ -328,10 +330,10 @@ Delete an existing project. **All sprints and tasks for the project are also del
   * Code: `401 UNAUTHORIZED`
   * Content: `{ "error": "You are unauthorized to make this request." }`
 
-<a name="external-projects-position">
+<a name="external-projects-positions">
 ### Reorder Backlog Tasks
 
-Reorder the tasks in the project backlog by attaching an array of task IDs that represent the tasks' relative ranking. Task IDs that do not correspond to tasks in the project backlog are ignored.
+Reorder the tasks in the project backlog by attaching an array of task IDs that represent the tasks' relative ranking. All tasks in the backlog need to be present in the `positions` array. Task IDs that do not correspond to tasks in the project backlog are ignored.
 
 - **URL**
   + `/projects/:projectId/positions`
@@ -412,7 +414,7 @@ Starts the sprint that is currently with `status = 0` (planning) and sets `statu
 This will also automatically create a new sprint with `status = 0` (planning).
 
 - **URL**
-  + `/projects/:projectId/startsprint`
+  + `/projects/:projectId/sprints/start`
 - **Method**
   + `POST`
 - **Query Params**
@@ -440,10 +442,10 @@ This will also automatically create a new sprint with `status = 0` (planning).
 <a name="external-sprint-end"/>
 ### End Current Sprint of Project
 
-Ends the current sprint with `status = 1` (ongoing). There must be an ongoing sprint for a success response. The `endDate` of the sprint is automatically set to the date that this method is called.
+Ends the current sprint with `status = 1` (ongoing). There must be an ongoing sprint for a success response. The `endDate` of the sprint is automatically set to the date that this method is called. Tasks that are not yet completed will be moved to the project backlog.
 
 - **URL**
-  + `/projects/:projectId/endsprint`
+  + `/projects/:projectId/sprints/end`
 - **Method**
   + `POST`
 - **Query Params**
@@ -485,21 +487,22 @@ Get all existing sprints for a project. There will _always_ be one sprint with `
   + Content:
 
 ```json
-[
-  {
+{
+  "currentSprint": {
     "id": 1,
     "name": "mvp",
     "status": 1,
     "startDate": "2004-10-19 10:23:54+02",
     "endDate": null
-  }, {
+  },
+  "nextSprint": {
     "id": 2,
     "name": "profit",
     "status": 0,
     "startDate": null,
     "endDate": null
   }
-]
+}
 ```
 
 - **Error Response**
@@ -580,7 +583,7 @@ Get a sprint's tasks, including basic user information. Tasks are ordered by the
 <a name="external-sprints-modify"/>
 ### Modify Sprint
 
-Edit an existing sprint.
+Edit an existing sprint. The name cannot be empty.
 
 - **URL**
   + `/projects/:projectId/sprints/:sprintId`
@@ -627,32 +630,7 @@ Edit an existing sprint.
   * Code: `401 UNAUTHORIZED`
   * Content: `{ "error": "You are unauthorized to make this request." }`
 
-<a name="external-sprints-delete"/>
-### Delete Sprint
-
-Delete an existing sprint. tasks that belong to this sprint are **not** deleted.
-
-- **URL**
-  + `/projects/:projectId/sprints/:sprintId`
-- **Method**
-  + `DELETE`
-- **Query Params**
-  + None
-- **Data Params**
-  + None
-- **Success Response**
-  + Code: `204 NO CONTENT`
-  + Content: None
-- **Error Response**
-  * Code: `404 NOT FOUND`
-  * Content: `{ "error": "Sprint doesn't exist." }`
-
-  OR
-
-  * Code: `401 UNAUTHORIZED`
-  * Content: `{ "error": "You are unauthorized to make this request." }`
-
-<a name="external-sprints-position">
+<a name="external-sprints-positions">
 ### Reorder Tasks in a Sprint
 
 Reorder the tasks in the sprintboard by attaching an array of task IDs that represents the tasks' relative ranking. Task IDs that do not correspond to tasks in this sprint are ignored.
@@ -770,7 +748,7 @@ If there is no sprint with `status = 1` (ongoing), `currentSprint` will not be i
 
 ```json
 {
-  "currentSprint": [
+  "current": [
     {
       "id": 6,
       "name": "bacon",
@@ -789,7 +767,7 @@ If there is no sprint with `status = 1` (ongoing), `currentSprint` will not be i
       "sprintId": 2
     }
   ],
-  "nextSprint": [
+  "next": [
     {
       "id": 8,
       "name": "lorem",
@@ -809,17 +787,6 @@ If there is no sprint with `status = 1` (ongoing), `currentSprint` will not be i
       "score": 10,
       "userId": null,
       "sprintId": null
-    }
-  ],
-  "completed": [
-    {
-      "id": 2,
-      "name": "do another task",
-      "description": "some description",
-      "status": 3,
-      "score": 30,
-      "userId": 3,
-      "sprintId": 1
     }
   ]
 }
@@ -850,9 +817,9 @@ By default, new tasks are assigned `status = 0` and are ordered below existing t
 - **Data Params**
   + Required
     * `name=[string]`
-    * `description=[string]`
     * `score=[integer]`
   + Optional
+    * `description=[string]`
     * `userId=[number]`
     * `sprintId=[number]`
 - **Success Response**
@@ -952,7 +919,7 @@ Get a task's user and sprint information.
 <a name="external-tasks-modify"/>
 ### Modify Task
 
-Edit an existing task. The `status` must be a number 0, 1, 2 or 3.
+Edit an existing task. The `status` must be a number 0, 1, 2 or 3. To assign a task to a sprint or send it back to the backlog, use `/projects/:projectId/sprints/:sprintId/assigntasks` endpoint.
 
 - **URL**
   + `/projects/:projectId/tasks/:taskId`
@@ -967,7 +934,6 @@ Edit an existing task. The `status` must be a number 0, 1, 2 or 3.
     * `status=[number]`
     * `score=[number]`
     * `userId=[number]`
-    * `sprintId=[number]`
 - **Success Response**
   + Code: `200 OK`
   + Content:
@@ -1056,7 +1022,7 @@ Delete an existing task.
 Add or remove users to/from a project via users' id.
 
 - **URL**
-  + `/projects/:projectId/users`
+  + `/projects/:projectId/assignusers`
 - **Method**
   + `POST`
 - **Query Params**

@@ -49,6 +49,51 @@ export const validation = (req, res, next, projectId) => {
 //   therefore never triggers `validation` callback
 router.param('projectId', validation);
 
+// Fetch/Create User's Projects
+/* === /projects === */
+
+router.get('/', (req, res, next) => {
+  req.user.model.getProjects()
+    .then((projects) => {
+      res.status(200).json(R.pluck('dataValues')(projects));
+    });
+});
+
+router.post('/', (req, res, next) => {
+  req.body.emails = req.body.emails || [];
+  if (!(req.body.name && Array.isArray(req.body.emails))) {
+    return res.status(400).json(msg.projects[400]);
+  }
+
+  Promise.all(req.body.emails.map((email) => {
+    return new Promise((resolve) => {
+      models.User.findOne({where: {email: email}}).then(resolve);
+    });
+  }))
+  .then((users) => {
+    // TODO: send list of valid users to invitation system
+    R.pluck('id')(R.filter(R.identity)(users)); // valid users
+
+    // TODO: handle invalid emails
+    req.body.emails.filter((email, i) => {
+      return !users[i];
+    });
+  });
+
+  let params = {};
+  params.name = req.body.name;
+  if (req.body.length) {
+    params.length = req.body.length;
+  }
+
+  req.user.model.createProject(params)
+    .then((project) => {
+      project.createSprint().then(() => {
+        res.status(201).json(project.dataValues);
+      });
+    });
+});
+
 // Fetch/Modify/Delete Project
 /* === /projects/:projectId === */
 
