@@ -2,7 +2,7 @@ import request from 'supertest-as-promised';
 import test from 'blue-tape';
 import R from 'ramda';
 import {authorization, profile} from '../../tests/fakeauth';
-import { projects as testProjects, sprints as testSprints, tasks as testTasks } from '../../tests/fixtures';
+import {projects as testProjects, sprints as testSprints, tasks as testTasks} from '../../tests/fixtures';
 import app from '../src/app';
 import models from '../src/models';
 
@@ -11,9 +11,10 @@ const after = test;
 
 let projectId;
 let sprintIds;
+let taskIds;
 
 // sync database and create fixtures
-before('Before', (t) => {
+before('Before - Sprint Spec', (t) => {
   let currentProject;
 
   return models.sequelize.sync({
@@ -33,8 +34,8 @@ before('Before', (t) => {
     currentProject = project;
     projectId = project.id;
     return Promise.all([
-      project.createSprint(testSprints[0]),
-      project.createSprint(testSprints[1])
+      project.createSprint(testSprints[0]), // ongoing
+      project.createSprint(testSprints[1]) // planning
     ]);
   })
   .then((sprints) => { // store sprint ids add sample tasks
@@ -46,37 +47,33 @@ before('Before', (t) => {
     ]);
   })
   .then((tasks) => {
-    return currentProject.addTasks(tasks);
+    taskIds = R.pluck('id')(tasks);
+    return Promise.all([
+      tasks[0].update({order: 1}),
+      tasks[1].update({order: 1}),
+      tasks[2].update({order: 2}),
+      currentProject.addTasks(tasks)
+    ]);
   });
 });
 
 test("GET /projects/:projectId/sprints should respond with project's sprints", (t) => {
   return request(app)
-    .get('/projects/'+projectId+'/sprints')
+    .get(`/projects/${projectId}/sprints`)
     .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
+      let sprints = res.body;
       t.pass('200 OK');
-      t.assert(Array.isArray(res.body), 'Response should be an array');
-      t.equal(res.body[0].name, testSprints[0].name, 'Sprint name should match');
-    });
-});
-
-test('POST /projects/:projectId/sprints should create a new sprint', (t) => {
-  return request(app)
-    .post('/projects/'+projectId+'/sprints')
-    .set('Authorization', authorization(0))
-    .send(testSprints[1])
-    .expect(201)
-    .then((res) => {
-      t.pass('201 CREATED');
-      t.equal(res.body.name, testSprints[1].name, 'Sprint name should match');
+      t.assert(sprints.currentSprint, 'Response should have the current sprint if there is one');
+      t.assert(sprints.nextSprint, 'Response should have the next sprint');
+      t.equal(sprints.currentSprint.name, testSprints[0].name, 'Sprint name should match');
     });
 });
 
 test('GET /projects/:projectId/sprints/:sprintId should respond with 404 when sprintId is invalid', (t) => {
   return request(app)
-    .get('/projects/'+projectId+'/sprints/12345')
+    .get(`/projects/${projectId}/sprints/12345`)
     .set('Authorization', authorization(0))
     .expect(404)
     .then((res) => {
@@ -86,32 +83,21 @@ test('GET /projects/:projectId/sprints/:sprintId should respond with 404 when sp
 
 test('GET /projects/:projectId/sprints/:sprintId should respond with sprint details', (t) => {
   return request(app)
-    .get('/projects/'+projectId+'/sprints/'+sprintIds[1])
+    .get(`/projects/${projectId}/sprints/${sprintIds[1]}`)
     .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
+      let sprint = res.body;
       t.pass('200 OK');
-      t.assert(Array.isArray(res.body.tasks), 'Sprint should have a tasks array');
-
-      let ranks = R.pluck('rank')(res.body.tasks);
-      let ascending = true;
-      ranks.reduce((prev, curr) => {
-        ascending = ascending && curr >= prev;
-        return curr;
-      });
-
-      t.assert(ascending, 'Tasks should be in ascending order by rank');
+      t.assert(Array.isArray(sprint.tasks), 'Sprint should have a tasks array');
     });
 });
 
 test('PUT /projects/:projectId/sprints/:sprintId should modify sprint', (t) => {
-  let params = {
-    name: 'the new name',
-    status: 'Done'
-  };
+  let params = {name: 'the new name'};
 
   return request(app)
-    .put('/projects/'+projectId+'/sprints/'+sprintIds[0])
+    .put(`/projects/${projectId}/sprints/${sprintIds[0]}`)
     .set('Authorization', authorization(0))
     .send(params)
     .expect(200)
@@ -119,113 +105,154 @@ test('PUT /projects/:projectId/sprints/:sprintId should modify sprint', (t) => {
       let sprint = res.body;
       t.pass('200 OK');
       t.equal(sprint.name, params.name, 'Sprint name should be updated');
-      t.equal(sprint.status, params.status, 'Sprint status should be updated');
       t.ok(sprint.updatedAt, 'Sprint should have updatedAt property');
     });
 });
 
-test('DELETE /projects/:projectId/sprints/:sprintId should delete a sprint without deleting tasks', (t) => {
-  let numTasks;
-
-  let params = {
-    where: {id: projectId},
-    include: [{
-      model: models.Task,
-      as: 'tasks'
-    }, {
-      model: models.Sprint,
-      as: 'sprints'
-    }]
-  };
-
-  return models.Project.findOne(params)
-    .then((project) => { // track the starting number of tasks in project; request to delete sprint
-      numTasks = project.tasks.length;
-      return request(app)
-        .delete('/projects/'+projectId+'/sprints/'+sprintIds[1])
-        .set('Authorization', authorization(0))
-        .expect(204);
-    })
-    .then((res) => { // confirm 204; request the deleted sprint and expect 404
-      t.pass('204 NO CONTENT');
-      return request(app)
-        .get('/projects/'+projectId+'/sprints/'+sprintIds[1])
-        .set('Authorization', authorization(0))
-        .expect(404);
-    })
-    .then((res) => { // confirm 404; request project details
-      t.pass('404 NOT FOUND - sprint should no longer exist');
-      return models.Project.findOne(params);
-    })
-    .then((project) => { // confirm project tasks have not been deleted
-      t.equal(project.tasks.length, numTasks, 'The number of tasks in project should remain unchanged');
+test('POST /projects/:projectId/sprints/start should respond with 400 if there is already an ongoing sprint', (t) => {
+  return request(app)
+    .post(`/projects/${projectId}/sprints/start`)
+    .set('Authorization', authorization(0))
+    .expect(400)
+    .then((res) => {
+      t.pass('400 BAD REQUEST');
     });
 });
 
-test('POST /projects/:projectId/sprints/:sprintId/assigntasks should add/remove tasks to/from sprint', (t) => {
-  let taskIds = [];
-  let numTasks;
-
-  let projectParams = {
-    where: {
-      id: projectId
-    }
-  };
-
-  let sprintParams = {
-    where: {
-      id: sprintIds[0]
-    },
-    include: [ // include tasks where the id is contained in the `taskIds` array
-      {
-        model: models.Task,
-        as: 'tasks'
-      }
-    ]
-  };
-
-  return models.Project.findOne(projectParams)
-    .then((project) => { // add tasks to the project (not associated with any sprint)
+test('POST /projects/:projectId/sprints/end should end the current ongoing sprint', (t) => {
+  return request(app)
+    .post(`/projects/${projectId}/sprints/end`)
+    .set('Authorization', authorization(0))
+    .expect(204)
+    .then((res) => {
+      t.pass('204 NO CONTENT');
       return Promise.all([
-        project.createTask(testTasks[3]),
-        project.createTask(testTasks[4]),
-        project.createTask(testTasks[5])
+        models.Sprint.findOne({where: {id: sprintIds[0]}}),
+        models.Task.findOne({where: {id: taskIds[0]}})
       ]);
     })
-    .then((tasks) => { // fetch sprint
-      Array.push.apply(taskIds, R.pluck('id')(tasks));
-      return models.Sprint.findOne(sprintParams);
-    })
-    .then((sprint) => { // track starting number of tasks in sprint; send request to add tasks
-      numTasks = sprint.tasks.length;
-      return request(app)
-        .post('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/assigntasks')
-        .set('Authorization', authorization(0))
-        .send({add: taskIds})
-        .expect(204);
-    })
-    .then((res) => { // confirm 204
-      t.pass('204 NO CONTENT - tasks added to sprint');
-      return models.Sprint.findOne(sprintParams);
-    })
-    .then((sprint) => { // confirm # tasks in sprint, and send request to remove tasks
-      t.equal(sprint.tasks.length, numTasks + taskIds.length, 'Tasks should be assigned to sprint');
-      return request(app)
-        .post('/projects/'+projectId+'/sprints/'+sprintIds[0]+'/assigntasks')
-        .set('Authorization', authorization(0))
-        .send({remove: taskIds})
-        .expect(204);
-    })
-    .then((res) => { // confirm 204
-      t.pass('204 NO CONTENT - takss removed from sprint');
-      return models.Sprint.findOne(sprintParams);
-    })
-    .then((sprint) => { // confirm # tasks in sprint
-      t.equal(sprint.tasks.length, numTasks, 'Tasks should be removed from sprint');
+    .then((results) => {
+      let sprint = results[0];
+      let task = results[1];
+
+      t.equal(sprint.status, 2, 'The prior ongoing sprint should now have status = 2 (complete)');
+      t.equal(task.sprintId, null, 'Unfinished tasks should be moved to the backlog');
     });
 });
 
-after('After', (t) => {
+test('POST /projects/:projectId/sprints/end should respond with 400 if there is no ongoing sprint', (t) => {
+  return request(app)
+    .post(`/projects/${projectId}/sprints/end`)
+    .set('Authorization', authorization(0))
+    .expect(400)
+    .then((res) => {
+      t.pass('400 BAD REQUEST');
+    });
+});
+
+test('POST /projects/:projectId/sprints/start should start the next sprint', (t) => {
+  return request(app)
+    .post(`/projects/${projectId}/sprints/start`)
+    .set('Authorization', authorization(0))
+    .expect(204)
+    .then((res) => {
+      t.pass('204 NO CONTENT');
+      return models.Sprint.findOne({where: {id: sprintIds[1]}});
+    })
+    .then((sprint) => {
+      t.equal(sprint.status, 1, 'The prior planning sprint should now have status = 1 (ongoing)');
+    });
+});
+
+test('POST /projects/:projectId/sprints/:sprintId/positions should reorder tasks', (t) => {
+  let order;
+
+  // find all tasks in this sprint, send a request to reverse the order
+  return models.Task.findAll({where: {sprintId: sprintIds[1]}})
+    .then((tasks) => {
+      order = R.reverse(R.pluck('id')(tasks));
+      return request(app)
+        .post(`/projects/${projectId}/sprints/${sprintIds[1]}/positions`)
+        .set('Authorization', authorization(0))
+        .send({positions: order})
+        .expect(200);
+    })
+    .then((res) => {
+      let tasks = res.body;
+      t.pass('200 OK');
+      t.assert(R.equals(R.pluck('id')(tasks), order), 'Tasks should be reordered');
+    });
+});
+
+test('POST /projects/:projectId/sprints/:sprintId/assigntasks should add tasks to sprint', (t) => {
+  let testIds;
+  let numTasks;
+
+  let projectParams = {where: {id: projectId}};
+  let sprintParams = {where: {id: sprintIds[0]}, include: [{model: models.Task, as: 'tasks'}]};
+
+  return Promise.all([
+    models.Project.findOne(projectParams),
+    models.Sprint.findOne(sprintParams)
+  ])
+  .then((results) => {
+    let project = results[0];
+    let sprint = results[1];
+    numTasks = sprint.tasks.length; // track initial number of tasks
+
+    return Promise.all([ // create additional tasks in backlog
+      project.createTask(testTasks[3]),
+      project.createTask(testTasks[4])
+    ]);
+  })
+  // request to add backlog tasks to sprint
+  .then((tasks) => {
+    testIds = R.pluck('id')(tasks);
+    return request(app)
+      .post(`/projects/${projectId}/sprints/${sprintIds[0]}/assigntasks`)
+      .set('Authorization', authorization(0))
+      .send({add: R.concat(testIds, [taskIds[2]])}) // include a task that belongs to another sprint
+      .expect(204);
+  })
+  .then((res) => {
+    t.pass('204 NO CONTENT - tasks added to sprint');
+    return models.Sprint.findOne(sprintParams);
+  })
+  .then((sprint) => {
+    t.equal(sprint.tasks.length, numTasks + testIds.length, 'Tasks should be assigned to sprint');
+    t.assert(!R.find(R.propEq('id', taskIds[2]))(sprint.tasks), 'Invalid task should be ignored');
+    t.assert(R.equals(R.takeLast(testIds.length, R.pluck('id')(sprint.tasks)), testIds), 'Tasks should be in order');
+
+    // request removal of tasks from sprint
+    return request(app)
+      .post(`/projects/${projectId}/sprints/${sprintIds[0]}/assigntasks`)
+      .set('Authorization', authorization(0))
+      .send({remove: R.concat(R.reverse(testIds), [taskIds[2]])}) // include a task that belongs to another sprint
+      .expect(204);
+  })
+  .then((res) => {
+    t.pass('204 NO CONTENT - tasks removed from sprint');
+    return Promise.all([
+      models.Sprint.findOne(sprintParams),
+      models.Task.findOne({where: {id: taskIds[2]}}),
+      models.Task.findAll({
+        where: {projectId: projectId, sprintId: null},
+        order: [['order', 'ASC']]
+      })
+    ]);
+  })
+  .then((results) => {
+    let sprint = results[0];
+    let invalidTask = results[1];
+    let backlogTasks = results[2];
+
+    t.equal(sprint.tasks.length, numTasks, 'Tasks should be removed from sprint');
+    t.equal(invalidTask.sprintId, sprintIds[1], 'Invalid task should still be associated with its sprint');
+    t.assert(R.equals(R.takeLast(testIds.length, R.pluck('id')(backlogTasks)), R.reverse(testIds)), 'Tasks moved to backlog should be in order');
+  });
+});
+
+after('After - Sprint Spec', (t) => {
   return models.sequelize.sync({
     force: true
   });

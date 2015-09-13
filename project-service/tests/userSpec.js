@@ -7,7 +7,7 @@ import models from '../src/models';
 const before = test;
 const after = test;
 
-before('Before', (t) => {
+before('Before - User Spec', (t) => {
   // sync returns a promise
   return models.sequelize.sync({
     force: true
@@ -16,7 +16,8 @@ before('Before', (t) => {
     return models.User.create({
       auth0Id: profile(0).user_id,
       email: profile(0).email,
-      username: profile(0).nickname
+      username: profile(0).nickname,
+      picture: ''
     });
   });
 });
@@ -68,7 +69,7 @@ test('Public API should not create another user for the same Authorization heade
     });
 });
 
-after('After', (t) => {
+after('After - User Spec', (t) => {
   return models.sequelize.sync({
     force: true
   });

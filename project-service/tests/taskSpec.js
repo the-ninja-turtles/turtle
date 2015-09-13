@@ -15,7 +15,7 @@ let sprintIds;
 let taskIds;
 
 // sync database and create fixtures
-before('Before', (t) => {
+before('Before - Task Spec', (t) => {
   let currentProject;
 
   return models.sequelize.sync({
@@ -36,8 +36,8 @@ before('Before', (t) => {
     currentProject = project;
     projectId = project.id;
     return Promise.all([
-      project.createSprint(testSprints[0]),
-      project.createSprint(testSprints[1])
+      project.createSprint(testSprints[0]), // ongoing
+      project.createSprint(testSprints[1]) // planning
     ]);
   })
   .then((sprints) => { // store sprint ids add sample tasks
@@ -48,44 +48,49 @@ before('Before', (t) => {
       sprints[1].createTask(testTasks[2])
     ]);
   })
-  .then((tasks) => { // associate the tasks with the current project
+  .then((tasks) => { // associate with project, user, and specify order
     taskIds = R.pluck('id')(tasks);
-    tasks[0].userId = userId;
     return Promise.all([
       currentProject.addTasks(taskIds),
-      tasks[0].save()
+      tasks[0].update({order: 1, userId: userId}),
+      tasks[1].update({order: 3}),
+      tasks[2].update({order: 2})
     ]);
   });
 });
 
 test("GET /project/:projectId/tasks should respond with project's tasks", (t) => {
   return request(app)
-    .get('/projects/'+projectId+'/tasks')
+    .get(`/projects/${projectId}/tasks`)
     .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
+      let tasks = res.body;
       t.pass('200 OK');
-      t.assert(Array.isArray(res.body), 'Response should be an array');
 
-      let ascending = true;
-      res.body.reduce((prev, curr) => {
-        ascending = ascending && curr >= prev;
-        return curr;
-      });
+      t.assert(tasks.current, 'Response should have a current array');
+      t.assert(tasks.next, 'Response should have next array');
+      t.assert(tasks.backlog, 'Response should have backlog array');
 
-      t.assert(ascending, 'Tasks should be in ascending order by rank');
+      t.equal(tasks.current.length, 1, 'Current sprint should have one task');
+      t.equal(tasks.next.length, 2, 'Next sprint should have two tasks');
+      t.equal(tasks.backlog.length, 0, 'Backlog should be empty');
+
+      t.assert(R.equals(R.pluck('id')(tasks.next), [3, 2]), 'The tasks should be in order');
     });
 });
 
 test('POST /project/:projectId/tasks should create a new task', (t) => {
   return request(app)
-    .post('/projects/'+projectId+'/tasks')
+    .post(`/projects/${projectId}/tasks`)
     .set('Authorization', authorization(0))
     .send(testTasks[3])
     .expect(201)
     .then((res) => {
+      let task = res.body;
       t.pass('201 CREATED');
-      t.equal(res.body.name, testTasks[3].name, 'Task name should match');
+      t.equal(task.name, testTasks[3].name, 'Task name should match');
+      t.equal(task.order, 1, 'Task should haver order = 1 (first task added in backlog)');
     });
 });
 
@@ -95,13 +100,15 @@ test('POST /project/:projectId/tasks should accept optional userId and sprintId 
   params.sprintId = sprintIds[1];
 
   return request(app)
-    .post('/projects/'+projectId+'/tasks')
+    .post(`/projects/${projectId}/tasks`)
     .set('Authorization', authorization(0))
     .send(params)
     .expect(201)
     .then((res) => {
-      t.equal(res.body.userId, params.userId, 'User ID should match');
-      t.equal(res.body.sprintId, params.sprintId, 'Sprint ID should match');
+      let task = res.body;
+      t.equal(task.userId, params.userId, 'User ID should match');
+      t.equal(task.sprintId, params.sprintId, 'Sprint ID should match');
+      t.equal(task.order, 4, 'Task should have order = 4');
     });
 });
 
@@ -111,7 +118,7 @@ test('POST /project/:projectId/tasks should return 404 for invalid userId or spr
   params.sprintId = -99;
 
   return request(app)
-    .post('/projects/'+projectId+'/tasks')
+    .post(`/projects/${projectId}/tasks`)
     .set('Authorization', authorization(0))
     .send(params)
     .expect(404)
@@ -122,7 +129,7 @@ test('POST /project/:projectId/tasks should return 404 for invalid userId or spr
 
 test('GET /project/:projectId/tasks/:taskId should respond with 404 when taskId is invalid', (t) => {
   return request(app)
-    .get('/projects/'+projectId+'/tasks/1337')
+    .get(`/projects/${projectId}/tasks/1337`)
     .set('Authorization', authorization(0))
     .expect(404)
     .then((res) => {
@@ -132,15 +139,16 @@ test('GET /project/:projectId/tasks/:taskId should respond with 404 when taskId 
 
 test('GET /project/:projectId/tasks/:taskId should respond with task details', (t) => {
   return request(app)
-    .get('/projects/'+projectId+'/tasks/'+taskIds[0])
+    .get(`/projects/${projectId}/tasks/${taskIds[0]}`)
     .set('Authorization', authorization(0))
     .expect(200)
     .then((res) => {
+      let task = res.body;
       t.pass('200 OK');
-      t.assert(res.body.user, 'Task should have a user property');
-      t.assert(res.body.sprint, 'Task should have a sprint property');
-      t.equal(res.body.user.id, userId, 'Task user ID should match');
-      t.equal(res.body.sprint.id, sprintIds[0], 'Task sprint ID should match');
+      t.assert(task.user, 'Task should have a user property');
+      t.assert(task.sprint, 'Task should have a sprint property');
+      t.equal(task.user.id, userId, 'Task user ID should match');
+      t.equal(task.sprint.id, sprintIds[0], 'Task sprint ID should match');
     });
 });
 
@@ -148,39 +156,33 @@ test('PUT /project/:projectId/tasks/:taskId should modify task', (t) => {
   let params = {
     name: 'boo',
     description: 'round and cuddly ghost',
-    status: 'Unbreakable',
+    status: 3,
     score: 50,
-    rank: 0,
-    userId: 1,
-    sprintId: 1
+    userId: 1
   };
 
   return request(app)
-    .put('/projects/'+projectId+'/tasks/'+taskIds[0])
+    .put(`/projects/${projectId}/tasks/${taskIds[0]}`)
     .set('Authorization', authorization(0))
     .send(params)
     .expect(200)
     .then((res) => {
+      let task = res.body;
       t.pass('200 OK');
 
       let match = true;
       for (let key in params) {
-        if (params[key] !== res.body[key]) {
-          match = false;
-        }
+        match = match && params[key] === task[key];
       }
+
       t.assert(match, 'Parameters should match');
     });
 });
 
 test('PUT /project/:projectId/tasks/:taskId should respond with 404 if userId or sprintId is invalid', (t) => {
-  let params = {
-    userId: 555,
-    sprintId: 900
-  };
-
+  let params = {userId: 555, sprintId: 900};
   return request(app)
-    .put('/projects/'+projectId+'/tasks/'+taskIds[0])
+    .put(`/projects/${projectId}/tasks/${taskIds[0]}`)
     .set('Authorization', authorization(0))
     .send(params)
     .expect(404)
@@ -191,22 +193,24 @@ test('PUT /project/:projectId/tasks/:taskId should respond with 404 if userId or
 
 test('DELETE /project/:projectId/tasks/:taskId should delete a task and respond with 204', (t) => {
   return request(app)
-    .delete('/projects/'+projectId+'/tasks/'+taskIds[0])
+    .delete(`/projects/${projectId}/tasks/${taskIds[0]}`)
     .set('Authorization', authorization(0))
     .expect(204)
     .then((res) => {
       t.pass(204);
-      return request(app)
-        .get('/projects/'+projectId+'/tasks/'+taskIds[0])
-        .set('Authorization', authorization(0))
-        .expect(404);
+      return models.Task.findOne({
+        where: {
+          id: taskIds[0],
+          projectId: projectId
+        }
+      });
     })
-    .then((res) => {
-      t.pass('404 NOT FOUND - task should no longer exist');
+    .then((task) => {
+      t.notok(task, 'Task should no longer exist');
     });
 });
 
-after('After', (t) => {
+after('After - Task Spec', (t) => {
   return models.sequelize.sync({
     force: true
   });

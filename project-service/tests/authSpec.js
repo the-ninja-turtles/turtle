@@ -5,8 +5,9 @@ import app from '../src/app';
 import models from '../src/models';
 
 const before = test;
+const after = test;
 
-before('Before', (t) => {
+before('Before - Auth Spec', (t) => {
   // sync returns a promise
   return models.sequelize.sync();
 });
@@ -28,4 +29,10 @@ test('Public API should respond with 404 when no route is found', (t) => {
     .then((res) => {
       t.pass('404 NOT FOUND'); // t.equal(404, res.status);
     });
+});
+
+after('After - Auth Spec', (t) => {
+  return models.sequelize.sync({
+    force: true
+  });
 });
