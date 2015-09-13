@@ -16,6 +16,7 @@ let SprintBoard = React.createClass({
 
   getInitialState() {
     return {
+      id: parseInt(this.props.params.id),
       sprint: {
         columns: [],
         tasksByColumn: {}
@@ -25,7 +26,7 @@ let SprintBoard = React.createClass({
 
   componentDidMount() {
     this.listenTo(SprintStore, this.onStoreUpdate);
-    SprintActions.fetchSprint();
+    SprintActions.fetchSprint(this.state.id);
   },
 
   onStoreUpdate(sprint) {

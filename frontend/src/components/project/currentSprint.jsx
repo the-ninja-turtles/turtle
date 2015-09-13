@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import React from 'react';
-import Reflux from 'reflux';
 import {Navigation} from 'react-router';
 import {ProgressBar} from 'react-bootstrap';
+import {ProjectActions} from '../../actions/actions.js';
 
 let CurrentSprint = React.createClass({
 
-  mixins: [Navigation, Reflux.ListenerMixin],
+  mixins: [Navigation],
 
   openSprintboard() {
     this.transitionTo('sprint', {id: this.props.project});
@@ -41,13 +41,13 @@ let CurrentSprint = React.createClass({
   },
 
   days() {
-    let start = Date.parse(this.props.startDate);
+    let start = Date.parse(this.props.sprint.startDate);
     let diff = Date.now() - start;
     return Math.floor(diff / (24 * 3600 * 1000));
   },
 
   endSprint() {
-
+    ProjectActions.endSprint();
   },
 
   render() {
@@ -78,7 +78,7 @@ let CurrentSprint = React.createClass({
         </div>
         <div className='btn-container right'>
           <button className='btn block primary' onClick={this.openSprintboard}>Open sprintboard</button>
-          <button className='btn block danger' onClick={this.endSprint()}>End sprint</button>
+          <button className='btn block danger' onClick={this.endSprint}>End sprint</button>
         </div>
         <div className='clearfix'></div>
         <span className='days-left'>{message}</span>

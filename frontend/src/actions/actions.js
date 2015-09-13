@@ -6,10 +6,6 @@ export const DashboardActions = Reflux.createActions({
   'deleteProject': {asyncResult: true}
 });
 
-export const CreateTaskActions = Reflux.createActions({
-  'createTask': {asyncResult: true}
-});
-
 export const SprintActions = Reflux.createActions({
   'fetchSprint': {asyncResult: true},
   'updateTaskStatusLocally': {},
@@ -20,7 +16,9 @@ export const SprintActions = Reflux.createActions({
 
 export const ProjectActions = Reflux.createActions({
   'fetchProject': {asyncResult: true},
-  'moveTask': {}
+  'createTask': {asyncResult: true},
+  'startSprint': {asyncResult: true},
+  'endSprint': {asyncResult: true}
 });
 
 export const UserActions = Reflux.createActions({

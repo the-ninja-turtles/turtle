@@ -2,19 +2,17 @@ import React from 'react';
 import Reflux from 'reflux';
 import _ from 'lodash';
 import {Modal, Input} from 'react-bootstrap';
-import {CreateTaskActions} from '../../actions/actions';
+import {ProjectActions} from '../../actions/actions';
 import CreateTaskStore from '../../stores/createTaskStore';
 
 let CreateTask = React.createClass({
   mixins: [Reflux.ListenerMixin],
 
   propTypes: {
+    project: React.PropTypes.number.isRequired,
     showModal: React.PropTypes.bool.isRequired,
     close: React.PropTypes.func.isRequired,
-    projectId: React.PropTypes.number.isRequired,
     users: React.PropTypes.array.isRequired,
-    status: React.PropTypes.string.isRequired,
-    rank: React.PropTypes.number.isRequired,
     sprintId: React.PropTypes.number // defaults to null
   },
 
@@ -24,9 +22,7 @@ let CreateTask = React.createClass({
       taskProperties: {
         name: '',
         description: '',
-        status: this.props.status,
         score: 1,
-        rank: this.props.rank,
         userId: null,
         sprintId: this.props.sprintId || null
       }
@@ -44,7 +40,7 @@ let CreateTask = React.createClass({
   },
 
   createTask() {
-    CreateTaskActions.createTask(this.props.projectId, this.state.taskProperties);
+    ProjectActions.createTask(this.props.project, this.state.taskProperties);
   },
 
   handleChanges(e) {
@@ -127,11 +123,11 @@ let CreateTask = React.createClass({
 
         <Modal.Footer>
           <button
-            className='btn primary'
+            className='btn block primary'
             disabled={this.state.disableCreate}
             onClick={this.createTask}
           >
-            Create
+            Create task
           </button>
         </Modal.Footer>
       </Modal>

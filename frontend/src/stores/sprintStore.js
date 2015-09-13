@@ -1,19 +1,16 @@
 import _ from 'lodash';
 import Reflux from 'reflux';
 import {SprintActions, TaskActions} from '../actions/actions';
-// import {mockSprints} from '../../tests/utils/fake.js';
-// let mockSprint = mockSprints(1, 3)[0];
-import {MockSprint as mockSprint} from './mock-data';
-
+import projects from '../ajax/projects.js';
 
 const SprintStore = Reflux.createStore({
   listenables: [SprintActions, TaskActions],
 
   columns: ['To Do', 'In Progress', 'Review', 'Done'],
 
-  onFetchSprint() {
-    // simulating asynchronous nature of fetching a sprint
-    Promise.resolve(mockSprint).then((sprint) => {
+  onFetchSprint(id) {
+    projects.id(id).fetch().then((project) => {
+      let sprint = project.currentSprint;
       this.transformSprint(sprint);
       this.sprint = sprint; // cache sprint locally
       this.trigger(this.sprint);

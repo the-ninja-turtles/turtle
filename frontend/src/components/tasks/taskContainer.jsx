@@ -32,7 +32,6 @@ let collect = (connect, monitor) => {
 
 let TaskContainer = React.createClass({
   propTypes: {
-    projectId: React.PropTypes.number.isRequired,
     users: React.PropTypes.array.isRequired,
     tasks: React.PropTypes.array.isRequired
   },

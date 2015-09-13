@@ -1,13 +1,13 @@
+import _ from 'lodash';
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
-import {CreateTaskActions as Actions} from '../actions/actions';
+import {ProjectActions} from '../actions/actions';
 
 let CreateTaskStore = Reflux.createStore({
-  listenables: Actions,
+  listenables: ProjectActions,
 
   onCreateTask(id, properties) {
-    console.log(id, properties);
-    projects.id(id).tasks.create(properties).then((response) => {
+    projects.id(id).tasks.create(_.pick(properties, 'name', 'score', 'description')).then((response) => {
       this.trigger(response);
     });
   }

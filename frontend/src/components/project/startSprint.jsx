@@ -1,23 +1,21 @@
 import React from 'react';
-import Reflux from 'reflux';
 import {Navigation} from 'react-router';
+import {ProjectActions} from '../../actions/actions.js';
 
 let StartSprint = React.createClass({
 
-  mixins: [Navigation, Reflux.ListenerMixin],
-
-  openSprintboard() {
-    this.transitionTo('sprint', {id: this.props.project});
-  },
+  mixins: [Navigation],
 
   startSprint() {
-    this.openSprintboard();
+    ProjectActions.startSprint(() => {
+      this.transitionTo('sprint', {id: this.props.project});
+    });
   },
 
   render() {
     return (
       <div className='start-sprint'>
-        <button className='btn primary' onClick={this.startSprint}>Start sprint</button>
+        <button className='btn block primary' onClick={this.startSprint}>Start sprint</button>
       </div>
     );
   }

@@ -12,11 +12,25 @@ let Resource = function(name, singular, resources) {
   this.name = name;
   this.singular = singular;
   this.resources = resources || [];
-  this.actions = {};
+  this.collectionActions = {};
+  this.modelActions = {};
 };
 
-Resource.prototype.define = function(name, method) {
-  this.actions[name] = method;
+Resource.prototype.define = function(name, onModel, method) {
+  method = method || 'POST';
+  let fn = method;
+
+  if (_.isString(method)) {
+    fn = function(data) {
+      return request(method, this._path() + '/' + name, data);
+    };
+  }
+
+  if (onModel) {
+    this.modelActions[name] = fn;
+  } else {
+    this.collectionActions[name] = fn;
+  }
   return this;
 };
 
@@ -24,6 +38,10 @@ Resource.prototype.define = function(name, method) {
 let Collection = function(resource, parent) {
   this.resource = resource;
   this.parent = parent;
+
+  _.each(this.resource.collectionActions, (method, name) => {
+    this[name] = method.bind(this);
+  });
 };
 
 Collection.prototype.id = function(id) {
@@ -52,26 +70,19 @@ Collection.prototype.on = function(event, callback) {
 
 
 let Model = function(parent, id) {
-  let self = this;
   this.parent = parent;
   this.id = id;
 
   _.each(parent.resource.resources, (resource) => {
-    Object.defineProperty(self, resource.name, {
+    Object.defineProperty(this, resource.name, {
       get: () => {
-        return new Collection(resource, self);
+        return new Collection(resource, this);
       }
     });
   });
 
-  _.each(parent.resource.actions, (method, name) => {
-    if (_.isString(method)) {
-      self[name] = ((m, n, data) => {
-        request(m, self._path() + '/' + n, data);
-      }).bind(null, method, name);
-    } else {
-      self[name] = method;
-    }
+  _.each(parent.resource.modelActions, (method, name) => {
+    this[name] = method.bind(this);
   });
 };
 
@@ -101,11 +112,11 @@ Model.prototype.on = function(event, callback) {
 
 let tasks = new Resource('tasks', 'task');
 let sprints = new Resource('sprints', 'sprint')
-  .define('positions', 'POST')
-  .define('assigntasks', 'POST');
+  .define('start')
+  .define('end')
+  .define('positions', true)
+  .define('assigntasks', true);
 let projects = new Resource('projects', 'project', [tasks, sprints])
-  .define('startsprint', 'POST')
-  .define('endsprint', 'POST')
-  .define('positions', 'POST');
+  .define('positions');
 
 export default new Collection(projects);

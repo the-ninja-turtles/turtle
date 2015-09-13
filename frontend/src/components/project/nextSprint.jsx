@@ -1,11 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
-import Reflux from 'reflux';
 import TaskContainer from '../tasks/taskContainer.jsx';
 
 let NextSprint = React.createClass({
-
-  mixins: [Reflux.ListenerMixin],
 
   score() {
     return _.reduce(this.props.tasks, (acc, task) => {

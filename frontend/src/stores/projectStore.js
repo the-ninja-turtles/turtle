@@ -2,21 +2,40 @@ import _ from 'lodash';
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
 import {ProjectActions, TaskActions, TaskContainerActions} from '../actions/actions';
-import {MockProject as mockProject} from './mock-data';
 
 const ProjectStore = Reflux.createStore({
   listenables: [ProjectActions, TaskActions, TaskContainerActions],
 
   onFetchProject(id) {
-    // // simulating asynchronous nature of fetching a project
-    Promise.resolve(mockProject).then((project) => {
+    projects.id(id).fetch().then((project) => {
       this.project = project;
       this.trigger(project);
     });
-    // projects.id(id).fetch().then((project) => {
-    //   cachedProject = project;
-    //   this.trigger(project);
-    // });
+  },
+
+  onStartSprint(cb) {
+    projects.id(this.project.id).sprints.start()
+      .then(() => {
+        return this.p().fetch();
+      })
+      .then((project) => {
+        this.trigger(project);
+      })
+      .then(() => {
+        cb();
+      });
+  },
+
+  onEndSprint() {
+    projects.id(this.project.id).sprints.end()
+      .then(() => {
+        return this.p().fetch();
+      })
+      .then((project) => {
+        this.project = project;
+        this.project.currentSprint = {};
+        this.trigger(this.project);
+      });
   },
 
   onUpdateTaskPosLocally(params) {

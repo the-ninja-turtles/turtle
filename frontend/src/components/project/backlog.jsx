@@ -1,6 +1,7 @@
 import React from 'react';
 import TaskContainer from '../tasks/taskContainer.jsx';
 import CreateTask from '../tasks/createTask.jsx';
+import {ProjectActions} from '../../actions/actions.js';
 
 let Backlog = React.createClass({
   propTypes: {
@@ -17,6 +18,7 @@ let Backlog = React.createClass({
 
   close() {
     this.setState({showModal: false});
+    ProjectActions.fetchProject(this.props.project);
   },
 
   open() {
@@ -28,8 +30,8 @@ let Backlog = React.createClass({
       <div className='backlog'>
         <CreateTask
             showModal={this.state.showModal}
+            project={this.props.project}
             close={this.close}
-            projectId={this.props.project}
             users={this.props.users}
           />
         <h1 className='left'>Backlog</h1>
