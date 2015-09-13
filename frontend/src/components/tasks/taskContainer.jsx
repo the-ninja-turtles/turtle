@@ -38,15 +38,16 @@ let TaskContainer = React.createClass({
   },
 
   render() {
-    let tasks = this.props.tasks || [];
-    tasks = tasks.map((task) => {
+    let tasks = this.props.tasks.map((task) => {
       let user = _.findWhere(this.props.users, {id: task.userId});
       return (<Task key={task.id} id={task.id} name={task.name} description={task.description} score={task.score} user={user} />);
     });
 
     const {connectDropTarget} = this.props;
     return connectDropTarget(
-      <div className='task-container'>{tasks}</div>
+      this.props.tasks.length ?
+      (<div className='task-container'>{tasks}</div>) :
+      (<div className='task-container task-container-no-tasks'>{this.props.empty}</div>)
     );
   }
 

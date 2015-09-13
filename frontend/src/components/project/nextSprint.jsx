@@ -22,7 +22,8 @@ let NextSprint = React.createClass({
           <span className='sprint-score-score'>{this.score()}</span>
         </span>
         <div className='clearfix'></div>
-        <TaskContainer tasks={this.props.tasks} users={this.props.users} />
+        <TaskContainer tasks={this.props.tasks} users={this.props.users}
+          empty='Drag tasks from the backlog to assign them to this sprint'/>
       </div>
     );
   }

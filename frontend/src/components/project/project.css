@@ -42,3 +42,11 @@ hr {
 .btn-container .btn {
   margin-bottom: 5px;
 }
+
+.task-container-no-tasks {
+  display: block;
+  line-height: 200px;
+  font-size: 18px;
+  color: #ccc;
+  text-align: center;
+}
