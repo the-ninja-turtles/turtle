@@ -53,7 +53,7 @@ export const MockProject = {
     'id': 1,
     'name': 'mvp',
     'length': 7,
-    'startDate': '2004-10-19 10:23:54+02',
+    //'startDate': '2004-10-19 10:23:54+02',
     tasks: [
       {
         'id': 2,

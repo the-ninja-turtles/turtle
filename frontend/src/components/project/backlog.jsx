@@ -37,7 +37,7 @@ let Backlog = React.createClass({
           <button className='btn primary' onClick={this.open}>+ New Task</button>
         </div>
         <div className='clearfix'></div>
-        <TaskContainer tasks={this.props.tasks} users={this.props.users} />
+        <TaskContainer tasks={this.props.tasks} users={this.props.users} empty='No tasks in your backlog' />
       </div>
     );
   }
