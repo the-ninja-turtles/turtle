@@ -24,10 +24,8 @@ export let request = (method, url, data) => {
   return axios(options).then((res) => {
     return res.data;
   }).catch((res) => {
-    return new Promise((resolve, reject) => {
-      console.error({code: res.status, error: res.data.error});
-      reject({code: res.status, error: res.data.error});
-    });
+    console.error({code: res.status, error: res.data.error});
+    Promise.reject({code: res.status, error: res.data.error});
   });
 };
 
