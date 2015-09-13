@@ -46,7 +46,7 @@ let Project = React.createClass({
   render() {
     let current = () => {
       if (this.state.project.currentSprint.startDate) {
-        return (<CurrentSprint project={this.state.id} sprint={this.state.currentSprint} />);
+        return (<CurrentSprint project={this.state.id} sprint={this.state.currentSprint} length={this.state.project.sprintLength} startDate={this.state.project.currentSprint.startDate} />);
       }
       return (<StartSprint project={this.state.id} />);
     };

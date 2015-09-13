@@ -40,11 +40,30 @@ let CurrentSprint = React.createClass({
     }, 0);
   },
 
+  days() {
+    let start = Date.parse(this.props.startDate);
+    let diff = Date.now() - start;
+    return Math.floor(diff / (24 * 3600 * 1000));
+  },
+
   endSprint() {
 
   },
 
   render() {
+    let length = this.props.length;
+    let current = this.days();
+    let message = Math.abs(length - current) + ' days ' + (length > current ? 'left' : 'overdue');
+
+    let max = () => {
+      return Math.max(length, current);
+    };
+    let green = () => {
+      return (length > current ? current : length) / max() * 100;
+    };
+    let red = () => {
+      return (current > length ? current - length : 0) / max() * 100;
+    };
     return (
       <div className='current-sprint-info'>
         <div className='info left'>
@@ -58,11 +77,15 @@ let CurrentSprint = React.createClass({
           </span>
         </div>
         <div className='btn-container right'>
-          <button className='btn primary' onClick={this.openSprintboard}>Open sprintboard</button>
-          <button className='btn danger' onClick={this.endSprint()}>End sprint</button>
+          <button className='btn block primary' onClick={this.openSprintboard}>Open sprintboard</button>
+          <button className='btn block danger' onClick={this.endSprint()}>End sprint</button>
         </div>
         <div className='clearfix'></div>
-        <ProgressBar />
+        <span className='days-left'>{message}</span>
+        <ProgressBar>
+          <ProgressBar bsStyle='success' now={green()} />
+          <ProgressBar bsStyle='danger' now={red()} />
+        </ProgressBar>
       </div>
     );
   }
