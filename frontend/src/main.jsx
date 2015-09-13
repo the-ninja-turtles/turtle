@@ -4,6 +4,7 @@ import App from './components/app.jsx';
 import Dashboard from './components/dashboard/dashboard.jsx';
 import SprintBoard from './components/sprintboard/board.jsx';
 import Project from './components/project/project.jsx';
+import e from './actions/events.js';
 
 let Route = Router.Route;
 let DefaultRoute = Router.DefaultRoute;
