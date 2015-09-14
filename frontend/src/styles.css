@@ -50,7 +50,7 @@ html, body {
 .primary:hover,
 .primary:focus {
   color: white;
-  background: #17466C;
+  background: #1E6198;
 }
 
 .danger {
@@ -61,7 +61,7 @@ html, body {
 .danger:hover,
 .danger:focus {
   color: white;
-  background: #550000;
+  background: #5C0910;
 }
 
 h1, h2, h3, h4, h5, h6 {

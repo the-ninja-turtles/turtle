@@ -2,24 +2,26 @@
   text-align: center;
   max-width: 850px;
   margin: 30px auto;
-  font-size: 18px;
+  font-size: 24px;
 }
 
 .item {
-  color: #333;
+  color: white;
+  background-color: #277DB3;
+  border: 1px solid #17486F;
   cursor: pointer;
   display: inline-block;
   width: 200px;
   height: 200px;
   line-height: 200px;
-  background: #F8F8F8;
-  border: 1px solid #ccc;
   border-radius: 4px;
+  padding: 4px;
   margin: 20px;
   position: relative;
+  transition: all 0.15s ease-in-out;
   .name {
     display: inline-block;
-    line-height: 20px;
+    line-height: 28px;
     vertical-align: middle;
   }
   .close {
@@ -30,22 +32,27 @@
   }
 }
 
-.new-project {
-  color: #bbb;
-  background: #FBFBFB;
-  border-color: #ddd;
-  .close {
-    display: none !important;
-  }
-}
-
 .item:hover {
-  border-color: #999;
+  transform: scale(1.05, 1.05);
+  color: white;
+  background-color: #1E6198;
+  border-color: #0D2035;
   .close {
     display: block;
   }
 }
 
+.new-project {
+  color: #BBB;
+  background: #FBFBFB;
+  border-color: #DDD;
+  .close {
+    display: none !important;
+  }
+}
+
 .new-project:hover {
-  color: #333;
+  color: #777;
+  background-color: #F8F8F8;
+  border-color: #999;
 }

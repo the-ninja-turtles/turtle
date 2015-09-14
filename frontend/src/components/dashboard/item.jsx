@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import {Glyphicon} from 'react-bootstrap';
 
 let Item = React.createClass({
 
@@ -21,7 +22,7 @@ let Item = React.createClass({
     });
     return (
       <li className={classes} onClick={this.handleClick}>
-        <button className='close' onClick={this.deleteProject}><span>x</span></button>
+        <button className='close' onClick={this.deleteProject}><Glyphicon glyph='remove' /></button>
         <p className='name'>{this.props.name}</p>
       </li>
     );

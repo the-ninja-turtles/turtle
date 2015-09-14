@@ -103,28 +103,24 @@ let CreateProject = React.createClass({
 
         <Modal.Body>
           <div className='create-project'>
-            <form>
-              <input
-                type='text'
-                className='name'
-                ref='projectName'
-                placeholder='Title'
-                onChange={this.checkName}
-              />
-            </form>
+            <input
+              type='text'
+              className='name'
+              ref='projectName'
+              placeholder='Title'
+              onChange={this.checkName}
+            />
 
-            <form>
-              <label className='team'>Team Members</label>
-              <Input
-                type='email'
-                className='invitee'
-                ref='inviteeEmail'
-                placeholder='Email address'
-                onChange={this.checkEmail}
-                value={this.state.inviteeEmail}
-                buttonAfter={inviteButton}
-              />
-            </form>
+            <label className='team'>Team Members</label>
+            <Input
+              type='email'
+              className='invitee'
+              ref='inviteeEmail'
+              placeholder='Email address'
+              onChange={this.checkEmail}
+              value={this.state.inviteeEmail}
+              buttonAfter={inviteButton}
+            />
 
             {(() => {
               return this.state.invitees.length ? inviteeList : undefined;

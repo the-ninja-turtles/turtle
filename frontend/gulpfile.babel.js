@@ -12,6 +12,7 @@ global.paths = {
   images: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico'].map((ext) => {
     return path.join(__dirname, 'src/**/*' + ext);
   }),
+  node_modules: path.join(__dirname, 'node_modules'),
   views: path.join(__dirname, 'server/**/*.ejs'),
   dist: path.join(__dirname, 'dist'),
   public: path.join(__dirname, 'dist/public')
