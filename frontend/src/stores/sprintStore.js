@@ -8,12 +8,22 @@ const SprintStore = Reflux.createStore({
 
   columns: ['To Do', 'In Progress', 'Review', 'Done'],
 
+  onOpenCreateTask() {
+    this.trigger({
+      showModal: true
+    });
+  },
+
   onFetchSprint(id) {
     projects.id(id).fetch().then((project) => {
+      let users = project.users;
       let sprint = project.currentSprint;
       this.transformSprint(sprint);
       this.sprint = sprint; // cache sprint locally
-      this.trigger(this.sprint);
+      this.trigger({
+        users,
+        sprint: this.sprint
+      });
     });
   },
 
@@ -36,7 +46,7 @@ const SprintStore = Reflux.createStore({
     if (task) {
       oldColumn.splice(oldColumn.indexOf(task), 1);
       newColumn.push(task);
-      this.trigger(sprint);
+      this.trigger({sprint});
     }
   },
 
@@ -55,7 +65,7 @@ const SprintStore = Reflux.createStore({
     let targetTaskContainer = targetTaskInfo.container;
     draggedTaskContainer.splice(draggedTaskContainer.indexOf(draggedTask), 1);
     targetTaskContainer.splice(targetTaskContainer.indexOf(targetTask), 0, draggedTask);
-    this.trigger(this.sprint);
+    this.trigger({sprint: this.sprint});
   },
 
   onReorderTasksOnServer() {

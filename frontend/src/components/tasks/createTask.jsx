@@ -13,7 +13,7 @@ let CreateTask = React.createClass({
     showModal: React.PropTypes.bool.isRequired,
     close: React.PropTypes.func.isRequired,
     users: React.PropTypes.array.isRequired,
-    sprintId: React.PropTypes.number // defaults to null
+    sprint: React.PropTypes.number // defaults to null
   },
 
   getInitialState() {
@@ -23,8 +23,7 @@ let CreateTask = React.createClass({
         name: '',
         description: '',
         score: 1,
-        userId: null,
-        sprintId: this.props.sprintId || null
+        userId: null
       }
     };
   },
@@ -40,16 +39,16 @@ let CreateTask = React.createClass({
   },
 
   createTask() {
-    ProjectActions.createTask(this.props.project, this.state.taskProperties);
+    let taskProperties = _.extend({sprintId: this.props.sprint}, this.state.taskProperties);
+    ProjectActions.createTask(this.props.project, taskProperties);
   },
 
   handleChanges(e) {
     let newProperties = _.extend({}, this.state.taskProperties);
     newProperties.name = React.findDOMNode(this.refs.taskName).value;
     newProperties.description = React.findDOMNode(this.refs.taskDescription).value;
-    // uncomment when ready, or else task will not be accepted by project svc
-    // newProperties.userId = parseInt(this.refs.taskAssignment.getValue()) || null;
-    newProperties.score = Math.max(1, React.findDOMNode(this.refs.taskScore).value);
+    newProperties.userId = parseInt(this.refs.taskAssignment.getValue()) || null;
+    newProperties.score = Math.min(999, Math.max(1, React.findDOMNode(this.refs.taskScore).value));
 
     this.setState({
       taskProperties: newProperties,

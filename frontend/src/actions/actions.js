@@ -7,6 +7,7 @@ export const DashboardActions = Reflux.createActions({
 });
 
 export const SprintActions = Reflux.createActions({
+  'openCreateTask': {},
   'fetchSprint': {asyncResult: true},
   'updateTaskStatusLocally': {},
   'updateTaskStatusOnServer': {asyncResult: true},

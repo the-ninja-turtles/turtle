@@ -8,19 +8,20 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 
 import SprintColumn from './column.jsx';
+import CreateTask from '../tasks/createTask.jsx';
 
 let SprintBoard = React.createClass({
-  mixins: [
-    Reflux.ListenerMixin
-  ],
+  mixins: [Reflux.ListenerMixin],
 
   getInitialState() {
     return {
       id: parseInt(this.props.params.id),
+      users: [],
       sprint: {
         columns: [],
         tasksByColumn: {}
-      }
+      },
+      showModal: false
     };
   },
 
@@ -29,28 +30,38 @@ let SprintBoard = React.createClass({
     SprintActions.fetchSprint(this.state.id);
   },
 
-  onStoreUpdate(sprint) {
-    this.setState({
-      sprint: sprint
-    });
+  onStoreUpdate(data) {
+    this.setState(data);
+  },
+
+  close() {
+    this.setState({showModal: false});
+    SprintActions.fetchSprint(this.state.id);
   },
 
   render() {
-    let sprintColumns = [];
-    _.forEach(this.state.sprint.columns, (column, key) => {
+    let sprintColumns = _.map(this.state.sprint.columns, (column, key) => {
       let columnTasks = this.state.sprint.tasksByColumn[key];
-      sprintColumns.push(
+      return (
         <SprintColumn
           key={column}
           id={key}
           columnName={column}
           tasks={columnTasks}
+          users={this.state.users}
         />
       );
     });
 
     return (
       <div className='sprint-board'>
+        <CreateTask
+          showModal={this.state.showModal}
+          project={this.state.id}
+          close={this.close}
+          users={this.state.users}
+          sprint={this.state.sprint.id}
+        />
         {sprintColumns}
       </div>
     );

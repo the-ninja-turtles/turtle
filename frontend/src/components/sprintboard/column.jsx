@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import {DropTarget} from 'react-dnd';
 import {SprintActions} from '../../actions/actions';
@@ -37,9 +38,16 @@ let collect = (connect, monitor) => {
 
 let SprintColumn = React.createClass({
 
+  propTypes: {
+    users: React.PropTypes.array.isRequired,
+    tasks: React.PropTypes.array.isRequired
+  },
+
   render() {
     let tasks = this.props.tasks || [];
+
     tasks = tasks.map((task) => {
+      let user = _.findWhere(this.props.users, {id: task.userId});
       return (
         <Task
           key={task.id}
@@ -48,7 +56,7 @@ let SprintColumn = React.createClass({
           description={task.description}
           score={task.score}
           status={task.status}
-          user={task.user}
+          user={user}
           isOnSprintboard={true}
         />
       );

@@ -6,10 +6,12 @@ import {__RewireAPI__ as testmodule} from '../../src/components/sprintboard/boar
 let SprintBoard =  testmodule.__GetDependency__('SprintBoard');
 SprintBoard.prototype.getInitialState = () => {
   return {
+    users: [],
     sprint: {
       columns: ['To Do', 'In Progress', 'Review', 'Done'],
       tasksByColumn: {}
-    }
+    },
+    showModal: false
   };
 };
 
@@ -28,7 +30,7 @@ test('Sprint board is a div', (assert) => {
 
 test('Sprint board has a class "sprint-board"', (assert) => {
   assert.equal(sprintBoard.props.className, 'sprint-board',
-    'Sprint board should have a class "sprintBoard"');
+    'Sprint board should have a class "sprint-board"');
   assert.end();
 });
 
@@ -36,7 +38,6 @@ test('Sprint board renders the correct number of columns', (assert) => {
   // this is a pretty stupid test, because I can not assign
   // an arbtrary number of columns during the test; it currently checks
   // that the number of columns is the same as in src/mock-data/sprint-columns.js file
-  assert.equal(sprintBoard.props.children.length, 4,
-    'Sprint board should render four sprint columns');
+  assert.equal(sprintBoard.props.children[1].length, 4, 'Sprint board should render four sprint columns');
   assert.end();
 });

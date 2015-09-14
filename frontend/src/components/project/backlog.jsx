@@ -29,11 +29,11 @@ let Backlog = React.createClass({
     return (
       <div className='backlog'>
         <CreateTask
-            showModal={this.state.showModal}
-            project={this.props.project}
-            close={this.close}
-            users={this.props.users}
-          />
+          showModal={this.state.showModal}
+          project={this.props.project}
+          close={this.close}
+          users={this.props.users}
+        />
         <h1 className='left'>Backlog</h1>
         <div className='btn-container right'>
           <button className='btn primary' onClick={this.open}>+ New Task</button>

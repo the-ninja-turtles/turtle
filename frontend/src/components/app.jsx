@@ -5,6 +5,7 @@ import {Navbar, Nav, NavItem, CollapsibleNav} from 'react-bootstrap';
 import auth from '../auth/auth.js';
 import AppStore from '../stores/appStore.js';
 import Notifications from './notifications/notifications.jsx';
+import {SprintActions} from '../actions/actions.js';
 
 let RouteHandler = Router.RouteHandler;
 
@@ -43,6 +44,18 @@ let App = React.createClass({
       }
     };
 
+    let createTask = () => {
+      if (this.isActive('sprint')) {
+        return (
+          <li>
+            <div className='btn-container nav-button'>
+              <button className='btn primary' onClick={SprintActions.openCreateTask}>+ New Task</button>
+            </div>
+          </li>
+        );
+      }
+    };
+
     let authNav = () => {
       if (this.state.isLoggedIn) {
         return (<NavItem onClick={auth().logout}>Sign out</NavItem>);
@@ -57,6 +70,7 @@ let App = React.createClass({
             <Nav navbar>
               <NavItem onClick={this.goToDashboard}>Dashboard</NavItem>
               {project()}
+              {createTask()}
             </Nav>
             <Nav navbar right>{authNav()}</Nav>
           </CollapsibleNav>

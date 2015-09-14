@@ -7,7 +7,7 @@ let CreateTaskStore = Reflux.createStore({
   listenables: ProjectActions,
 
   onCreateTask(id, properties) {
-    projects.id(id).tasks.create(_.pick(properties, 'name', 'score', 'description')).then((response) => {
+    projects.id(id).tasks.create(_.pick(properties, 'name', 'score', 'description', 'userId', 'sprintId')).then((response) => {
       this.trigger(response);
     });
   }
