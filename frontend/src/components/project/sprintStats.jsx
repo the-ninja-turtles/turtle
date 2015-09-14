@@ -4,7 +4,7 @@ import {Navigation} from 'react-router';
 import {ProgressBar} from 'react-bootstrap';
 import {ProjectActions} from '../../actions/actions.js';
 
-let CurrentSprint = React.createClass({
+let SprintStats = React.createClass({
 
   mixins: [Navigation],
 
@@ -66,22 +66,17 @@ let CurrentSprint = React.createClass({
     };
     return (
       <div className='current-sprint-info'>
-        <div className='info left'>
-          <span className='sprint-score'>
-            <span className='sprint-score-label'>Score</span>
-            <span className='sprint-score-score'>{this.currScore()}/{this.score()}</span>
+        <span className='info'>
+          <span className='info-block one-third text-left days-left'>{message}</span>
+          <span className='info-block one-third text-center'>
+            <span className='info-block-label'>Score</span>
+            <span className='info-block-value'>{this.currScore()}/{this.score()}</span>
           </span>
-          <span className='sprint-score'>
-            <span className='sprint-score-label'>Tasks</span>
-            <span className='sprint-score-score'>{this.currTasks()}/{this.tasks()}</span>
+          <span className='info-block one-third text-right'>
+            <span className='info-block-label'>Tasks</span>
+            <span className='info-block-score'>{this.currTasks()}/{this.tasks()}</span>
           </span>
-        </div>
-        <div className='btn-container right'>
-          <button className='btn block primary' onClick={this.openSprintboard}>Open sprintboard</button>
-          <button className='btn block danger' onClick={this.endSprint}>End sprint</button>
-        </div>
-        <div className='clearfix'></div>
-        <span className='days-left'>{message}</span>
+        </span>
         <ProgressBar>
           <ProgressBar bsStyle='success' now={green()} />
           <ProgressBar bsStyle='danger' now={red()} />
@@ -92,4 +87,4 @@ let CurrentSprint = React.createClass({
 
 });
 
-export default CurrentSprint;
+export default SprintStats;

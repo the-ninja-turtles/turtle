@@ -5,7 +5,7 @@ import {Navbar, Nav, NavItem, CollapsibleNav} from 'react-bootstrap';
 import auth from '../auth/auth.js';
 import AppStore from '../stores/appStore.js';
 import Notifications from './notifications/notifications.jsx';
-import {SprintActions} from '../actions/actions.js';
+import {ProjectActions} from '../actions/actions.js';
 
 let RouteHandler = Router.RouteHandler;
 
@@ -16,8 +16,7 @@ let App = React.createClass({
   getInitialState() {
     return {
       isLoggedIn: auth().isLoggedin(),
-      currentProject: null,
-      currentSprint: null
+      showStartSprint: true
     };
   },
 
@@ -37,7 +36,31 @@ let App = React.createClass({
     this.transitionTo('project', {id: this.getParams().id});
   },
 
+  goToSprintboard() {
+    this.transitionTo('sprint', {id: this.getParams().id});
+  },
+
+  startSprint() {
+    ProjectActions.startSprint(() => {
+      this.transitionTo('sprint', {id: this.props.project});
+    });
+  },
+
+  endSprint() {
+    ProjectActions.endSprint();
+  },
+
   render() {
+    let btn = (jsx) => {
+      return (
+        <li>
+          <div className='nav-button'>
+            {jsx}
+          </div>
+        </li>
+      );
+    };
+
     let project = () => {
       if (this.isActive('sprint')) {
         return (<NavItem onClick={this.goToProject}>Project</NavItem>);
@@ -46,13 +69,23 @@ let App = React.createClass({
 
     let createTask = () => {
       if (this.isActive('sprint')) {
-        return (
-          <li>
-            <div className='btn-container nav-button'>
-              <button className='btn primary' onClick={SprintActions.openCreateTask}>+ New Task</button>
-            </div>
-          </li>
-        );
+        return btn(<button className='btn primary' onClick={this.openCreateTask}>+ New Task</button>);
+      }
+    };
+
+    let startEndSprint = () => {
+      if (this.isActive('project')) {
+        if (this.state.showStartSprint) {
+          return btn(<button className='btn primary' onClick={this.startSprint}>Start sprint</button>);
+        } else {
+          return btn(<button className='btn danger' onClick={this.endSprint}>End sprint</button>);
+        }
+      }
+    };
+
+    let gotoSprintboard = () => {
+      if (this.isActive('project') && !this.state.showStartSprint) {
+        return btn(<button className='btn primary' onClick={this.goToSprintboard}>Open sprintboard</button>);
       }
     };
 
@@ -71,6 +104,8 @@ let App = React.createClass({
               <NavItem onClick={this.goToDashboard}>Dashboard</NavItem>
               {project()}
               {createTask()}
+              {startEndSprint()}
+              {gotoSprintboard()}
             </Nav>
             <Nav navbar right>{authNav()}</Nav>
           </CollapsibleNav>

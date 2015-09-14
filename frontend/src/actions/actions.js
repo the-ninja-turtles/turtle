@@ -1,42 +1,47 @@
 import Reflux from 'reflux';
 
 export const DashboardActions = Reflux.createActions({
-  'fetchProjects': {asyncResult: true},
-  'createProject': {asyncResult: true},
-  'deleteProject': {asyncResult: true}
+  fetchProjects: {},
+  createProject: {},
+  deleteProject: {}
 });
 
 export const SprintActions = Reflux.createActions({
-  'openCreateTask': {},
-  'fetchSprint': {asyncResult: true},
-  'updateTaskStatusLocally': {},
-  'updateTaskStatusOnServer': {asyncResult: true},
-  'reorderTasksLocally': {},
-  'reorderTasksOnServer': {asyncResult: true}
+  openCreateTask: {},
+  fetchSprint: {},
+  updateTaskStatusLocally: {},
+  updateTaskStatusOnServer: {},
+  reorderTasksLocally: {},
+  reorderTasksOnServer: {}
 });
 
 export const ProjectActions = Reflux.createActions({
-  'fetchProject': {asyncResult: true},
-  'createTask': {asyncResult: true},
-  'startSprint': {asyncResult: true},
-  'endSprint': {asyncResult: true}
+  fetchProject: {},
+  createTask: {},
+  startSprint: {},
+  endSprint: {}
 });
 
 export const UserActions = Reflux.createActions({
-  'loggedIn': {},
-  'loggedOut': {}
+  loggedIn: {},
+  loggedOut: {}
+});
+
+export const NavbarActions = Reflux.createActions({
+  showStartSprintBtn: {},
+  showEndSprintBtn: {}
 });
 
 export const EventActions = Reflux.createActions({
-  'notify': {}
+  notify: {}
 });
 
 export const TaskActions = Reflux.createActions({
-  'updateTaskPosLocally': {},
-  'updateTaskPosOnServer': {asyncResult: true}
+  updateTaskPosLocally: {},
+  updateTaskPosOnServer: {}
 });
 
 export const TaskContainerActions = Reflux.createActions({
-  'addTaskToContainerLocally': {},
-  'addTaskToContainerOnServer': {asyncResult: true}
+  addTaskToContainerLocally: {},
+  addTaskToContainerOnServer: {}
 });

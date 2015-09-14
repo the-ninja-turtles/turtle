@@ -1,9 +1,9 @@
 .task {
   border: 1px solid #ccc;
   background: #FFF;
-  margin-bottom: 10px;
   text-align: left;
   position: relative;
+  margin: 0 10px 10px 10px;
 }
 
 .task-name {

@@ -27,18 +27,18 @@ let Backlog = React.createClass({
 
   render() {
     return (
-      <div className='backlog'>
-        <CreateTask
-          showModal={this.state.showModal}
-          project={this.props.project}
-          close={this.close}
-          users={this.props.users}
-        />
-        <h1 className='left'>Backlog</h1>
-        <div className='btn-container right'>
-          <button className='btn primary' onClick={this.open}>+ New Task</button>
-        </div>
-        <div className='clearfix'></div>
+      <div className='fill'>
+        <header className='task-container-header'>
+          <CreateTask
+            showModal={this.state.showModal}
+            project={this.props.project}
+            close={this.close}
+            users={this.props.users}
+          />
+          <h1 className='left'>Backlog</h1>
+          <button className='btn primary right' onClick={this.open}>+ New Task</button>
+          <div className='clearfix'></div>
+        </header>
         <TaskContainer tasks={this.props.tasks} users={this.props.users} empty='No tasks in your backlog' />
       </div>
     );

@@ -1,8 +1,8 @@
 import Reflux from 'reflux';
-import {UserActions as Actions} from '../actions/actions';
+import {UserActions, NavbarActions} from '../actions/actions';
 
 let AppStore = Reflux.createStore({
-  listenables: Actions,
+  listenables: [UserActions, NavbarActions],
 
   onLoggedIn(token) {
     this.trigger({isLoggedIn: true});
@@ -10,6 +10,14 @@ let AppStore = Reflux.createStore({
 
   onLoggedOut() {
     this.trigger({isLoggedIn: false});
+  },
+
+  onShowStartSprintBtn() {
+    this.trigger({showStartSprint: true});
+  },
+
+  onShowEndSprintBtn() {
+    this.trigger({showStartSprint: false});
   }
 });
 

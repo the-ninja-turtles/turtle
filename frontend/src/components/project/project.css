@@ -1,56 +1,48 @@
-.project-view {
-  max-width: 850px;
-  margin: 30px auto;
-  padding: 10px;
-}
-
 hr {
-  margin: 20px 0;
-}
-
-.task-container {
-  min-height: 200px;
-}
-
-.task-container {
-  max-height: 600px;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.days-left {
-  font-size: 16px;
-}
-
-.sprint-score {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.sprint-score-label {
-  margin-right: 5px;
-}
-
-.sprint-score-score {
-  font-weight: normal;
-}
-
-.info {
-  width: 200px;
-  margin-top: 25px;
-  margin-left: 100px;
-}
-
-.info .sprint-score {
-  margin-right: 40px;
+  margin: 0 0 20px 0;
 }
 
 .progress {
-  margin-top: 10px;
+  margin: 0 0 5px 0;
+  background-color: #fff;
 }
 
-.btn-container .btn {
-  margin-bottom: 5px;
+.task-container {
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.task-container-header {
+  margin: 10px;
+}
+
+.info {
+  display: flex;
+  width: 100%;
+}
+
+.info-block {
+  display: block;
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.info-block.days-left {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.info-block-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.current-sprint {
+  margin: 25px auto 0 auto;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background: #F8F8F8;
 }
 
 .task-container-no-tasks {
