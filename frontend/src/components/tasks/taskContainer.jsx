@@ -10,17 +10,15 @@ const target = {
       taskId: monitor.getItem().id,
       tasks: props.tasks
     };
-    if (monitor.isOver({ shallow: true })) {
+    if (monitor.isOver({shallow: true})) {
       TaskContainerActions.addTaskToContainerLocally(drag);
     }
   },
 
   drop(props, monitor) {
-    let drag = {
-      taskId: monitor.getItem().id,
-      tasks: props.tasks
-    };
-    TaskContainerActions.addTaskToContainerOnServer(drag);
+    if (monitor.isOver({shallow: true})) {
+      TaskContainerActions.addTaskToContainerOnServer(monitor.getItem().id);
+    }
   }
 };
 

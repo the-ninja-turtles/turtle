@@ -117,6 +117,6 @@ let sprints = new Resource('sprints', 'sprint')
   .define('positions', true)
   .define('assigntasks', true);
 let projects = new Resource('projects', 'project', [tasks, sprints])
-  .define('positions');
+  .define('positions', true);
 
 export default new Collection(projects);

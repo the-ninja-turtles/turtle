@@ -5,7 +5,7 @@ import {Navbar, Nav, NavItem, CollapsibleNav} from 'react-bootstrap';
 import auth from '../auth/auth.js';
 import AppStore from '../stores/appStore.js';
 import Notifications from './notifications/notifications.jsx';
-import {ProjectActions} from '../actions/actions.js';
+import {ProjectActions, SprintActions} from '../actions/actions.js';
 
 let RouteHandler = Router.RouteHandler;
 
@@ -69,7 +69,7 @@ let App = React.createClass({
 
     let createTask = () => {
       if (this.isActive('sprint')) {
-        return btn(<button className='btn primary' onClick={this.openCreateTask}>+ New Task</button>);
+        return btn(<button className='btn primary' onClick={SprintActions.openCreateTask}>+ New Task</button>);
       }
     };
 

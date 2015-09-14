@@ -19,7 +19,7 @@ let SprintBoard = React.createClass({
       users: [],
       sprint: {
         columns: [],
-        tasksByColumn: {}
+        tasksByColumn: []
       },
       showModal: false
     };

@@ -39,10 +39,6 @@ const ProjectStore = Reflux.createStore({
   },
 
   onUpdateTaskPosLocally(params) {
-    if (!this.project) {
-      return;
-    }
-
     let draggedTask = this.findTask(params.draggedTaskId);
     let targetTask = this.findTask(params.targetTaskId);
 
@@ -57,7 +53,17 @@ const ProjectStore = Reflux.createStore({
     }
   },
 
-  onUpdateTaskPosOnServer(params) {
+  onUpdateTaskPosOnServer(taskId) {
+    this.onAddTaskToContainerOnServer(taskId).then(() => {
+      let task = this.findTask(taskId);
+      let ids = _.pluck(task.container, 'id');
+
+      if (task.container === this.project.backlog) {
+        projects.id(this.project.id).positions({positions: ids});
+      } else {
+        projects.id(this.project.id).sprints.id(this.project.nextSprint.id).positions({positions: ids});
+      }
+    });
   },
 
   onAddTaskToContainerLocally(params) {
@@ -77,7 +83,17 @@ const ProjectStore = Reflux.createStore({
   },
 
   onAddTaskToContainerOnServer(taskId) {
-
+    let task = this.findTask(taskId);
+    let change = {
+      add: [],
+      remove: []
+    };
+    if (task.container === this.project.backlog) {
+      change.remove.push(task.id);
+    } else {
+      change.add.push(task.id);
+    }
+    return projects.id(this.project.id).sprints.id(this.project.nextSprint.id).assigntasks(change);
   },
 
   findTask(taskId) {

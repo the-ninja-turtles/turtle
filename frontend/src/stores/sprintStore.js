@@ -16,77 +16,59 @@ const SprintStore = Reflux.createStore({
 
   onFetchSprint(id) {
     projects.id(id).fetch().then((project) => {
-      let users = project.users;
-      let sprint = project.currentSprint;
-      this.transformSprint(sprint);
-      this.sprint = sprint; // cache sprint locally
+      this.project = project;
+      this.sprint = project.currentSprint;
+
+      this.fillColumns();
       this.trigger({
-        users,
+        users: project.users,
         sprint: this.sprint
       });
     });
   },
 
-  transformSprint(sprint) {
-    sprint.columns = {};
-    sprint.tasksByColumn = {};
-    this.columns.forEach((column, index) => {
-      sprint.columns[index] = column;
-      let tasksForColumn = _.where(sprint.tasks, {status: index});
-      sprint.tasksByColumn[index] = tasksForColumn;
+  fillColumns() {
+    this.sprint.columns = this.columns;
+    this.sprint.tasksByColumn = [];
+    _.each(this.columns, (column, index) => {
+      this.sprint.tasksByColumn[index] = _.where(this.sprint.tasks, {status: index});
     });
   },
 
   onUpdateTaskStatusLocally(params) {
-    let sprint = this.sprint;
-    let taskInfo = this.findTask(params.taskId);
-    let task = taskInfo.task;
-    let oldColumn = taskInfo.container;
-    let newColumn = sprint.tasksByColumn[params.newStatus];
+    let task = this.findTask(params.taskId);
     if (task) {
-      oldColumn.splice(oldColumn.indexOf(task), 1);
-      newColumn.push(task);
-      this.trigger({sprint});
+      task.container.splice(task.container.indexOf(task), 1);
+      this.sprint.tasksByColumn[params.newStatus].push(task);
+      this.trigger({sprint: this.sprint});
     }
   },
 
   onUpdateTaskStatusOnServer(params) {
-    let task = this.findTask(params.taskId).task;
-    task.status = params.newStatus;
-    // send a request to the server with updated status of the task
+    let task = this.findTask(params.taskId);
+    projects.id(this.project.id).tasks.id(task.id).update({status: params.newStatus});
   },
 
   onReorderTasksLocally(params) {
-    let draggedTaskInfo = this.findTask(params.draggedTaskId);
-    let draggedTask = draggedTaskInfo.task;
-    let draggedTaskContainer = draggedTaskInfo.container;
-    let targetTaskInfo = this.findTask(params.targetTaskId);
-    let targetTask = targetTaskInfo.task;
-    let targetTaskContainer = targetTaskInfo.container;
-    draggedTaskContainer.splice(draggedTaskContainer.indexOf(draggedTask), 1);
-    targetTaskContainer.splice(targetTaskContainer.indexOf(targetTask), 0, draggedTask);
+    let draggedTask = this.findTask(params.draggedTaskId);
+    let targetTask = this.findTask(params.targetTaskId);
+    draggedTask.container.splice(draggedTask.container.indexOf(draggedTask), 1);
+    targetTask.container.splice(targetTask.container.indexOf(targetTask), 0, draggedTask);
     this.trigger({sprint: this.sprint});
   },
 
   onReorderTasksOnServer() {
-    console.log('sending request to server');
-    let tasksArray = [];
-    // just to avoid any surprizes when iterating over a JS object by keys
-    // get an array of keys and sort it
-    let columnIds = _.sortBy(Object.keys(this.sprint.tasksByColumn));
-    _.forEach(columnIds, (id) => {
-      tasksArray = tasksArray.concat(this.sprint.tasksByColumn[id]);
-    });
-    // send the new array of tasks back to the server
+    // not called when reordered inside the same column
+    let ids = _.pluck(_.flatten(this.sprint.tasksByColumn), 'id');
+    projects.id(this.project.id).sprints.id(this.sprint.id).positions({positions: ids});
   },
 
   findTask(id) {
-    let columns = this.sprint.tasksByColumn;
     let taskInfo = {};
-    _.forEach(columns, (column) => {
+    _.each(this.sprint.tasksByColumn, (column) => {
       let task = _.findWhere(column, {id: id});
       if (task) {
-        taskInfo.task = task;
+        taskInfo = task;
         taskInfo.container = column;
       }
     });

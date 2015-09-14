@@ -12,7 +12,7 @@ const columnTarget = {
     // if hover event occurs over an empty column region (not over task)
     // and the column is different from the one that the task is dragged from
     // activate action that will push the task in the column array
-    if (monitor.isOver({ shallow: true })) {
+    if (monitor.isOver({shallow: true})) {
       SprintActions.updateTaskStatusLocally({taskId: task.id, newStatus: newStatus});
     }
   },
@@ -25,7 +25,6 @@ const columnTarget = {
     // update the task’s status
     if (task.status !== props.id) {
       SprintActions.updateTaskStatusOnServer({taskId: task.id, newStatus: newStatus});
-      SprintActions.reorderTasksOnServer();
     }
   }
 };
