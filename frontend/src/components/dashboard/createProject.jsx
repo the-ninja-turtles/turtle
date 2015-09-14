@@ -32,7 +32,7 @@ let CreateProject = React.createClass({
     let email = this.refs.inviteeEmail.getValue();
     if (email) {
       let invitees = this.state.invitees.slice();
-      invitees.push({email: email});
+      invitees.push(email);
       this.setState({
         invitees: invitees,
         inviteeEmail: '',
@@ -75,7 +75,7 @@ let CreateProject = React.createClass({
                 <Member
                   key={idx}
                   idx={idx}
-                  email={invitee.email}
+                  email={invitee}
                   remove={this.removeInvite}
                 />
               );
@@ -112,15 +112,17 @@ let CreateProject = React.createClass({
             />
 
             <label className='team'>Team Members</label>
-            <Input
-              type='email'
-              className='invitee'
-              ref='inviteeEmail'
-              placeholder='Email address'
-              onChange={this.checkEmail}
-              value={this.state.inviteeEmail}
-              buttonAfter={inviteButton}
-            />
+            <form>
+              <Input
+                type='email'
+                className='invitee'
+                ref='inviteeEmail'
+                placeholder='Email address'
+                onChange={this.checkEmail}
+                value={this.state.inviteeEmail}
+                buttonAfter={inviteButton}
+              />
+            </form>
 
             {(() => {
               return this.state.invitees.length ? inviteeList : undefined;

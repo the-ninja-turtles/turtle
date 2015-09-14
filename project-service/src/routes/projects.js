@@ -65,33 +65,32 @@ router.post('/', (req, res, next) => {
     return res.status(400).json(msg.projects[400]);
   }
 
+  console.log(req.body.emails);
   Promise.all(req.body.emails.map((email) => {
     return new Promise((resolve) => {
       models.User.findOne({where: {email: email}}).then(resolve);
     });
   }))
   .then((users) => {
-    // TODO: send list of valid users to invitation system
-    R.pluck('id')(R.filter(R.identity)(users)); // valid users
-
-    // TODO: handle invalid emails
     req.body.emails.filter((email, i) => {
       return !users[i];
     });
-  });
 
-  let params = {};
-  params.name = req.body.name;
-  if (req.body.length) {
-    params.length = req.body.length;
-  }
+    let userIds = R.pluck('id')(R.filter(R.identity)(users)); // valid user ids
 
-  req.user.model.createProject(params)
-    .then((project) => {
-      project.createSprint().then(() => {
+    let params = {};
+    params.name = req.body.name;
+    if (req.body.length) {
+      params.length = req.body.length;
+    }
+
+    req.user.model.createProject(params).then((project) => {
+      // create default sprint and add all valid users
+      Promise.all([project.createSprint(), project.addUsers(userIds)]).then(() => {
         res.status(201).json(project.dataValues);
       });
     });
+  });
 });
 
 // Fetch/Modify/Delete Project
