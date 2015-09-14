@@ -12,6 +12,17 @@ hr {
   min-height: 200px;
 }
 
+.task-container {
+  max-height: 600px;
+  overflow-y: auto;
+  padding: 10px;
+  .task {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 .days-left {
   font-size: 16px;
 }

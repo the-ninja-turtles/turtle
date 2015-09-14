@@ -65,7 +65,7 @@ let App = React.createClass({
 
     return (
       <div className='app'>
-        <Navbar brand='Turtle' inverse toggleNavKey={0}>
+        <Navbar brand='Turtle' fixedTop inverse toggleNavKey={0}>
           <CollapsibleNav eventKey={0}>
             <Nav navbar>
               <NavItem onClick={this.goToDashboard}>Dashboard</NavItem>

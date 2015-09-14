@@ -8,20 +8,37 @@
   display: inline-block;
   vertical-align: top;
   width: 25%;
-  padding: 0 5px;
   height: 100%;
   text-align: center;
-  border-left: solid #AAA 2px;
   border-right: solid #AAA 2px;
+  overflow-y: auto;
+}
+
+.sprint-column:last-child {
+  border-right: none;
 }
 
 .column-name {
-  font-size: 18px;
-  padding: 10px;
+  font-size: 20px;
+  padding: 12px;
   margin: 0;
+  position: fixed;
+  width: 25%;
+  height: 40px;
+  background-color: #EEE;
+  border-right: solid #AAA 2px;
+  z-index: 50;
 }
 
-.sprint-column .task {
+.sprint-column:last-child .column-name {
+  border-right: none;
+}
+
+.column-tasks {
+  margin-top: 60px;
+}
+
+.column-tasks .task {
   width: 90%;
   margin-left: auto;
   margin-right: auto;
