@@ -84,7 +84,7 @@ router.post('/', (req, res, next) => {
     });
 
     users = R.filter(R.identity)(users); // valid users
-    let acl = R.pluck('auth0Id')(users);
+    let acl = R.union([req.user.user_id], R.pluck('auth0Id')(users));
     let userIds = R.pluck('id')(users);
 
     let params = {};
@@ -169,7 +169,8 @@ router.put('/:projectId', (req, res, next) => {
 
     // publish
     publish('project:change', req.project.acl, R.merge(project.dataValues, {
-      message: `${req.user.username} has modified project details for ${project.name}.`
+      initiator: req.user.model.id,
+      message: `${req.user.model.username} has modified project details for ${project.name}.`
     }));
   });
 });
@@ -182,7 +183,8 @@ router.delete('/:projectId', (req, res, next) => {
       publish('project:delete', req.project.acl, {
         id: req.project.id,
         name: req.project.name,
-        message: `The project ${req.project.name} has been deleted by ${req.user.username}.`
+        initiator: req.user.model.id,
+        message: `The project ${req.project.name} has been deleted by ${req.user.model.username}.`
       });
     });
 });

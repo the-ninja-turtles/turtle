@@ -95,6 +95,8 @@ router.post('/start', (req, res, next) => {
 
       // publish
       publish('sprint:start', req.project.acl, {
+        projectId: req.project.id,
+        initiator: req.user.model.id,
         message: `A new sprint has been started for project ${req.project.name}.`
       });
     });
@@ -157,6 +159,8 @@ router.post('/end', (req, res, next) => {
 
       // publish
       publish('sprint:end', req.project.acl, {
+        projectId: req.project.id,
+        initiator: req.user.model.id,
         message: `The current sprint for project ${req.project.name} has ended.`
       });
     });

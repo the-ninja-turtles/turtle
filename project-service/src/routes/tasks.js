@@ -129,7 +129,8 @@ router.post('/', (req, res, next) => {
 
       // publish
       publish('task:add', req.project.acl, R.merge(task.dataValues, {
-        message: `${req.user.username} added a new task to project ${req.project.name}.`
+        initiator: req.user.model.id,
+        message: `${req.user.model.username} added a new task to project ${req.project.name}.`
       }));
     });
   });
@@ -189,7 +190,8 @@ router.put('/:taskId', (req, res, next) => {
 
       // publish
       publish('task:change', req.project.acl, R.merge(task.dataValues, {
-        message: `${req.user.username} modified a task in project ${req.project.name}.`
+        initiator: req.user.model.id,
+        message: `${req.user.model.username} modified a task in project ${req.project.name}.`
       }));
     });
   });
@@ -202,7 +204,9 @@ router.delete('/:taskId', (req, res, next) => {
 
       // publish
       publish('task:delete', req.project.acl, {
-        message: `${req.user.username} deleted a task from project ${req.project.name}`
+        projectId: req.project.id,
+        initiator: req.user.model.id,
+        message: `${req.user.model.username} deleted a task from project ${req.project.name}`
       });
     });
 });
