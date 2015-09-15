@@ -1,9 +1,11 @@
 import request from 'supertest-as-promised';
 import test from 'blue-tape';
+import sinon from 'sinon';
 import R from 'ramda';
 import {authorization, profile} from '../../tests/fakeauth';
 import { projects as testProjects, sprints as testSprints, tasks as testTasks } from '../../tests/fixtures';
 import app from '../src/app';
+import router from '../src/routes/tasks';
 import models from '../src/models';
 
 const before = test;
@@ -13,6 +15,9 @@ let userId;
 let projectId;
 let sprintIds;
 let taskIds;
+
+let spy = sinon.spy();
+router.__Rewire__('publish', spy);
 
 // sync database and create fixtures
 before('Before - Task Spec', (t) => {
@@ -91,6 +96,9 @@ test('POST /project/:projectId/tasks should create a new task', (t) => {
       t.pass('201 CREATED');
       t.equal(task.name, testTasks[3].name, 'Task name should match');
       t.equal(task.order, 1, 'Task should haver order = 1 (first task added in backlog)');
+
+      t.ok(spy.calledWith('task:add'), 'Event task:add should be published');
+      spy.reset();
     });
 });
 
@@ -176,6 +184,9 @@ test('PUT /project/:projectId/tasks/:taskId should modify task', (t) => {
       }
 
       t.assert(match, 'Parameters should match');
+
+      t.ok(spy.calledWith('task:change'), 'Event task:change should be published');
+      spy.reset();
     });
 });
 
@@ -207,6 +218,9 @@ test('DELETE /project/:projectId/tasks/:taskId should delete a task and respond 
     })
     .then((task) => {
       t.notok(task, 'Task should no longer exist');
+
+      t.ok(spy.calledWith('task:delete'), 'Event task:delete should be published');
+      spy.reset();
     });
 });
 
