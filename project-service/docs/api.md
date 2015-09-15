@@ -27,7 +27,6 @@ The project service will also expose internal API to allow the **invitation syst
     - `/projects/:projectId/sprints/:sprintId`
       + [Details](#external-sprints-details)
       + [Modify](#external-sprints-modify)
-      + [Delete](#external-sprints-delete)
     - `/projects/:projectId/sprints/:sprintId/positions`
       + [Positions](#external-sprints-positions)
     - `/projects/:projectId/sprints/:sprintId/assigntasks`
