@@ -40,10 +40,9 @@ let SprintStats = React.createClass({
     }, 0);
   },
 
-  days() {
+  timeSinceStart() {
     let start = Date.parse(this.props.sprint.startDate);
-    let diff = Date.now() - start;
-    return Math.floor(diff / (24 * 3600 * 1000));
+    return Date.now() - start;
   },
 
   endSprint() {
@@ -51,9 +50,10 @@ let SprintStats = React.createClass({
   },
 
   render() {
-    let length = this.props.length;
-    let current = this.days();
-    let message = Math.abs(length - current) + ' days ' + (length > current ? 'left' : 'overdue');
+    let length = this.props.length * 24 * 3600 * 1000;
+    let current = this.timeSinceStart();
+    let days = Math.floor(current / (24 * 3600 * 1000));
+    let message = Math.abs(this.props.length - days) + ' days ' + (this.props.length > days ? 'left' : 'overdue');
 
     let max = () => {
       return Math.max(length, current);
