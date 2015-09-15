@@ -41,14 +41,14 @@ let Project = React.createClass({
   render() {
     let current = () => {
       if (this.state.project.currentSprint && this.state.project.currentSprint.startDate) {
-        NavbarActions.showEndSprintBtn();
+        NavbarActions.setHasCurrentSprint(true);
         return (
           <div className='current-sprint two-thirds'>
             <SprintStats project={this.state.id} sprint={this.state.project.currentSprint} length={this.state.project.length} />
           </div>
         );
       } else {
-        NavbarActions.showStartSprintBtn();
+        NavbarActions.setHasCurrentSprint(false);
       }
     };
 

@@ -4,6 +4,10 @@ import {UserActions, NavbarActions} from '../actions/actions';
 let AppStore = Reflux.createStore({
   listenables: [UserActions, NavbarActions],
 
+  initialize() {
+    this.hasCurrentSprint = false;
+  },
+
   onLoggedIn(token) {
     this.trigger({isLoggedIn: true});
   },
@@ -12,12 +16,11 @@ let AppStore = Reflux.createStore({
     this.trigger({isLoggedIn: false});
   },
 
-  onShowStartSprintBtn() {
-    this.trigger({showStartSprint: true});
-  },
-
-  onShowEndSprintBtn() {
-    this.trigger({showStartSprint: false});
+  onSetHasCurrentSprint(val) {
+    if (this.hasCurrentSprint !== val) {
+      this.hasCurrentSprint = val;
+      this.trigger({hasCurrentSprint: val});
+    }
   }
 });
 

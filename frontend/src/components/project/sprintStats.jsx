@@ -13,13 +13,13 @@ let SprintStats = React.createClass({
   },
 
   score() {
-    return _.reduce(this.props.tasks, (acc, task) => {
+    return _.reduce(this.props.sprint.tasks, (acc, task) => {
       return acc + task.score;
     }, 0);
   },
 
   currScore() {
-    return _.reduce(this.props.tasks, (acc, task) => {
+    return _.reduce(this.props.sprint.tasks, (acc, task) => {
       if (task.status !== 3) {
         return acc;
       }
@@ -28,13 +28,13 @@ let SprintStats = React.createClass({
   },
 
   tasks() {
-    return this.props.tasks && this.props.tasks.length || 0;
+    return this.props.sprint.tasks && this.props.sprint.tasks.length || 0;
   },
 
   currTasks() {
-    return _.reduce(this.props.tasks, (acc, task) => {
+    return _.reduce(this.props.sprint.tasks, (acc, task) => {
       if (task.status === 3) {
-        return acc++;
+        return acc + 1;
       }
       return acc;
     }, 0);

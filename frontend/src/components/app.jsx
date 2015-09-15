@@ -16,7 +16,7 @@ let App = React.createClass({
   getInitialState() {
     return {
       isLoggedIn: auth().isLoggedin(),
-      showStartSprint: true
+      hasCurrentSprint: false
     };
   },
 
@@ -42,7 +42,7 @@ let App = React.createClass({
 
   startSprint() {
     ProjectActions.startSprint(() => {
-      this.transitionTo('sprint', {id: this.props.project});
+      this.transitionTo('sprint', {id: this.getParams().id});
     });
   },
 
@@ -75,7 +75,7 @@ let App = React.createClass({
 
     let startEndSprint = () => {
       if (this.isActive('project')) {
-        if (this.state.showStartSprint) {
+        if (!this.state.hasCurrentSprint) {
           return btn(<button className='btn primary' onClick={this.startSprint}>Start sprint</button>);
         } else {
           return btn(<button className='btn danger' onClick={this.endSprint}>End sprint</button>);
@@ -84,7 +84,7 @@ let App = React.createClass({
     };
 
     let gotoSprintboard = () => {
-      if (this.isActive('project') && !this.state.showStartSprint) {
+      if (this.isActive('project') && this.state.hasCurrentSprint) {
         return btn(<button className='btn primary' onClick={this.goToSprintboard}>Open sprintboard</button>);
       }
     };

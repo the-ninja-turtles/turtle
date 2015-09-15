@@ -28,8 +28,7 @@ export const UserActions = Reflux.createActions({
 });
 
 export const NavbarActions = Reflux.createActions({
-  showStartSprintBtn: {},
-  showEndSprintBtn: {}
+  setHasCurrentSprint: {}
 });
 
 export const EventActions = Reflux.createActions({
