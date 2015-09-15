@@ -125,6 +125,8 @@ test('POST /projects/:projectId/sprints/start should respond with 400 if there i
 });
 
 test('POST /projects/:projectId/sprints/end should end the current ongoing sprint', (t) => {
+  spy.reset();
+
   return request(app)
     .post(`/projects/${projectId}/sprints/end`)
     .set('Authorization', authorization(0))
@@ -143,8 +145,15 @@ test('POST /projects/:projectId/sprints/end should end the current ongoing sprin
       t.equal(sprint.status, 2, 'The prior ongoing sprint should now have status = 2 (complete)');
       t.equal(task.sprintId, null, 'Unfinished tasks should be moved to the backlog');
 
-      t.ok(spy.calledWith('sprint:end'), 'Event sprint:end should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'sprint:end', 'Event sprint:end should be published');
+      t.ok(acl.length, 'ACL should include at least 1 user');
+      t.ok(data.initiator, 'Payload should include initiator user id');
+      t.ok(data.projectId, 'Payload should include project id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
@@ -159,6 +168,8 @@ test('POST /projects/:projectId/sprints/end should respond with 400 if there is 
 });
 
 test('POST /projects/:projectId/sprints/start should start the next sprint', (t) => {
+  spy.reset();
+
   return request(app)
     .post(`/projects/${projectId}/sprints/start`)
     .set('Authorization', authorization(0))
@@ -170,8 +181,15 @@ test('POST /projects/:projectId/sprints/start should start the next sprint', (t)
     .then((sprint) => {
       t.equal(sprint.status, 1, 'The prior planning sprint should now have status = 1 (ongoing)');
 
-      t.ok(spy.calledWith('sprint:start'), 'Event sprint:start should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'sprint:start', 'Event sprint:start should be published');
+      t.ok(acl.length, 'ACL should include at least 1 user');
+      t.ok(data.initiator, 'Payload should include initiator user id');
+      t.ok(data.projectId, 'Payload should include project id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 

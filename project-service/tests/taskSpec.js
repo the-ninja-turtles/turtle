@@ -86,6 +86,8 @@ test("GET /project/:projectId/tasks should respond with project's tasks", (t) =>
 });
 
 test('POST /project/:projectId/tasks should create a new task', (t) => {
+  spy.reset();
+
   return request(app)
     .post(`/projects/${projectId}/tasks`)
     .set('Authorization', authorization(0))
@@ -97,8 +99,15 @@ test('POST /project/:projectId/tasks should create a new task', (t) => {
       t.equal(task.name, testTasks[3].name, 'Task name should match');
       t.equal(task.order, 1, 'Task should haver order = 1 (first task added in backlog)');
 
-      t.ok(spy.calledWith('task:add'), 'Event task:add should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'task:add', 'Event task:add should be published');
+      t.ok(acl.length, 'ACL should include at least 1 user');
+      t.ok(data.initiator, 'Payload should include initiator user id');
+      t.ok(data.projectId, 'Payload should include project Id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
@@ -161,6 +170,8 @@ test('GET /project/:projectId/tasks/:taskId should respond with task details', (
 });
 
 test('PUT /project/:projectId/tasks/:taskId should modify task', (t) => {
+  spy.reset();
+
   let params = {
     name: 'boo',
     description: 'round and cuddly ghost',
@@ -185,8 +196,15 @@ test('PUT /project/:projectId/tasks/:taskId should modify task', (t) => {
 
       t.assert(match, 'Parameters should match');
 
-      t.ok(spy.calledWith('task:change'), 'Event task:change should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'task:change', 'Event task:change should be published');
+      t.ok(acl.length, 'ACL should include at least 1 user');
+      t.ok(data.initiator, 'Payload should include the initiator');
+      t.ok(data.projectId, 'Payload should include project Id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
@@ -203,6 +221,8 @@ test('PUT /project/:projectId/tasks/:taskId should respond with 404 if userId or
 });
 
 test('DELETE /project/:projectId/tasks/:taskId should delete a task and respond with 204', (t) => {
+  spy.reset();
+
   return request(app)
     .delete(`/projects/${projectId}/tasks/${taskIds[0]}`)
     .set('Authorization', authorization(0))
@@ -219,8 +239,15 @@ test('DELETE /project/:projectId/tasks/:taskId should delete a task and respond 
     .then((task) => {
       t.notok(task, 'Task should no longer exist');
 
-      t.ok(spy.calledWith('task:delete'), 'Event task:delete should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'task:delete', 'Event task:delete should be published');
+      t.ok(acl.length, 'ACL should include at least 1 user');
+      t.ok(data.initiator, 'Payload should include the initiator');
+      t.ok(data.projectId, 'Payload should include project Id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 

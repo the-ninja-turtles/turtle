@@ -83,6 +83,8 @@ test("GET /projects should respond with user's projects", (t) => {
 });
 
 test('POST /projects should create a new project', (t) => {
+  spy.reset();
+
   return request(app)
     .post('/projects')
     .set('Authorization', authorization(0))
@@ -98,12 +100,20 @@ test('POST /projects should create a new project', (t) => {
       t.assert(sprint, 'The new project should have a sprint');
       t.equal(sprint.status, 0, 'The sprint should have status = 0');
 
-      t.ok(spy.calledWith('project:add'), 'Event project:add should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'project:add', 'Event project:add should be published');
+      t.ok(acl.length, 'ACL should have at least 1 user');
+      t.ok(data.id, 'Payload should include project id');
+      t.ok(data.message, 'Payload should include a message');
     });
 });
 
 test('POST /projects should still create a new project if missing emails list', (t) => {
+  spy.reset();
+
   return request(app)
     .post('/projects')
     .set('Authorization', authorization(0))
@@ -159,6 +169,8 @@ test('GET /projects/:projectId should respond with project details', (t) => {
 });
 
 test('PUT /projects/:projectId should modify project', (t) => {
+  spy.reset();
+
   let params = {
     name: 'supermario',
     length: 10
@@ -176,12 +188,24 @@ test('PUT /projects/:projectId should modify project', (t) => {
       t.equal(project.length, params.length, 'Project length (sprint duration) should be updated');
       t.ok(project.updatedAt, 'Project should have updatedAt property');
 
-      t.ok(spy.calledWith('project:change'), 'Event project:change should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'project:change', 'Event project:change should be published');
+      t.ok(acl.length, 'ACL should have at least 1 user');
+      t.ok(data.id, 'Payload should have project id');
+      t.ok(data.name, 'Payload should have project name');
+      t.equal(data.name, params.name, 'Name should match');
+      t.ok(data.length, 'Payload should have project length');
+      t.ok(data.initiator, 'Payload should have initiator user id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
 test('DELETE /projects/:projectId should delete a project and respond with 204', (t) => {
+  spy.reset();
+
   return request(app)
     .delete(`/projects/${projectIds[1]}`)
     .set('Authorization', authorization(0))
@@ -193,8 +217,16 @@ test('DELETE /projects/:projectId should delete a project and respond with 204',
     .then((project) => {
       t.notok(project, 'Project should no longer exist in database');
 
-      t.ok(spy.calledWith('project:delete'), 'Event project:delete should be published');
-      spy.reset();
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'project:delete', 'Event project:delete should be published');
+      t.ok(acl.length, 'ACL should have at least 1 user');
+      t.ok(data.id, 'Payload should have project id');
+      t.ok(data.name, 'Payload should have project name');
+      t.ok(data.initiator, 'Payload should have a initiator user id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
