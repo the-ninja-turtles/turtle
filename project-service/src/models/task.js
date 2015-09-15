@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
       }
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       defaultValue: ''
     },
     status: {

@@ -1,7 +1,7 @@
 export default (sequelize, DataTypes) => {
   let Project = sequelize.define('Project', {
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(40),
       validate: {
         notEmpty: true
       }
