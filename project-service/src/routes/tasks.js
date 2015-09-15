@@ -1,6 +1,7 @@
 import express from 'express';
 import R from 'ramda';
 import models from '../models';
+import publish from '../publish';
 
 // for URLs
 // /projects/:projectId/tasks
@@ -124,7 +125,12 @@ router.post('/', (req, res, next) => {
       sprintId: req.body.sprintId || null // optional parameter
     })
     .then((task) => {
-      res.status(201).json(R.prop('dataValues')(task));
+      res.status(201).json(task.dataValues);
+
+      // publish
+      publish('task:add', req.project.acl, R.merge(task.dataValues, {
+        message: `${req.user.username} added a new task to project ${req.project.name}.`
+      }));
     });
   });
 });
@@ -180,6 +186,11 @@ router.put('/:taskId', (req, res, next) => {
     })
     .then((task) => {
       res.status(200).json(task.dataValues);
+
+      // publish
+      publish('task:change', req.project.acl, R.merge(task.dataValues, {
+        message: `${req.user.username} modified a task in project ${req.project.name}.`
+      }));
     });
   });
 });
@@ -188,6 +199,11 @@ router.delete('/:taskId', (req, res, next) => {
   req.task.destroy()
     .then(() => {
       res.sendStatus(204);
+
+      // publish
+      publish('task:delete', req.project.acl, {
+        message: `${req.user.username} deleted a task from project ${req.project.name}`
+      });
     });
 });
 

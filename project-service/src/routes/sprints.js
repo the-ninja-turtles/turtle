@@ -1,6 +1,7 @@
 import express from 'express';
 import R from 'ramda';
 import models from '../models';
+import publish from '../publish';
 
 // for URLs
 // /projects/:projectId/sprints/start
@@ -91,6 +92,11 @@ router.post('/start', (req, res, next) => {
     ])
     .then(() => {
       res.sendStatus(204);
+
+      // publish
+      publish('sprint:start', req.project.acl, {
+        message: `A new sprint has been started for project ${req.project.name}.`
+      });
     });
   });
 });
@@ -148,6 +154,11 @@ router.post('/end', (req, res, next) => {
     })
     .then(() => {
       res.sendStatus(204);
+
+      // publish
+      publish('sprint:end', req.project.acl, {
+        message: `The current sprint for project ${req.project.name} has ended.`
+      });
     });
   });
 });
