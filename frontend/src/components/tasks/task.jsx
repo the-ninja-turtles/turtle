@@ -62,7 +62,7 @@ let Task = React.createClass({
       description: this.props.description,
       score: this.props.score,
       sprintId: this.props.sprintId,
-      userId: this.props.user ? this.props.user : null
+      userId: this.props.user ? this.props.user.id : null
     });
   },
 
