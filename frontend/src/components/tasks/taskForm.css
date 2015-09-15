@@ -1,3 +1,7 @@
+.modal-create-task {
+  width: 360px;
+}
+
 .create-task {
   .name {
     width: 100%;
@@ -20,6 +24,7 @@
     width: 50px;
     float: right;
     margin: 10px 0;
+    padding-right: 0;
     input {
       margin: 0;
     }

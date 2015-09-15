@@ -19,16 +19,23 @@
   margin: 20px;
   position: relative;
   transition: all 0.15s ease-in-out;
+  word-break: break-word;
   .name {
     display: inline-block;
     line-height: 28px;
     vertical-align: middle;
   }
   .close {
-    top: 8px;
-    right: 13px;
+    top: 2px;
+    right: 8px;
     position: absolute;
     display: none;
+    text-shadow: none;
+    font-size: 30px;
+  }
+  .close:focus,
+  .close:active {
+    outline: none;
   }
 }
 
@@ -55,4 +62,28 @@
   color: #777;
   background-color: #F8F8F8;
   border-color: #999;
+}
+
+.project-enter {
+  opacity: 0.01;
+  transform: scale(0.01, 0.01);
+}
+
+.project-enter.project-enter-active {
+  opacity: 1;
+  transform: scale(1.0, 1.0);
+  transition: all .25s ease-in;
+}
+
+.project-leave {
+  opacity: 1;
+}
+
+.project-leave.project-leave-active {
+  opacity: 0.01;
+  transition: all .25s ease-in;
+}
+
+.modal-create-project {
+  width: 400px;
 }

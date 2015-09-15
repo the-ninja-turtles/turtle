@@ -1,10 +1,12 @@
-import React from 'react';
+import React from 'react/addons';
 import {Navigation} from 'react-router';
 import Reflux from 'reflux';
 import Item from './item.jsx';
 import CreateProject from './createProject.jsx';
 import {DashboardActions} from '../../actions/actions';
 import DashboardStore from '../../stores/dashboardStore';
+
+let ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 let Dashboard = React.createClass({
   // `ListenerMixin` will unsubscribe components from stores upon unmounting
@@ -49,11 +51,21 @@ let Dashboard = React.createClass({
 
         <ul>
           <Item id='0' name='+ New Project' click={this.open} isCreateProject='true'/>
-          {
-            this.state.projects.map((project) => {
-              return <Item key={project.id} id={project.id} name={project.name} click={this.enterProject} delete={this.deleteProject} />;
-            })
-          }
+          <ReactCSSTransitionGroup transitionName='project'>
+            {
+              this.state.projects.map((project) => {
+                return (
+                  <Item
+                    key={project.id}
+                    id={project.id}
+                    name={project.name}
+                    click={this.enterProject}
+                    delete={this.deleteProject}
+                  />
+                );
+              })
+            }
+          </ReactCSSTransitionGroup>
         </ul>
       </div>
     );

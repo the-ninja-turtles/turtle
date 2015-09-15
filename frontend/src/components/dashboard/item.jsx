@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import {Glyphicon} from 'react-bootstrap';
+import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 let Item = React.createClass({
 
@@ -16,13 +16,19 @@ let Item = React.createClass({
   },
 
   render() {
+    let deleteTooltip = (
+      <Tooltip id='tip-delete'><strong>Permanently</strong> Delete Project</Tooltip>
+    );
+
     let classes = classNames({
       'item': true,
       'new-project': this.props.isCreateProject
     });
     return (
       <li className={classes} onClick={this.handleClick}>
-        <button className='close' onClick={this.deleteProject}><Glyphicon glyph='remove' /></button>
+        <OverlayTrigger rootClose placement='top' overlay={deleteTooltip}>
+          <button className='close' onClick={this.deleteProject}>&times;</button>
+        </OverlayTrigger>
         <p className='name'>{this.props.name}</p>
       </li>
     );

@@ -1,22 +1,17 @@
 import React from 'react';
-import {Modal, Input} from 'react-bootstrap';
+import {Modal, Input, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import Member from './member.jsx';
 import {DashboardActions as Actions} from '../../actions/actions.js';
 
 let CreateProject = React.createClass({
   getInitialState() {
     return {
+      projectName: '',
       invitees: [],
       inviteeEmail: '',
       disableInvite: true,
       disableCreate: true
     };
-  },
-
-  componentDidUpdate(prevProps, prevState) {
-    if (!prevProps.showModal && this.props.showModal) {
-      React.findDOMNode(this.refs.projectName).focus();
-    }
   },
 
   checkEmail(e) {
@@ -48,7 +43,10 @@ let CreateProject = React.createClass({
   },
 
   checkName(e) {
-    this.setState({disableCreate: !e.target.value});
+    this.setState({
+      disableCreate: !e.target.value,
+      projectName: e.target.value.substr(0, 40)
+    });
   },
 
   createProject() {
@@ -95,21 +93,28 @@ let CreateProject = React.createClass({
       </button>
     );
 
+    let letterCount = (
+      <Tooltip id='project-letter-count'>{40 - this.state.projectName.length}</Tooltip>
+    );
+
     return (
-      <Modal show={this.props.showModal} onHide={this.close} bsSize='md'>
+      <Modal show={this.props.showModal} onHide={this.close} dialogClassName='modal-create-project'>
         <Modal.Header closeButton>
           <Modal.Title>Create a New Project</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <div className='create-project'>
-            <input
-              type='text'
-              className='name'
-              ref='projectName'
-              placeholder='Title'
-              onChange={this.checkName}
-            />
+            <OverlayTrigger trigger='focus' placement='right' overlay={letterCount}>
+              <input
+                type='text'
+                className='name'
+                ref='projectName'
+                placeholder='Title'
+                onChange={this.checkName}
+                value={this.state.projectName}
+              />
+            </OverlayTrigger>
 
             <label className='team'>Team Members</label>
             <form>

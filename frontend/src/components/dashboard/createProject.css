@@ -30,7 +30,7 @@
     list-style-type: none;
     clear:both;
     overflow: auto;
-    margin: 4px 0;
+    margin: 8px 0;
     line-height: 30px;
     .email {
       float: left;

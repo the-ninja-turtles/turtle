@@ -2,7 +2,7 @@ import React from 'react';
 import Reflux from 'reflux';
 import Router from 'react-router';
 import _ from 'lodash';
-import {Modal, Input} from 'react-bootstrap';
+import {Modal, Input, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import {ProjectActions, SprintActions, TaskFormActions} from '../../actions/actions';
 import TaskFormStore from '../../stores/taskFormStore';
 
@@ -78,7 +78,7 @@ let TaskForm = React.createClass({
 
   handleChanges(e) {
     let newProperties = _.extend({}, this.state.taskProperties);
-    newProperties.name = React.findDOMNode(this.refs.taskName).value;
+    newProperties.name = React.findDOMNode(this.refs.taskName).value.substr(0, 255);
     newProperties.description = React.findDOMNode(this.refs.taskDescription).value;
     newProperties.userId = parseInt(this.refs.taskAssignment.getValue()) || null;
     newProperties.score = Math.min(999, Math.max(1, React.findDOMNode(this.refs.taskScore).value));
@@ -151,14 +151,23 @@ let TaskForm = React.createClass({
       );
     };
 
+    let letterCount = (
+      <Tooltip id='task-letter-count'>{255 - this.state.taskProperties.name.length}</Tooltip>
+    );
+
+    let scoreTooltip = (
+      <Tooltip id='tip-score'>Number between 1 - 999</Tooltip>
+    );
+
     return (
-      <Modal show={this.state.show} onHide={this.close} bsSize='sm'>
+      <Modal show={this.state.show} onHide={this.close} dialogClassName='modal-create-task'>
         <Modal.Header closeButton>
           <Modal.Title>Create a New Task</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <form className='create-task'>
+            <OverlayTrigger trigger='focus' placement='right' overlay={letterCount}>
             <input
               type='text'
               className='name'
@@ -167,6 +176,7 @@ let TaskForm = React.createClass({
               onChange={this.handleChanges}
               value={this.state.taskProperties.name}
             />
+            </OverlayTrigger>
 
             <textarea
               className='description'
@@ -196,14 +206,16 @@ let TaskForm = React.createClass({
 
             <div className='score'>
               <label>Score:</label>
-              <input
-                type='number'
-                className='score'
-                ref='taskScore'
-                min='1'
-                onChange={this.handleChanges}
-                value={this.state.taskProperties.score}
-              />
+              <OverlayTrigger placement='right' overlay={scoreTooltip}>
+                <input
+                  type='number'
+                  className='score'
+                  ref='taskScore'
+                  min='1'
+                  onChange={this.handleChanges}
+                  value={this.state.taskProperties.score}
+                />
+              </OverlayTrigger>
             </div>
           </form>
         </Modal.Body>
