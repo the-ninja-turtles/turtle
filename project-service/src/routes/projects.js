@@ -1,6 +1,7 @@
 import express from 'express';
 import R from 'ramda';
 import models from '../models';
+import publish from '../publish';
 
 // for URLs
 // /projects/
@@ -39,8 +40,15 @@ export const validation = (req, res, next, projectId) => {
     if (!project) {
       return res.status(404).json(msg.project[404]);
     }
-    req.project = project;
-    next();
+
+    project.getUsers().then((users) => {
+      req.project = project;
+      if (users) {
+        req.project.users = users;
+        req.project.acl = R.pluck('auth0Id')(users);
+      }
+      next();
+    });
   });
 };
 
@@ -65,7 +73,6 @@ router.post('/', (req, res, next) => {
     return res.status(400).json(msg.projects[400]);
   }
 
-  console.log(req.body.emails);
   Promise.all(req.body.emails.map((email) => {
     return new Promise((resolve) => {
       models.User.findOne({where: {email: email}}).then(resolve);
@@ -76,7 +83,9 @@ router.post('/', (req, res, next) => {
       return !users[i];
     });
 
-    let userIds = R.pluck('id')(R.filter(R.identity)(users)); // valid user ids
+    users = R.filter(R.identity)(users); // valid users
+    let acl = R.pluck('auth0Id')(users);
+    let userIds = R.pluck('id')(users);
 
     let params = {};
     params.name = req.body.name;
@@ -88,6 +97,11 @@ router.post('/', (req, res, next) => {
       // create default sprint and add all valid users
       Promise.all([project.createSprint(), project.addUsers(userIds)]).then(() => {
         res.status(201).json(project.dataValues);
+
+        // publish
+        publish('project:add', acl, R.merge(project.dataValues, {
+          message: `A new project ${project.name} has been added to your dashboard.`
+        }));
       });
     });
   });
@@ -125,7 +139,9 @@ router.get('/:projectId', (req, res, next) => {
     if (currentSprint) { // if there is an ongoing sprint at the moment
       currentSprint.tasks = R.filter(R.propEq('sprintId', currentSprint.id))(project.tasks);
     }
-    nextSprint.tasks = R.filter(R.propEq('sprintId', nextSprint.id))(project.tasks);
+    if (nextSprint) {
+      nextSprint.tasks = R.filter(R.propEq('sprintId', nextSprint.id))(project.tasks);
+    }
     let backlog = R.filter(R.propEq('sprintId', null))(project.tasks);
 
     res.status(200).json({
@@ -144,13 +160,17 @@ router.put('/:projectId', (req, res, next) => {
   if (!(req.body.name || req.body.length)) {
     return res.status(400).json(msg.project[400]);
   }
-
   req.project.update({
     name: req.body.name || req.project.getDataValue('name'),
     length: req.body.length || req.project.getDataValue('length')
   })
   .then((project) => {
     res.status(200).json(project.dataValues);
+
+    // publish
+    publish('project:change', req.project.acl, R.merge(project.dataValues, {
+      message: `${req.user.username} has modified project details for ${project.name}.`
+    }));
   });
 });
 
@@ -158,6 +178,12 @@ router.delete('/:projectId', (req, res, next) => {
   req.project.destroy()
     .then(() => {
       res.sendStatus(204); // same as res.status(204).send('No Content');
+
+      publish('project:delete', req.project.acl, {
+        id: req.project.id,
+        name: req.project.name,
+        message: `The project ${req.project.name} has been deleted by ${req.user.username}.`
+      });
     });
 });
 

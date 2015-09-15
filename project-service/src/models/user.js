@@ -7,7 +7,6 @@ export default (sequelize, DataTypes) => {
     },
     email: { // email from decoded JWT provided by Auth0
       type: DataTypes.STRING,
-      unique: true,
       validate: {
         isEmail: true,
         notEmpty: true
