@@ -1,15 +1,21 @@
 import request from 'supertest-as-promised';
 import test from 'blue-tape';
+import sinon from 'sinon';
 import R from 'ramda';
 import {authorization, profile} from '../../tests/fakeauth';
 import {projects as testProjects, sprints as testSprints, tasks as testTasks} from '../../tests/fixtures';
 import app from '../src/app';
+import router from '../src/routes/projects';
 import models from '../src/models';
 
 const before = test;
 const after = test;
 
+let userIds;
 let projectIds;
+
+let spy = sinon.spy();
+router.__Rewire__('publish', spy);
 
 before('Before - Project Spec', (t) => {
   return models.sequelize.sync({
@@ -30,6 +36,7 @@ before('Before - Project Spec', (t) => {
     ]);
   })
   .then((users) => { // create a test project for each user
+    userIds = R.pluck('id')(users);
     return Promise.all([
       users[0].createProject(testProjects[0]),
       users[0].createProject(testProjects[2]),
@@ -39,6 +46,7 @@ before('Before - Project Spec', (t) => {
   .then((projects) => {
     projectIds = R.pluck('id')(projects);
     return Promise.all([
+      projects[2].addUser(userIds[0]), // add user 0 to project
       projects[0].createSprint(testSprints[1]), // create the "planning" sprint
       projects[0].createTask(testTasks[0]),
       projects[0].createTask(testTasks[1]),
@@ -48,7 +56,7 @@ before('Before - Project Spec', (t) => {
     ]);
   })
   .then((results) => {
-    let tasks = results.slice(1);
+    let tasks = results.slice(2);
     return Promise.all([
       tasks[0].update({order: 1}),
       tasks[1].update({order: 5}),
@@ -89,6 +97,9 @@ test('POST /projects should create a new project', (t) => {
     .then((sprint) => {
       t.assert(sprint, 'The new project should have a sprint');
       t.equal(sprint.status, 0, 'The sprint should have status = 0');
+
+      t.ok(spy.calledWith('project:add'), 'Event project:add should be published');
+      spy.reset();
     });
 });
 
@@ -123,8 +134,8 @@ test('GET /projects/:projectId should respond with 404 when projectId does not e
 
 test('GET /projects/:projectId should respond with 404 if projectId exists but does not belong to user', (t) => {
   return request(app)
-    .get(`/projects/${projectIds[2]}`) // project that belongs to another user
-    .set('Authorization', authorization(0))
+    .get(`/projects/${projectIds[0]}`) // project that belongs to another user
+    .set('Authorization', authorization(1))
     .expect(404)
     .then((res) => {
       t.pass('404 NOT FOUND - user does not belong to this project');
@@ -154,8 +165,8 @@ test('PUT /projects/:projectId should modify project', (t) => {
   };
 
   return request(app)
-    .put(`/projects/${projectIds[0]}`)
-    .set('Authorization', authorization(0))
+    .put(`/projects/${projectIds[2]}`)
+    .set('Authorization', authorization(1))
     .send(params)
     .expect(200)
     .then((res) => {
@@ -164,6 +175,9 @@ test('PUT /projects/:projectId should modify project', (t) => {
       t.equal(project.name, params.name, 'Project name should be updated');
       t.equal(project.length, params.length, 'Project length (sprint duration) should be updated');
       t.ok(project.updatedAt, 'Project should have updatedAt property');
+
+      t.ok(spy.calledWith('project:change'), 'Event project:change should be published');
+      spy.reset();
     });
 });
 
@@ -178,6 +192,9 @@ test('DELETE /projects/:projectId should delete a project and respond with 204',
     })
     .then((project) => {
       t.notok(project, 'Project should no longer exist in database');
+
+      t.ok(spy.calledWith('project:delete'), 'Event project:delete should be published');
+      spy.reset();
     });
 });
 

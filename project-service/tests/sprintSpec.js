@@ -1,9 +1,11 @@
 import request from 'supertest-as-promised';
 import test from 'blue-tape';
+import sinon from 'sinon';
 import R from 'ramda';
 import {authorization, profile} from '../../tests/fakeauth';
 import {projects as testProjects, sprints as testSprints, tasks as testTasks} from '../../tests/fixtures';
 import app from '../src/app';
+import router from '../src/routes/sprints';
 import models from '../src/models';
 
 const before = test;
@@ -12,6 +14,9 @@ const after = test;
 let projectId;
 let sprintIds;
 let taskIds;
+
+let spy = sinon.spy();
+router.__Rewire__('publish', spy);
 
 // sync database and create fixtures
 before('Before - Sprint Spec', (t) => {
@@ -137,6 +142,9 @@ test('POST /projects/:projectId/sprints/end should end the current ongoing sprin
 
       t.equal(sprint.status, 2, 'The prior ongoing sprint should now have status = 2 (complete)');
       t.equal(task.sprintId, null, 'Unfinished tasks should be moved to the backlog');
+
+      t.ok(spy.calledWith('sprint:end'), 'Event sprint:end should be published');
+      spy.reset();
     });
 });
 
@@ -161,6 +169,9 @@ test('POST /projects/:projectId/sprints/start should start the next sprint', (t)
     })
     .then((sprint) => {
       t.equal(sprint.status, 1, 'The prior planning sprint should now have status = 1 (ongoing)');
+
+      t.ok(spy.calledWith('sprint:start'), 'Event sprint:start should be published');
+      spy.reset();
     });
 });
 
