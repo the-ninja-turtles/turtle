@@ -12,7 +12,9 @@ let TaskFormStore = Reflux.createStore({
 
   onSaveTask(id, properties) {
     projects.id(id).tasks.create(_.pick(properties, 'name', 'score', 'description', 'userId', 'sprintId')).then((response) => {
-      this.trigger({response: response});
+      if (!response.error) {
+        this.trigger({success: true});
+      }
     });
   },
 
@@ -21,9 +23,19 @@ let TaskFormStore = Reflux.createStore({
   },
 
   onUpdateTask(params) {
-    // console.log('params', params);
     projects.id(params.projectId).tasks.id(params.taskId).update(params.taskProperties).then((response) => {
-      this.trigger({response: response});
+      if (!response.error) {
+        this.trigger({success: true});
+      }
+    });
+  },
+
+  onDeleteTask(params) {
+    // console.log('params', params);
+    projects.id(params.projectId).tasks.id(params.taskId).delete().then((response) => {
+      if (!response) {
+        this.trigger({success: true});
+      }
     });
   }
 

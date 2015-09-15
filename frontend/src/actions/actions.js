@@ -47,5 +47,6 @@ export const TaskFormActions = Reflux.createActions({
   createTask: {},
   saveTask: {},
   editTask: {},
-  updateTask: {}
+  updateTask: {},
+  deleteTask: {}
 });

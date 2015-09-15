@@ -24,7 +24,7 @@ let TaskForm = React.createClass({
   },
 
   onStoreUpdate(params) {
-    if (params.response && !params.response.error) {
+    if (params.success) {
       this.closeAndUpdate();
     }
     if (params.action === 'create') {
@@ -104,7 +104,52 @@ let TaskForm = React.createClass({
     }
   },
 
+  deleteTask() {
+    let params = {
+      projectId: this.props.project,
+      taskId: this.state.taskProperties.id
+    };
+    TaskFormActions.deleteTask(params);
+  },
+
   render() {
+
+    let deleteButton = () => {
+      if (!this.state.isNewTask) {
+        return (
+          <button
+            className='btn danger'
+            style={{display: 'inline-block'}}
+            onClick={this.deleteTask}
+          >
+            Delete task
+          </button>
+        );
+      }
+    };
+
+    let createOrUpdateButton = () => {
+      let classes, text, onclick;
+      if (this.state.isNewTask) {
+        classes = 'btn block primary';
+        text = 'Create task';
+        onclick = this.createTask;
+      } else {
+        classes = 'btn primary';
+        text = 'Update task';
+        onclick = this.updateTask;
+      }
+      return (
+        <button
+          className={classes}
+          style={{display: 'inline-block'}}
+          disabled={this.state.disableCreate}
+          onClick={onclick}
+        >
+          {text}
+        </button>
+      );
+    };
 
     return (
       <Modal show={this.state.show} onHide={this.close} bsSize='sm'>
@@ -164,13 +209,8 @@ let TaskForm = React.createClass({
         </Modal.Body>
 
         <Modal.Footer>
-          <button
-            className='btn block primary'
-            disabled={this.state.disableCreate}
-            onClick={this.state.isNewTask ?  this.createTask : this.updateTask}
-          >
-            {this.state.isNewTask ? 'Create task' : 'Update task'}
-          </button>
+          {deleteButton()}
+          {createOrUpdateButton()}
         </Modal.Footer>
       </Modal>
     );
