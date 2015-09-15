@@ -1,7 +1,7 @@
 import React from 'react';
 import TaskContainer from '../tasks/taskContainer.jsx';
-import CreateTask from '../tasks/createTask.jsx';
-import {ProjectActions} from '../../actions/actions.js';
+import TaskForm from '../tasks/taskForm.jsx';
+import {TaskFormActions} from '../../actions/actions.js';
 
 let Backlog = React.createClass({
   propTypes: {
@@ -10,33 +10,20 @@ let Backlog = React.createClass({
     tasks: React.PropTypes.array.isRequired
   },
 
-  getInitialState() {
-    return {
-      showModal: false
-    };
-  },
-
-  close() {
-    this.setState({showModal: false});
-    ProjectActions.fetchProject(this.props.project);
-  },
-
-  open() {
-    this.setState({showModal: true});
+  createTask() {
+    TaskFormActions.createTask();
   },
 
   render() {
     return (
       <div className='fill'>
         <header className='task-container-header'>
-          <CreateTask
-            showModal={this.state.showModal}
+          <TaskForm
             project={this.props.project}
-            close={this.close}
             users={this.props.users}
           />
           <h1 className='left'>Backlog</h1>
-          <button className='btn primary right' onClick={this.open}>+ New Task</button>
+          <button className='btn primary right' onClick={this.createTask}>+ New Task</button>
           <div className='clearfix'></div>
         </header>
         <TaskContainer tasks={this.props.tasks} users={this.props.users} empty='No tasks in your backlog' />

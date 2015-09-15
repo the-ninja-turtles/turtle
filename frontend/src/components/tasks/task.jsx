@@ -1,6 +1,6 @@
 import React, {PropTypes} from 'react/addons';
 import {DragSource, DropTarget} from 'react-dnd';
-import {TaskActions, SprintActions} from '../../actions/actions.js';
+import {TaskActions, SprintActions, TaskFormActions} from '../../actions/actions.js';
 
 const taskSource = {
   beginDrag(props) {
@@ -54,6 +54,18 @@ let collectForDrop = (connect, monitor) => {
 
 let Task = React.createClass({
 
+  editTask() {
+    TaskFormActions.editTask({
+      action: 'edit',
+      id: this.props.id,
+      name: this.props.name,
+      description: this.props.description,
+      score: this.props.score,
+      sprintId: this.props.sprintId,
+      userId: this.props.user ? this.props.user : null
+    });
+  },
+
   render() {
     const {connectDragSource, isDragging, connectDropTarget} = this.props;
 
@@ -75,7 +87,7 @@ let Task = React.createClass({
     };
 
     return connectDragSource(connectDropTarget(
-      <div className='task' style={taskStyle}>
+      <div className='task' style={taskStyle} onDoubleClick={this.editTask}>
         <span className='task-name'>{this.props.name}</span>
         <span className='task-description'>{this.props.description}</span>
         <span className='task-score'>{this.props.score}</span>

@@ -8,7 +8,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd/modules/backends/HTML5';
 
 import SprintColumn from './column.jsx';
-import CreateTask from '../tasks/createTask.jsx';
+import TaskForm from '../tasks/taskForm.jsx';
 
 let SprintBoard = React.createClass({
   mixins: [Reflux.ListenerMixin],
@@ -20,8 +20,7 @@ let SprintBoard = React.createClass({
       sprint: {
         columns: [],
         tasksByColumn: []
-      },
-      showModal: false
+      }
     };
   },
 
@@ -32,11 +31,6 @@ let SprintBoard = React.createClass({
 
   onStoreUpdate(data) {
     this.setState(data);
-  },
-
-  close() {
-    this.setState({showModal: false});
-    SprintActions.fetchSprint(this.state.id);
   },
 
   render() {
@@ -55,10 +49,8 @@ let SprintBoard = React.createClass({
 
     return (
       <div className='sprint-board'>
-        <CreateTask
-          showModal={this.state.showModal}
+        <TaskForm
           project={this.state.id}
-          close={this.close}
           users={this.state.users}
           sprint={this.state.sprint.id}
         />

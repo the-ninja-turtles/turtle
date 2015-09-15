@@ -55,6 +55,7 @@ let SprintColumn = React.createClass({
           description={task.description}
           score={task.score}
           status={task.status}
+          sprintId={task.sprintId}
           user={user}
           isOnSprintboard={true}
         />
