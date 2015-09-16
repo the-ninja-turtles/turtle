@@ -1,23 +1,33 @@
 .task {
   border: 1px solid #ccc;
-  background: #FFF;
+  background: #f8f8f8;
+  color: black;
   text-align: left;
   position: relative;
-  margin: 0 10px 10px 10px;
+  margin: 0 10px 14px 10px;
+  padding-bottom: 3px;
+  border-radius: 4px;
 
-  .task-name {
+  .task-header {
     background: #222;
     color: #EEE;
+    padding: 5px 10px;
+    height: 30px;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+  }
+
+  .task-name {
     display: block;
-    padding: 5px 20px;
+    padding: 5px 10px 0 10px;
     font-size: 16px;
+    font-weight: bold;
   }
 
   .task-description {
     margin: 10px 0;
-    color: #222;
     display: block;
-    padding: 5px 20px;
+    padding: 0 10px;
   }
 
   .task-username {
@@ -25,30 +35,34 @@
   }
 
   .task-score {
-    height: 40px;
-    width: 40px;
-    line-height: 40px;
+    height: 28px;
+    width: 28px;
+    line-height: 28px;
     font-weight: bold;
-    background: #FFF;
+    background: #4d4d4c;
+    color: white;
     text-align: center;
     border-radius: 100%;
     display: block;
-    border: 1px solid #ccc;
     position: absolute;
-    top: -5px;
-    right: 50px;
+    top: 1px;
+    right: 2px;
   }
 
   .task-picture {
-    height: 50px;
-    width: 50px;
-    border-radius: 100%;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
     display: block;
-    background-size: 50px 50px;
-    border: 1px solid #ccc;
+    text-align: center;
+    line-height: 40px;
+    background-color: #eee;
+    background-size: contain;
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -7px;
+    right: 36px;
+    box-shadow: 1px 1px 5px black;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -60,6 +74,7 @@
   position: relative;
   margin: 0 10px 20px 10px;
   width: 95%;
+  border-radius: 4px;
 
   .task-name {
     display: block;
@@ -102,14 +117,20 @@
   }
 
   .task-picture {
-    height: 100%;
+    height: 3.9em;
     width: 3.9em;
+    line-height: 3.9em;
+    text-align: center;
     display: block;
     position: absolute;
+    background-color: #eee;
     background-size: contain;
     z-index: 1;
-    top: 0;
-    right: 0;
+    top: -1px;
+    right: -1px;
     border: 1px solid #ccc;
+    border-left: none;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
 }

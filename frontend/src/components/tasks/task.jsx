@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react/addons';
 import Router from 'react-router';
 import {DragSource, DropTarget} from 'react-dnd';
 import {TaskActions, SprintActions, TaskFormActions} from '../../actions/actions.js';
+import {Glyphicon} from 'react-bootstrap';
 
 const taskSource = {
   beginDrag(props) {
@@ -85,11 +86,17 @@ let Task = React.createClass({
           <span className='task-username'>{this.props.user.username}</span>,
           <span className='task-picture' style={taskPictureStyle}></span>
         ];
+      } else {
+        return [
+          <span className='task-username'>Not assigned</span>,
+          <span className='task-picture'><Glyphicon glyph='user' /></span>
+        ];
       }
     };
 
     return connectDragSource(connectDropTarget(
       <div className={this.isActive('sprint') ? 'task' : 'task-in-project-view'} style={taskStyle} onDoubleClick={this.editTask}>
+        <div className='task-header'> </div>
         <span className='task-name'>{this.props.name}</span>
         <span className='task-description'>{this.props.description}</span>
         <span className='task-score'>{this.props.score}</span>

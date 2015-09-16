@@ -55,7 +55,7 @@ let Project = React.createClass({
     return (
       <div className='fill'>
         {current()}
-        <div className='flex-container'>
+        <div className='flex-container two-thirds center-block'>
           <div className='flex-container-item half'>
             <Backlog project={this.state.id} tasks={this.state.project.backlog} users={this.state.project.users} />
           </div>

@@ -24,6 +24,7 @@ let TaskForm = React.createClass({
   },
 
   onStoreUpdate(params) {
+    this.setState(this.newTaskFormState);
     if (params.success) {
       this.closeAndUpdate();
     }
@@ -90,11 +91,13 @@ let TaskForm = React.createClass({
   },
 
   close() {
-    this.setState(this.newTaskFormState);
+    this.setState({show: false});
+    // this.setState(this.newTaskFormState);
   },
 
   closeAndUpdate() {
-    this.setState(this.newTaskFormState);
+    this.setState({show: false});
+    // this.setState(this.newTaskFormState);
     // if this task form was opened in the project view, refresh the project view
     // if this task form was opened in the sprintboard view, refresh the sprint view
     ProjectActions.fetchProject(this.props.project);
@@ -109,6 +112,13 @@ let TaskForm = React.createClass({
   },
 
   render() {
+    let heading = () => {
+      if (this.state.isNewTask) {
+        return 'Create a New Task';
+      } else {
+        return 'Edit Task';
+      }
+    };
 
     let deleteButton = () => {
       if (!this.state.isNewTask) {
@@ -158,7 +168,7 @@ let TaskForm = React.createClass({
     return (
       <Modal show={this.state.show} onHide={this.close} dialogClassName='modal-create-task'>
         <Modal.Header closeButton>
-          <Modal.Title>Create a New Task</Modal.Title>
+          <Modal.Title>{heading()}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
