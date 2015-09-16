@@ -54,6 +54,7 @@
 
 .task-in-project-view{
   border: 1px solid #ccc;
+  background: #f8f8f8;
   height: 3.9em;
   text-align: left;
   position: relative;
@@ -101,7 +102,7 @@
   }
 
   .task-picture {
-    height: 3.9em;
+    height: 100%;
     width: 3.9em;
     display: block;
     position: absolute;
