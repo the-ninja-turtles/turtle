@@ -193,44 +193,48 @@ router.delete('/:projectId', (req, res, next) => {
 /* === /projects/:projectId/positions === */
 
 router.post('/:projectId/positions', (req, res, next) => {
-  if (!Array.isArray(req.body.positions)) {
+  if (!(req.body.id && req.body.index >= 0)) {
     return res.status(400).json(msg.project[400]);
   }
 
   // fetch all backlog tasks
   req.project.getTasks({where: {sprintId: null}})
     .then((tasks) => {
-      // create tasks hash
-      let tasksHash = tasks.reduce((hash, task) => {
-        hash[task.id] = task;
-        return hash;
-      }, {});
+      tasks = tasks.sort((a, b) => {
+        return a.getDataValue('order') - b.getDataValue('order');
+      });
 
-      // create positions hash -
-      // - the order to be assigned to the task is the index + 1
-      // - only add to hash if the id corresponds to an existing task
-      let posHash = req.body.positions.reduce((hash, id, idx) => {
-        if (tasksHash[id]) {
-          hash[id] = idx + 1;
-        }
-        return hash;
-      }, {});
+      let oldIndex = R.findIndex(R.propEq('id', req.body.id))(tasks);
+      let newIndex = Math.min(req.body.index, tasks.length - 1);
 
-      // both hashes should have the same number of tasks, otherwise it means
-      // the `positions` array did not have all the backlog tasks
-      if (Object.keys(tasksHash).length !== Object.keys(posHash).length) {
+      if (oldIndex === -1) { // if task id does not exist, send 400
         return res.status(400).json(msg.project[400]);
       }
 
+      let target = tasks.splice(oldIndex, 1)[0]; // extract the task
+      tasks.splice(newIndex, 0, target); // insert it at desired index
+
       // update each task's `order` and send success response
-      Promise.all(req.body.positions.map((id) => {
-        return tasksHash[id].update({order: posHash[id]});
+      Promise.all(tasks.map((task, idx) => {
+        return task.update({order: idx + 1});
       }))
       .then((tasks) => {
         let data = R.pluck('dataValues')(tasks).sort((a, b) => {
           return a.order - b.order;
         });
         res.status(200).json(data);
+
+        // publish
+        publish('task:reorder', req.project.acl, {
+          id: target.id,
+          status: target.status,
+          oldIndex,
+          newIndex,
+          sprintId: null,
+          projectId: req.project.id,
+          initiator: req.user.model.id,
+          message: `${req.user.model.username} reordered a task in the backlog.`
+        });
       });
     });
 });

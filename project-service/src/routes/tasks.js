@@ -204,6 +204,8 @@ router.delete('/:taskId', (req, res, next) => {
 
       // publish
       publish('task:delete', req.project.acl, {
+        id: req.task.id,
+        sprintId: req.task.sprintId,
         projectId: req.project.id,
         initiator: req.user.model.id,
         message: `${req.user.model.username} deleted a task from project ${req.project.name}`
