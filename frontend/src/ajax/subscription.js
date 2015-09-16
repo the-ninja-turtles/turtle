@@ -15,8 +15,10 @@ export default class Subscription {
     filter = filter || _.identity;
     if (this._sub) {
       this._sub.then((es) => {
-        es.addEventListener(resource + ':' + event, (e) => {
+        let channel = resource + ':' + event;
+        es.addEventListener(channel, (e) => {
           let data = JSON.parse(e.data);
+          data.event = channel;
           filter(data) && callback(data);
         }, false);
       });

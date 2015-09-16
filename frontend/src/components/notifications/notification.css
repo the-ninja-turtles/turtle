@@ -1,5 +1,4 @@
 .notification-bar {
   background-color: #61ACEA !important;
-  top: 60px;
-  bottom: auto !important;
+  z-index: 999999;
 }

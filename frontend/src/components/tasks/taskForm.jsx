@@ -3,7 +3,7 @@ import Reflux from 'reflux';
 import Router from 'react-router';
 import _ from 'lodash';
 import {Modal, Input, OverlayTrigger, Tooltip} from 'react-bootstrap';
-import {ProjectActions, SprintActions, TaskFormActions} from '../../actions/actions';
+import {ProjectActions, TaskFormActions} from '../../actions/actions';
 import TaskFormStore from '../../stores/taskFormStore';
 
 let TaskForm = React.createClass({
@@ -97,11 +97,7 @@ let TaskForm = React.createClass({
     this.setState(this.newTaskFormState);
     // if this task form was opened in the project view, refresh the project view
     // if this task form was opened in the sprintboard view, refresh the sprint view
-    if (this.isActive('project')) {
-      ProjectActions.fetchProject(this.props.project);
-    } else if (this.isActive('sprint')) {
-      SprintActions.fetchSprint(this.props.project);
-    }
+    ProjectActions.fetchProject(this.props.project);
   },
 
   deleteTask() {

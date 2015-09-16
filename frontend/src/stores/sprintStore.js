@@ -14,16 +14,14 @@ const SprintStore = Reflux.createStore({
     });
   },
 
-  onFetchSprint(id) {
-    projects.id(id).fetch().then((project) => {
-      this.project = project;
-      this.sprint = project.currentSprint;
+  onLoadSprint(project) {
+    this.project = project;
+    this.sprint = project.currentSprint;
 
-      this.fillColumns();
-      this.trigger({
-        users: project.users,
-        sprint: this.sprint
-      });
+    this.fillColumns();
+    this.trigger({
+      users: project.users,
+      sprint: this.sprint
     });
   },
 
@@ -57,10 +55,10 @@ const SprintStore = Reflux.createStore({
     this.trigger({sprint: this.sprint});
   },
 
-  onReorderTasksOnServer() {
-    // not called when reordered inside the same column
+  onReorderTasksOnServer(draggedId) {
     let ids = _.pluck(_.flatten(this.sprint.tasksByColumn), 'id');
-    projects.id(this.project.id).sprints.id(this.sprint.id).positions({positions: ids});
+    let index = _.indexOf(ids, draggedId);
+    projects.id(this.project.id).sprints.id(this.sprint.id).positions({id: draggedId, index: index});
   },
 
   findTask(id) {

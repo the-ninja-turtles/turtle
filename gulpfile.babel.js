@@ -10,7 +10,7 @@ try {
   require('./event-system/gulpfile.babel.js');
   require('./project-service/gulpfile.babel.js');
   require('./invitation-service/gulpfile.babel.js');
-} catch(err) {
+} catch (err) {
   console.log('please run gulp install first');
 }
 

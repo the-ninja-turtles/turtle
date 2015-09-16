@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
-import {ProjectActions, TaskFormActions} from '../actions/actions';
+import {TaskFormActions} from '../actions/actions';
 
 let TaskFormStore = Reflux.createStore({
-  listenables: [ProjectActions, TaskFormActions],
+  listenables: [TaskFormActions],
 
   onCreateTask() {
     this.trigger({action: 'create'});
@@ -31,7 +31,6 @@ let TaskFormStore = Reflux.createStore({
   },
 
   onDeleteTask(params) {
-    // console.log('params', params);
     projects.id(params.projectId).tasks.id(params.taskId).delete().then((response) => {
       if (!response) {
         this.trigger({success: true});

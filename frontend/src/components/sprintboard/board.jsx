@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
 import Reflux from 'reflux';
-import {SprintActions} from '../../actions/actions';
+import {SprintActions, ProjectActions} from '../../actions/actions';
+import ProjectStore from '../../stores/projectStore';
 import SprintStore from '../../stores/sprintStore';
 
 import {DragDropContext} from 'react-dnd';
@@ -25,11 +26,16 @@ let SprintBoard = React.createClass({
   },
 
   componentDidMount() {
-    this.listenTo(SprintStore, this.onStoreUpdate);
-    SprintActions.fetchSprint(this.state.id);
+    this.listenTo(ProjectStore, this.onProjectStoreUpdate);
+    this.listenTo(SprintStore, this.onSprintStoreUpdate);
+    ProjectActions.fetchProject(this.state.id);
   },
 
-  onStoreUpdate(data) {
+  onProjectStoreUpdate(data) {
+    SprintActions.loadSprint(data);
+  },
+
+  onSprintStoreUpdate(data) {
     this.setState(data);
   },
 

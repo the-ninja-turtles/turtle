@@ -62,9 +62,8 @@ Collection.prototype._path = function() {
 };
 
 Collection.prototype.on = function(event, callback) {
-  let self = this;
-  subscription().on(self.resource.singular, event, callback, (data) => {
-    return !self.parent || self.parent.id === data[self.parent.singular + '_id'];
+  subscription().on(this.resource.singular, event, callback, (data) => {
+    return !this.parent || this.parent.id === data[this.parent.parent.resource.singular + 'Id'];
   });
 };
 
@@ -103,9 +102,8 @@ Model.prototype._path = function() {
 };
 
 Model.prototype.on = function(event, callback) {
-  let self = this;
-  subscription().on(self.parent.resource.singular, event, callback, (data) => {
-    return self.id === data.id;
+  subscription().on(this.parent.resource.singular, event, callback, (data) => {
+    return this.id === data.id;
   });
 };
 

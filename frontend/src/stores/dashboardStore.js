@@ -8,10 +8,14 @@ let DashboardStore = Reflux.createStore({
 
   init() {
     this.projects = [];
-    projects.on('add', (data) => {
-      this.projects.push(data);
+    projects.on('add', (event) => {
+      EventActions.notify(event);
+      this.projects.push(event);
       this.trigger(this.projects);
-      EventActions.notify('project:add');
+    });
+
+    projects.on('delete', (event) => {
+      EventActions.notify(event);
     });
   },
 
@@ -23,7 +27,7 @@ let DashboardStore = Reflux.createStore({
   },
 
   onCreateProject(name, emails, cb) {
-    projects.create({name: name, emails: emails || []}).then(cb).then(this.onFetchProjects);
+    projects.create({name: name, emails: emails || []}).then(cb);
   },
 
   onDeleteProject(id) {

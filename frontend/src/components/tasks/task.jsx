@@ -32,7 +32,7 @@ const taskTarget = {
   drop(props, monitor) {
     const draggedId = monitor.getItem().id;
     if (props.isOnSprintboard) {
-      SprintActions.reorderTasksOnServer();
+      SprintActions.reorderTasksOnServer(draggedId);
     } else {
       TaskActions.updateTaskPosOnServer(draggedId);
     }

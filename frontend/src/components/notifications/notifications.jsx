@@ -13,41 +13,27 @@ let Notifications = React.createClass({
   },
 
   onStoreUpdate(event) {
-    let e = this.state[event];
-    e.isActive = true;
-    this.setState(e);
+    this.state.notifications.push({isActive: true, message: event.message});
+    this.setState({notifications: this.state.notifications});
   },
 
   getInitialState: function () {
     return {
-      'project:add': {
-        message: 'project:add',
-        isActive: false
-      },
-      'project:change': {
-        message: 'project:change',
-        isActive: false
-      },
-      'task:add': {
-        message: 'task:add',
-        isActive: false
-      },
-      'task:change': {
-        message: 'task:change',
-        isActive: false
-      }
+      notifications: []
     };
   },
 
-  onDismiss(event) {
-    let e = this.state[event];
-    e.isActive = false;
-    this.setState(e);
+  onDismiss(index) {
+    this.state.notifications[index].isActive = false;
+    this.setState({notifications: this.state.notifications});
   },
 
   render() {
-    let notifications = _.mapValues(this.state, (notification, key) => {
-      return (<Notification message={notification.message} isActive={notification.isActive} onDismiss={this.onDismiss.bind(this, key)} />);
+    let notifications = _.map(this.state.notifications, (notification, index) => {
+      if (notification.isActive) {
+        _.delay(this.onDismiss.bind(this), 2000, index);
+      }
+      return (<Notification key={index} message={notification.message} isActive={notification.isActive} action='' />);
     });
     return (<div className='notifications'>{notifications}</div>);
   }
