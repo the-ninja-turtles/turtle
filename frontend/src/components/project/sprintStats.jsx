@@ -1,17 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
-import {Navigation} from 'react-router';
 import {ProgressBar} from 'react-bootstrap';
-import {ProjectActions} from '../../actions/actions.js';
 
 let SprintStats = React.createClass({
-
-  mixins: [Navigation],
-
-  openSprintboard() {
-    this.transitionTo('sprint', {id: this.props.project});
-  },
-
   score() {
     return _.reduce(this.props.sprint.tasks, (acc, task) => {
       return acc + task.score;
@@ -40,34 +31,28 @@ let SprintStats = React.createClass({
     }, 0);
   },
 
-  timeSinceStart() {
-    let start = Date.parse(this.props.sprint.startDate);
-    return Date.now() - start;
-  },
-
-  endSprint() {
-    ProjectActions.endSprint();
-  },
-
   render() {
     let length = this.props.length * 24 * 3600 * 1000;
-    let current = this.timeSinceStart();
-    let days = Math.floor(current / (24 * 3600 * 1000));
-    let message = Math.abs(this.props.length - days) + ' days ' + (this.props.length > days ? 'left' : 'overdue');
+    let current = Date.now() - Date.parse(this.props.sprint.startDate);
+    let displayText = () => {
+      let difference = Math.abs(length - current);
+      let days = Math.floor(difference/1000/3600/24);
+      let hours = Math.floor(difference/1000/3600) - days * 24;
+      return `${days} day${days === 1 ? '' : 's'}, ${hours} hour${hours === 1 ? '' : 's'} ${length > current ? 'remaining' : 'overdue'}`;
+    };
 
-    let max = () => {
-      return Math.max(length, current);
+    let remaining = () => {
+      return Math.max(0, length - current)/length * 100;
     };
-    let green = () => {
-      return (length > current ? current : length) / max() * 100;
+
+    let overdue = () => {
+      return !!(current > length) * 100; // show entire bar red
     };
-    let red = () => {
-      return (current > length ? current - length : 0) / max() * 100;
-    };
+
     return (
       <div className='current-sprint-info'>
         <span className='info'>
-          <span className='info-block one-third text-left days-left'>{message}</span>
+          <span className='info-block one-third text-left days-left'><strong>Current Sprint</strong></span>
           <span className='info-block one-third text-center'>
             <span className='info-block-label'>Score</span>
             <span className='info-block-value'>{this.currScore()}/{this.score()}</span>
@@ -78,13 +63,12 @@ let SprintStats = React.createClass({
           </span>
         </span>
         <ProgressBar>
-          <ProgressBar bsStyle='success' now={green()} />
-          <ProgressBar bsStyle='danger' now={red()} />
+          <ProgressBar key={0} bsStyle='success' now={remaining()} label={displayText()} />
+          <ProgressBar key={1} bsStyle='danger' now={overdue()} label={displayText()} />
         </ProgressBar>
       </div>
     );
   }
-
 });
 
 export default SprintStats;
