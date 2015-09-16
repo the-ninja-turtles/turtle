@@ -145,6 +145,7 @@ test('POST /projects/:projectId/sprints/end should end the current ongoing sprin
       t.equal(sprint.status, 2, 'The prior ongoing sprint should now have status = 2 (complete)');
       t.equal(task.sprintId, null, 'Unfinished tasks should be moved to the backlog');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -181,6 +182,7 @@ test('POST /projects/:projectId/sprints/start should start the next sprint', (t)
     .then((sprint) => {
       t.equal(sprint.status, 1, 'The prior planning sprint should now have status = 1 (ongoing)');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -194,22 +196,42 @@ test('POST /projects/:projectId/sprints/start should start the next sprint', (t)
 });
 
 test('POST /projects/:projectId/sprints/:sprintId/positions should reorder tasks', (t) => {
+  spy.reset();
   let order;
 
   // find all tasks in this sprint, send a request to reverse the order
   return models.Task.findAll({where: {sprintId: sprintIds[1]}})
     .then((tasks) => {
-      order = R.reverse(R.pluck('id')(tasks));
+      order = R.pluck('id')(tasks);
+      order.push(order.shift());
       return request(app)
         .post(`/projects/${projectId}/sprints/${sprintIds[1]}/positions`)
         .set('Authorization', authorization(0))
-        .send({positions: order})
+        .send({
+          id: order[order.length - 1],
+          index: order.length - 1
+        })
         .expect(200);
     })
     .then((res) => {
       let tasks = res.body;
       t.pass('200 OK');
       t.assert(R.equals(R.pluck('id')(tasks), order), 'Tasks should be reordered');
+
+      t.comment('Event publication tests');
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'task:reorder', 'Event task:reorder should be published');
+      t.ok(acl.length, 'ACL should have at least 1 user');
+      t.equal(data.id, order[order.length - 1], 'Payload should have task id');
+      t.equal(data.oldIndex, 0, 'Payload should have old index');
+      t.equal(data.newIndex, order.length - 1, 'Payload should have new index');
+      t.ok(data.sprintId, 'Payload should have sprint id');
+      t.ok(data.projectId, 'Payload should have project id');
+      t.ok(data.initiator, 'Payload should have a initiator user id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
@@ -236,6 +258,7 @@ test('POST /projects/:projectId/sprints/:sprintId/assigntasks should add tasks t
   })
   // request to add backlog tasks to sprint
   .then((tasks) => {
+    spy.reset();
     testIds = R.pluck('id')(tasks);
     return request(app)
       .post(`/projects/${projectId}/sprints/${sprintIds[0]}/assigntasks`)
@@ -245,6 +268,21 @@ test('POST /projects/:projectId/sprints/:sprintId/assigntasks should add tasks t
   })
   .then((res) => {
     t.pass('204 NO CONTENT - tasks added to sprint');
+
+    t.comment('Event publication tests');
+    let args = spy.args[0];
+    let event = args[0];
+    let acl = args[1];
+    let data = args[2];
+    t.equal(event, 'sprint:assign', 'Event sprint:assign should be published');
+    t.ok(acl.length, 'ACL should have at least 1 user');
+    t.ok(Array.isArray(data.add), 'Payload should have tasks added array');
+    t.ok(Array.isArray(data.remove), 'Payload should have tasks removed array');
+    t.ok(data.sprintId, 'Payload should have sprint id');
+    t.ok(data.projectId, 'Payload should have project id');
+    t.ok(data.initiator, 'Payload should have a initiator user id');
+    t.ok(data.message, 'Payload should have a message');
+
     return models.Sprint.findOne(sprintParams);
   })
   .then((sprint) => {

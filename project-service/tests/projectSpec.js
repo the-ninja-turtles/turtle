@@ -100,6 +100,7 @@ test('POST /projects should create a new project', (t) => {
       t.assert(sprint, 'The new project should have a sprint');
       t.equal(sprint.status, 0, 'The sprint should have status = 0');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -188,6 +189,7 @@ test('PUT /projects/:projectId should modify project', (t) => {
       t.equal(project.length, params.length, 'Project length (sprint duration) should be updated');
       t.ok(project.updatedAt, 'Project should have updatedAt property');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -217,6 +219,7 @@ test('DELETE /projects/:projectId should delete a project and respond with 204',
     .then((project) => {
       t.notok(project, 'Project should no longer exist in database');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -231,16 +234,19 @@ test('DELETE /projects/:projectId should delete a project and respond with 204',
 });
 
 test('POST /projects/:projectId/positions should reorder the tasks in backlog', (t) => {
-  let reorder = [5, 3, 1, 4, 2]; // task ids
+  spy.reset();
   return request(app)
     .post(`/projects/${projectIds[0]}/positions`)
     .set('Authorization', authorization(0))
-    .send({positions: reorder})
+    .send({
+      id: 5,
+      index: 0
+    })
     .expect(200)
     .then((res) => {
       let backlog = res.body;
       t.pass('200 OK');
-      t.assert(R.equals(R.pluck('id')(backlog), reorder), 'Should respond with reordered tasks');
+      t.assert(R.equals(R.pluck('id')(backlog), [5, 1, 3, 4, 2]), 'Should respond with reordered tasks');
       return models.Task.findAll({
         where: {
           projectId: projectIds[0],
@@ -250,16 +256,34 @@ test('POST /projects/:projectId/positions should reorder the tasks in backlog', 
       });
     })
     .then((tasks) => {
-      t.assert(R.equals(R.pluck('id')(tasks), reorder), 'Tasks should be reordered when fetching project details');
+      t.assert(R.equals(R.pluck('id')(tasks), [5, 1, 3, 4, 2]), 'Tasks should be reordered when fetching project details');
+
+      t.comment('Event publication tests');
+      let args = spy.args[0];
+      let event = args[0];
+      let acl = args[1];
+      let data = args[2];
+      t.equal(event, 'task:reorder', 'Event task:reorder should be published');
+      t.ok(acl.length, 'ACL should have at least 1 user');
+      t.equal(data.id, 5, 'Payload should have task id');
+      t.equal(data.newIndex, 0, 'Payloud should have new index of task');
+      t.equal(data.oldIndex, 1, 'Payloud should have old index of task');
+      t.ok(data.status !== undefined, 'Payload should have task status');
+      t.ok(data.sprintId === null, 'Sprint id should be null');
+      t.ok(data.projectId, 'Payload should have project id');
+      t.ok(data.initiator, 'Payload should have a initiator user id');
+      t.ok(data.message, 'Payload should have a message');
     });
 });
 
 test('POST /projects/:projectId/positions should respond with 400 for invalid data params', (t) => {
-  let reorder = [1, 2, 3]; // missing task ids 4 and 5
   return request(app)
     .post(`/projects/${projectIds[0]}/positions`)
     .set('Authorization', authorization(0))
-    .send({positions: reorder})
+    .send({
+      id: 77, // non existent task
+      index: 0
+    })
     .expect(400)
     .then((res) => {
       t.pass('400 BAD REQUEST');
@@ -272,7 +296,7 @@ test('POST /projects/:projectId/positions should respond with 400 for invalid da
       });
     })
     .then((tasks) => {
-      t.assert(R.equals(R.pluck('id')(tasks), [5, 3, 1, 4, 2]), 'Tasks order should not have changed');
+      t.assert(R.equals(R.pluck('id')(tasks), [5, 1, 3, 4, 2]), 'Tasks order should not have changed');
     });
 });
 

@@ -99,6 +99,7 @@ test('POST /project/:projectId/tasks should create a new task', (t) => {
       t.equal(task.name, testTasks[3].name, 'Task name should match');
       t.equal(task.order, 1, 'Task should haver order = 1 (first task added in backlog)');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -196,6 +197,7 @@ test('PUT /project/:projectId/tasks/:taskId should modify task', (t) => {
 
       t.assert(match, 'Parameters should match');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
@@ -239,13 +241,16 @@ test('DELETE /project/:projectId/tasks/:taskId should delete a task and respond 
     .then((task) => {
       t.notok(task, 'Task should no longer exist');
 
+      t.comment('Event publication tests');
       let args = spy.args[0];
       let event = args[0];
       let acl = args[1];
       let data = args[2];
       t.equal(event, 'task:delete', 'Event task:delete should be published');
       t.ok(acl.length, 'ACL should include at least 1 user');
+      t.ok(data.id, 'Payload should include the task id');
       t.ok(data.initiator, 'Payload should include the initiator');
+      t.ok(data.sprintId, 'Payload should include sprint Id');
       t.ok(data.projectId, 'Payload should include project Id');
       t.ok(data.message, 'Payload should have a message');
     });
