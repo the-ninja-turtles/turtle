@@ -16,10 +16,12 @@ The name of the events will be further namespaced, such as `project:change`, `ta
 - [Sprints](#sprints)
   + [Start](#sprints-start)
   + [End](#sprints-end)
+  + [Assign](#sprints-assign)
 - [Tasks](#tasks)
   + [Add](#tasks-add)
   + [Change](#tasks-change)
   + [Delete](#tasks-delete)
+  + [Reorder](#tasks-reorder)
 
 <a name="projects"/>
 ## Projects
@@ -155,6 +157,35 @@ When a sprint is ended for the current project.
 }
 ```
 
+<a name="sprints-assign"/>
+### Assign
+
+Event when tasks are assigned or removed from a sprint. The `add` array contains task ids for tasks that were assigned to the sprint (`sprintId`). The `remove` array contains taks ids for tasks that were removed from the sprint (`sprintId`) to the project backlog.
+
+- **Event Name**
+  + `sprint:assign`
+- **Data Parameters**
+  + `add=[array]`
+  + `remove=[array]`
+  + `sprintId=[number]`
+  + `projectId=[number]`
+  + `initiator=[number]`
+  + `message=[string]`
+
+```json
+{
+  "event": "sprint:assign",
+  "data": {
+    "add": [1, 2, 3],
+    "remove": [],
+    "sprintId": 1,
+    "projectId": 1,
+    "initiator": 1,
+    "message": "Bojack has assigned tasks to the upcoming sprint."
+  }
+}
+```
+
 <a name="tasks"/>
 ## Tasks
 
@@ -254,9 +285,44 @@ Task deleted from current project. The payload will also include a `initiator` t
   "event": "task:delete",
   "data": {
     "id": 1,
+    "sprintId": 2,
     "projectId": 1,
     "initiator": 1,
     "message": "Bojack deleted a task from project Awesome Project."
+  }
+}
+```
+
+<a name="tasks-reorder"/>
+### Reorder
+
+Tasks got reordered in backlog or in a sprint. The payload will include an array of ids that represent the new order of the tasks.
+
+- **Event Name**
+  + `task:reorder`
+- **Data Parameters**
+  + Always
+    * `id=[number]`
+    * `status=[number]`
+    * `oldIndex=[number]`
+    * `newIndex=[number]`
+    * `sprintId=[number]`
+    * `projectId=[number]`
+    * `initiator=[number]`
+    * `message=[string]`
+
+```json
+{
+  "event": "task:reorder",
+  "data": {
+    "id": 1,
+    "status": 2,
+    "oldIndex": 0,
+    "newIndex": 3,
+    "sprintId": null,
+    "projectId": 1,
+    "initiator": 1,
+    "message": "Bojack reordered a task in the backlog."
   }
 }
 ```

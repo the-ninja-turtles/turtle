@@ -332,7 +332,7 @@ Delete an existing project. **All sprints and tasks for the project are also del
 <a name="external-projects-positions">
 ### Reorder Backlog Tasks
 
-Reorder the tasks in the project backlog by attaching an array of task IDs that represent the tasks' relative ranking. All tasks in the backlog need to be present in the `positions` array. Task IDs that do not correspond to tasks in the project backlog are ignored.
+Reposition a task to a certain index in the backlog. `index = 0` means positioning the task first.
 
 - **URL**
   + `/projects/:projectId/positions`
@@ -341,7 +341,8 @@ Reorder the tasks in the project backlog by attaching an array of task IDs that 
 - **Query Params**
   + None
 - **Data Params**
-  + `positions=[array]`
+  + `id=[number]`
+  + `index=[number]`
 - **Success Response**
   + Code: `200 OK`
   + Content:
@@ -632,7 +633,7 @@ Edit an existing sprint. The name cannot be empty.
 <a name="external-sprints-positions">
 ### Reorder Tasks in a Sprint
 
-Reorder the tasks in the sprintboard by attaching an array of task IDs that represents the tasks' relative ranking. Task IDs that do not correspond to tasks in this sprint are ignored.
+Reorder the tasks in the sprintboard by providing the tasks's `id` and the new `index` of the task. An `index` of 0 represents highest priority/ordered first.
 
 - **URL**
   + `/projects/:projectId/sprints/:sprintId/positions`
@@ -641,7 +642,8 @@ Reorder the tasks in the sprintboard by attaching an array of task IDs that repr
 - **Query Params**
   + None
 - **Data Params**
-  + `positions=[array]`
+  + `id=[number]`
+  + `index=[number]`
 - **Success Response**
   + Code: `200 OK`
   + Content:
