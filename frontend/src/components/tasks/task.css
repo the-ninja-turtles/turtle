@@ -4,50 +4,111 @@
   text-align: left;
   position: relative;
   margin: 0 10px 10px 10px;
+
+  .task-name {
+    background: #222;
+    color: #EEE;
+    display: block;
+    padding: 5px 20px;
+    font-size: 16px;
+  }
+
+  .task-description {
+    margin: 10px 0;
+    color: #222;
+    display: block;
+    padding: 5px 20px;
+  }
+
+  .task-username {
+    display: none;
+  }
+
+  .task-score {
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    font-weight: bold;
+    background: #FFF;
+    text-align: center;
+    border-radius: 100%;
+    display: block;
+    border: 1px solid #ccc;
+    position: absolute;
+    top: -5px;
+    right: 50px;
+  }
+
+  .task-picture {
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+    display: block;
+    background-size: 50px 50px;
+    border: 1px solid #ccc;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+  }
 }
 
-.task-name {
-  background: #222;
-  color: #EEE;
-  display: block;
-  padding: 5px 20px;
-  font-size: 16px;
-}
-
-.task-description {
-  margin: 10px 0;
-  color: #222;
-  display: block;
-  padding: 5px 20px;
-}
-
-.task-username {
-  display: none;
-}
-
-.task-score {
-  height: 40px;
-  width: 40px;
-  line-height: 40px;
-  font-weight: bold;
-  background: #FFF;
-  text-align: center;
-  border-radius: 100%;
-  display: block;
+.task-in-project-view{
   border: 1px solid #ccc;
-  position: absolute;
-  top: -5px;
-  right: 50px;
-}
+  height: 3.9em;
+  text-align: left;
+  position: relative;
+  margin: 0 10px 20px 10px;
+  width: 95%;
 
-.task-picture {
-  height: 50px;
-  width: 50px;
-  border-radius: 100%;
-  display: block;
-  background-size: 50px 50px;
-  border: 1px solid #ccc;
-  position: absolute;
-  top: -10px;
-  right: -10px;
+  .task-name {
+    display: block;
+    font-weight: bold;
+    max-width: 80%;
+    padding: 0.5em 0 0 0.5em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .task-description {
+    display: block;
+    padding: 0 0 0.5em 0.5em;
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .task-score {
+    display: block;
+    text-align: center;
+    padding-top: 0.3em;
+    min-width: 2em;
+    height: 2em;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: white;
+    background: #4d4d4c;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 100;
+    top: -1em;
+    right: -1em;
+  }
+
+  .task-username {
+    display: none;
+  }
+
+  .task-picture {
+    height: 3.9em;
+    width: 3.9em;
+    display: block;
+    position: absolute;
+    background-size: contain;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    border: 1px solid #ccc;
+  }
 }

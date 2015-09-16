@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react/addons';
+import Router from 'react-router';
 import {DragSource, DropTarget} from 'react-dnd';
 import {TaskActions, SprintActions, TaskFormActions} from '../../actions/actions.js';
 
@@ -53,6 +54,7 @@ let collectForDrop = (connect, monitor) => {
 };
 
 let Task = React.createClass({
+  mixins: [Router.State],
 
   editTask() {
     TaskFormActions.editTask({
@@ -87,7 +89,7 @@ let Task = React.createClass({
     };
 
     return connectDragSource(connectDropTarget(
-      <div className='task' style={taskStyle} onDoubleClick={this.editTask}>
+      <div className={this.isActive('sprint') ? 'task' : 'task-in-project-view'} style={taskStyle} onDoubleClick={this.editTask}>
         <span className='task-name'>{this.props.name}</span>
         <span className='task-description'>{this.props.description}</span>
         <span className='task-score'>{this.props.score}</span>
