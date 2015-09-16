@@ -31,7 +31,7 @@ let Notifications = React.createClass({
   render() {
     let notifications = _.map(this.state.notifications, (notification, index) => {
       if (notification.isActive) {
-        _.delay(this.onDismiss.bind(this), 2000, index);
+        _.delay(this.onDismiss, 2000, index);
       }
       return (<Notification key={index} message={notification.message} isActive={notification.isActive} action='' />);
     });
