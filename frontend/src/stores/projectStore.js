@@ -56,12 +56,9 @@ const ProjectStore = Reflux.createStore({
     projects.id(id).tasks.on('reorder', (event) => {
       EventActions.notify(event);
       let task = this.findTask(event.id);
-      let sprint = this.findSprint(event.sprintId);
-      console.log(task.name, event.newIndex);
-      console.log('before reorder', _.pluck(sprint, 'name'));
+      let destination = event.sprintId ? this.findSprint(event.sprintId) : this.project.backlog;
       task.container.splice(_.indexOf(task.container, task), 1);
-      sprint.splice(event.newIndex, 0, task);
-      console.log('after reorder', _.pluck(sprint, 'name'));
+      destination.splice(event.newIndex, 0, task);
       this.trigger(this.project);
     });
     projects.id(id).sprints.on('assign', (event) => {
@@ -69,6 +66,7 @@ const ProjectStore = Reflux.createStore({
       if (event.add.length) {
         _.each(event.add, (taskId) => {
           let task = this.findTask(taskId);
+          task.sprintId = event.sprintId;
           let index = _.indexOf(this.project.backlog, task);
           if (index > -1) {
             this.project.backlog.splice(index, 1);
@@ -79,6 +77,7 @@ const ProjectStore = Reflux.createStore({
       if (event.remove.length) {
         _.each(event.remove, (taskId) => {
           let task = this.findTask(taskId);
+          task.sprintId = null;
           let index = _.indexOf(this.project.nextSprint.tasks, task);
           if (index > -1) {
             this.project.nextSprint.tasks.splice(_.indexOf(this.project.nextSprint.tasks, task), 1);
@@ -154,7 +153,7 @@ const ProjectStore = Reflux.createStore({
         return projects.id(this.project.id).sprints.id(this.project.nextSprint.id).assigntasks(change).then(resolve);
       }
       resolve();
-    }).then(() => {
+    }).then((res) => {
       let ids = _.pluck(task.container, 'id');
       let index = _.indexOf(ids, taskId);
 
