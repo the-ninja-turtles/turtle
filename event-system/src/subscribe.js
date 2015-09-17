@@ -11,6 +11,7 @@ router.get('/subscribe/:namespace', (req, res) => {
   res.set('Content-Type', 'text/event-stream')
     .set('Cache-Control', 'no-cache')
     .set('Connection', 'keep-alive')
+    .set('X-Accel-Buffering', 'no')
     .write('\n');
 
   let subscriber = redis.createClient();
