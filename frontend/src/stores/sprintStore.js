@@ -55,7 +55,6 @@ const SprintStore = Reflux.createStore({
       return projects.id(this.project.id).tasks.id(task.id).update({status: newStatus}).then(resolve);
     })
     .then(() => {
-      console.log('reordering 123');
       let tasks = _.flatten(this.sprint.tasksByColumn);
       let ids = _.pluck(tasks, 'id');
       let index = _.indexOf(ids, taskId);

@@ -11,6 +11,7 @@ const ProjectStore = Reflux.createStore({
       this.registerEventHandlers(id);
     }
     projects.id(id).fetch().then((project) => {
+      console.log(project);
       if (project.currentSprint) {
         let sortedSprint = [];
         _.each(project.currentSprint.tasks, (task) => {
@@ -43,7 +44,7 @@ const ProjectStore = Reflux.createStore({
       let task = this.findTask(event.id);
       let oldStatus = task.status;
       _.extend(task, _.pick(event, 'name', 'score', 'description', 'userId', 'sprintId', 'status'));
-      if (task.status === oldStatus) {
+      if (task.status === oldStatus) { // if not equal, changes will be made on `reorder` event
         this.trigger(this.project);
       }
     });
