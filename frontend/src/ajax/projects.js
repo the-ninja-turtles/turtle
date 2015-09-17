@@ -117,4 +117,14 @@ let sprints = new Resource('sprints', 'sprint')
 let projects = new Resource('projects', 'project', [tasks, sprints])
   .define('positions', true);
 
-export default new Collection(projects);
+let lastId;
+let collection = new Collection(projects);
+collection.id = function(id) {
+  if (lastId && id !== lastId) {
+    lastId = id;
+    subscription().off();
+  }
+  return Collection.prototype.id.call(this, id);
+};
+
+export default collection;

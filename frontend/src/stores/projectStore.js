@@ -8,70 +8,76 @@ const ProjectStore = Reflux.createStore({
 
   onFetchProject(id) {
     if (!this.project || this.project.id !== id) {
-      projects.id(id).sprints.on('start', (event) => {
-        EventActions.notify(event);
-        projects.id(this.project.id).fetch()
-          .then((project) => {
-            this.trigger(project);
-          });
-      });
-      projects.id(id).sprints.on('end', (event) => {
-        EventActions.notify(event);
-      });
-      projects.id(id).tasks.on('add', (event) => {
-        EventActions.notify(event);
-        let sprint = this.findSprint(event.sprintId);
-        sprint.push(_.pick(event, 'id', 'name', 'score', 'description', 'userId', 'sprintId', 'status'));
-        this.trigger(this.project);
-      });
-      projects.id(id).tasks.on('change', (event) => {
-        EventActions.notify(event);
-        let task = this.findTask(event.id);
-        _.extend(task, _.pick(event, 'name', 'score', 'description', 'userId', 'sprintId', 'status'));
-        this.trigger(this.project);
-      });
-      projects.id(id).tasks.on('delete', (event) => {
-        EventActions.notify(event);
-        let task = this.findTask(event.id);
-        task.container.splice(_.indexOf(task.container, task), 1);
-        this.trigger(this.project);
-      });
-      projects.id(id).tasks.on('reorder', (event) => {
-        EventActions.notify(event);
-        let task = this.findTask(event.id);
-        let sprint = this.findSprint(event.sprintId);
-        task.container.splice(_.indexOf(task.container, task), 1);
-        sprint.splice(event.newIndex, 0, task);
-        this.trigger(this.project);
-      });
-      projects.id(id).sprints.on('assign', (event) => {
-        EventActions.notify(event);
-        let sprint = this.findSprint(event.sprintId);
-        if (event.add.length && !sprint.length) {
-          _.each(event.add, (taskId) => {
-            let task = this.findTask(taskId);
-            task.container.splice(_.indexOf(task.container, task), 1);
-            sprint.push(task);
-          });
-        }
-        if (event.remove.length && !this.project.backlog.length) {
-          _.each(event.remove, (taskId) => {
-            let task = this.findTask(taskId);
-            task.container.splice(_.indexOf(task.container, task), 1);
-            this.project.backlog.push(task);
-          });
-        }
-      });
+      this.registerEventHandlers(id);
     }
     projects.id(id).fetch().then((project) => {
-      let sortedSprint = [];
-      _.each(project.currentSprint.tasks, (task) => {
-        sortedSprint[task.status] = sortedSprint[task.status] || [];
-        sortedSprint[task.status].push(task);
-      });
-      project.currentSprint.tasks = _.flatten(_.compact(sortedSprint));
+      if (project.currentSprint) {
+        let sortedSprint = [];
+        _.each(project.currentSprint.tasks, (task) => {
+          sortedSprint[task.status] = sortedSprint[task.status] || [];
+          sortedSprint[task.status].push(task);
+        });
+        project.currentSprint.tasks = _.flatten(_.compact(sortedSprint));
+      }
       this.project = project;
       this.trigger(project);
+    });
+  },
+
+  registerEventHandlers(id) {
+    projects.id(id).sprints.on('start', (event) => {
+      EventActions.notify(event);
+      this.onFetchProject(id);
+    });
+    projects.id(id).sprints.on('end', (event) => {
+      EventActions.notify(event);
+    });
+    projects.id(id).tasks.on('add', (event) => {
+      EventActions.notify(event);
+      let sprint = this.findSprint(event.sprintId);
+      sprint.push(_.pick(event, 'id', 'name', 'score', 'description', 'userId', 'sprintId', 'status'));
+      this.trigger(this.project);
+    });
+    projects.id(id).tasks.on('change', (event) => {
+      EventActions.notify(event);
+      let task = this.findTask(event.id);
+      _.extend(task, _.pick(event, 'name', 'score', 'description', 'userId', 'sprintId', 'status'));
+      this.trigger(this.project);
+    });
+    projects.id(id).tasks.on('delete', (event) => {
+      EventActions.notify(event);
+      let task = this.findTask(event.id);
+      task.container.splice(_.indexOf(task.container, task), 1);
+      this.trigger(this.project);
+    });
+    projects.id(id).tasks.on('reorder', (event) => {
+      EventActions.notify(event);
+      let task = this.findTask(event.id);
+      let sprint = this.findSprint(event.sprintId);
+      console.log(task.name, event.newIndex);
+      console.log('before reorder', _.pluck(sprint, 'name'));
+      task.container.splice(_.indexOf(task.container, task), 1);
+      sprint.splice(event.newIndex, 0, task);
+      console.log('after reorder', _.pluck(sprint, 'name'));
+      this.trigger(this.project);
+    });
+    projects.id(id).sprints.on('assign', (event) => {
+      EventActions.notify(event);
+      let sprint = this.findSprint(event.sprintId);
+      if (event.add.length && !sprint.length) {
+        _.each(event.add, (taskId) => {
+          let task = this.findTask(taskId);
+          task.container.splice(_.indexOf(task.container, task), 1);
+          sprint.push(task);
+        });
+      }
+      if (event.remove.length && !this.project.backlog.length) {
+        _.each(event.remove, (taskId) => {
+          let task = this.findTask(taskId);
+          task.container.splice(_.indexOf(task.container, task), 1);
+          this.project.backlog.push(task);
+        });
+      }
     });
   },
 
@@ -164,10 +170,12 @@ const ProjectStore = Reflux.createStore({
       task.container = this.project.nextSprint.tasks;
       return task;
     }
-    task = _.findWhere(this.project.currentSprint.tasks, {id: taskId});
-    if (task) {
-      task.container = this.project.currentSprint.tasks;
-      return task;
+    if (this.project.currentSprint) {
+      task = _.findWhere(this.project.currentSprint.tasks, {id: taskId});
+      if (task) {
+        task.container = this.project.currentSprint.tasks;
+        return task;
+      }
     }
   },
 
