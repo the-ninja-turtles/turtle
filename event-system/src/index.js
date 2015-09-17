@@ -1,4 +1,5 @@
 import express from 'express';
+import morgan from 'morgan';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import auth from './auth.js';
@@ -9,6 +10,7 @@ import normalize from './normalize.js';
 let publicApp = express();
 let privateApp = express();
 
+publicApp.use(morgan('dev'));
 publicApp.use(cors());
 publicApp.use(normalize);
 publicApp.use(auth);
