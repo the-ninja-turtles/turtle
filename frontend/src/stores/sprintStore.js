@@ -8,12 +8,6 @@ const SprintStore = Reflux.createStore({
 
   columns: ['To Do', 'In Progress', 'Review', 'Done'],
 
-  onOpenTaskForm() {
-    this.trigger({
-      showModal: true
-    });
-  },
-
   onLoadSprint(project) {
     this.project = project;
     this.sprint = project.currentSprint;
