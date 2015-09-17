@@ -68,6 +68,7 @@ router.get('/', (req, res, next) => {
 /* === /projects/:projectId/sprints/start === */
 /* === /projects/:projectId/sprints/end === */
 
+let _processingStart = {}; // keep track of start processes for each project id
 router.post('/start', (req, res, next) => {
   models.Sprint.findAll({
     where: {
@@ -79,27 +80,35 @@ router.post('/start', (req, res, next) => {
     let currentSprint = R.find(R.propEq('status', 1))(sprints);
     let nextSprint = R.find(R.propEq('status', 0))(sprints);
 
+    if (_processingStart[req.project.id]) {
+      return res.status(200).json({error: 'This request is already in progress.'});
+    }
+
     if (currentSprint) {
       return res.status(400).json({error: 'There is already an ongoing sprint.'});
     }
 
-    Promise.all([
-      nextSprint.update({
-        status: 1,
-        startDate: new Date()
-      }),
-      req.project.createSprint() // create a new sprint in planning
-    ])
-    .then(() => {
-      res.sendStatus(204);
+    _processingStart[req.project.id] = true;
+    nextSprint.update({status: 1, startDate: new Date()})
+      .then(() => {
+        return req.project.getSprints({where: {status: 0}});
+      })
+      .then((sprints) => {
+        if (!sprints.length) {
+          return req.project.createSprint();
+        }
+      })
+      .then(() => {
+        res.sendStatus(204);
+        _processingStart[req.project.id] = false;
 
-      // publish
-      publish('sprint:start', req.project.acl, {
-        projectId: req.project.id,
-        initiator: req.user.model.id,
-        message: `A new sprint has been started for project ${req.project.name}.`
+        // publish
+        publish('sprint:start', req.project.acl, {
+          projectId: req.project.id,
+          initiator: req.user.model.id,
+          message: `A new sprint has been started for project ${req.project.name}.`
+        });
       });
-    });
   });
 });
 
