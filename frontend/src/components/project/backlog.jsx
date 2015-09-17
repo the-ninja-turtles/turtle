@@ -16,7 +16,7 @@ let Backlog = React.createClass({
 
   render() {
     return (
-      <div className='fill'>
+      <div className='vertical-flex-container'>
         <header className='task-container-header'>
           <TaskForm
             project={this.props.project}

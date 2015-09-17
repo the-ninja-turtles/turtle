@@ -44,7 +44,7 @@ let TaskContainer = React.createClass({
     return connectDropTarget(
       this.props.tasks.length ?
       (<div className='task-container'>{tasks}</div>) :
-      (<div className='task-container task-container-no-tasks'>{this.props.empty}</div>)
+      (<div className='task-container task-container-no-tasks'><span className='task-container-no-tasks-message'>{this.props.empty}</span></div>)
     );
   }
 

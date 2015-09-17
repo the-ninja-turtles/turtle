@@ -43,7 +43,7 @@ let Project = React.createClass({
       if (this.state.project.currentSprint && this.state.project.currentSprint.startDate) {
         NavbarActions.setHasCurrentSprint(true);
         return (
-          <div className='current-sprint two-thirds'>
+          <div className='current-sprint'>
             <SprintStats project={this.state.id} sprint={this.state.project.currentSprint} length={this.state.project.length} />
           </div>
         );
@@ -53,9 +53,9 @@ let Project = React.createClass({
     };
 
     return (
-      <div className='fill'>
+      <div className='container vertical-flex-container'>
         {current()}
-        <div className='flex-container two-thirds center-block'>
+        <div className='horizontal-flex-container'>
           <div className='flex-container-item half'>
             <Backlog project={this.state.id} tasks={this.state.project.backlog} users={this.state.project.users} />
           </div>

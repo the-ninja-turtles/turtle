@@ -12,7 +12,7 @@ let NextSprint = React.createClass({
 
   render() {
     return (
-      <div className='fill'>
+      <div className='vertical-flex-container'>
         <header className='task-container-header'>
           <h1 className='left'>Next sprint</h1>
           <span className='info-block right'>

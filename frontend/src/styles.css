@@ -13,33 +13,15 @@ html, body {
 }
 
 .app {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  width: 100%;
   padding-top: 50px;
 }
 
-.flex-container {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  padding: 5px;
-}
-
-.flex-container-item {
-  height: 100%;
-  padding: 5px;
-}
-
-.fill {
-  width: 100%;
-  height: 100%;
-}
-
-.one-third {
+.third {
   width: 33.33%;
-}
-
-.two-thirds {
-  width: 66.66%;
 }
 
 .half {
