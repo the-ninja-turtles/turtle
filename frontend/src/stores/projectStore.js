@@ -11,7 +11,6 @@ const ProjectStore = Reflux.createStore({
       this.registerEventHandlers(id);
     }
     projects.id(id).fetch().then((project) => {
-      console.log(project);
       if (project.currentSprint) {
         let sortedSprint = [];
         _.each(project.currentSprint.tasks, (task) => {
