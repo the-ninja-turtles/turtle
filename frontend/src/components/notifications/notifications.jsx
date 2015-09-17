@@ -13,29 +13,29 @@ let Notifications = React.createClass({
   },
 
   onStoreUpdate(event) {
-    this.state.notifications.push({isActive: true, message: event.message});
-    this.setState({notifications: this.state.notifications});
+    this.setState({isActive: true, message: event.message});
   },
 
   getInitialState: function () {
     return {
-      notifications: []
+      isActive: false,
+      message: ''
     };
   },
 
   onDismiss(index) {
-    this.state.notifications[index].isActive = false;
-    this.setState({notifications: this.state.notifications});
+    this.setState({isActive: false});
   },
 
   render() {
-    let notifications = _.map(this.state.notifications, (notification, index) => {
-      if (notification.isActive) {
-        _.delay(this.onDismiss, 2000, index);
-      }
-      return (<Notification key={index} message={notification.message} isActive={notification.isActive} action='' />);
-    });
-    return (<div className='notifications'>{notifications}</div>);
+    if (this.state.isActive) {
+      _.delay(this.onDismiss, 2000);
+    }
+    return (
+      <div className='notifications'>
+        <Notification message={this.state.message} isActive={this.state.isActive} action='' />
+      </div>
+    );
   }
 
 });
