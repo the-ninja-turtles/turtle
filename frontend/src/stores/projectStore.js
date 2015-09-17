@@ -64,6 +64,12 @@ const ProjectStore = Reflux.createStore({
       });
     }
     projects.id(id).fetch().then((project) => {
+      let sortedSprint = [];
+      _.each(project.currentSprint.tasks, (task) => {
+        sortedSprint[task.status] = sortedSprint[task.status] || [];
+        sortedSprint[task.status].push(task);
+      });
+      project.currentSprint.tasks = _.flatten(_.compact(sortedSprint));
       this.project = project;
       this.trigger(project);
     });

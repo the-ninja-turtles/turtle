@@ -27,10 +27,14 @@ const SprintStore = Reflux.createStore({
 
   fillColumns() {
     this.sprint.columns = this.columns;
-    this.sprint.tasksByColumn = [];
-    _.each(this.columns, (column, index) => {
-      this.sprint.tasksByColumn[index] = _.where(this.sprint.tasks, {status: index});
+    let tasksByColumn = _.map(new Array(this.columns.length), () => {
+      return [];
     });
+    _.each(this.sprint.tasks, (task) => {
+      tasksByColumn[task.status] = tasksByColumn[task.status] || [];
+      tasksByColumn[task.status].push(task);
+    });
+    this.sprint.tasksByColumn = tasksByColumn;
   },
 
   onUpdateTaskStatusLocally(params) {
@@ -55,10 +59,11 @@ const SprintStore = Reflux.createStore({
     this.trigger({sprint: this.sprint});
   },
 
-  onReorderTasksOnServer(draggedId) {
-    let ids = _.pluck(_.flatten(this.sprint.tasksByColumn), 'id');
-    let index = _.indexOf(ids, draggedId);
-    projects.id(this.project.id).sprints.id(this.sprint.id).positions({id: draggedId, index: index});
+  onReorderTasksOnServer(taskId) {
+    let tasks = _.flatten(this.sprint.tasksByColumn);
+    let ids = _.pluck(tasks, 'id');
+    let index = _.indexOf(ids, taskId);
+    projects.id(this.project.id).sprints.id(this.sprint.id).positions({id: taskId, index: index});
   },
 
   findTask(id) {
