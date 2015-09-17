@@ -9,9 +9,8 @@ export const DashboardActions = Reflux.createActions({
 export const SprintActions = Reflux.createActions({
   loadSprint: {},
   updateTaskStatusLocally: {},
-  updateTaskStatusOnServer: {},
   reorderTasksLocally: {},
-  reorderTasksOnServer: {}
+  updateTaskOnServer: {}
 });
 
 export const ProjectActions = Reflux.createActions({
@@ -34,13 +33,13 @@ export const EventActions = Reflux.createActions({
 });
 
 export const TaskActions = Reflux.createActions({
-  updateTaskPosLocally: {},
-  updateTaskPosOnServer: {}
+  updateTaskPosLocally: {}
 });
 
 export const TaskContainerActions = Reflux.createActions({
   addTaskToContainerLocally: {},
-  addTaskToContainerOnServer: {}
+  addTaskToContainerOnServer: {},
+  updateTaskOnServer: {}
 });
 
 export const TaskFormActions = Reflux.createActions({

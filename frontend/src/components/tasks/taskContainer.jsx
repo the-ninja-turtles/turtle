@@ -16,9 +16,7 @@ const target = {
   },
 
   drop(props, monitor) {
-    if (monitor.isOver({shallow: true})) {
-      TaskContainerActions.addTaskToContainerOnServer(monitor.getItem().id);
-    }
+    TaskContainerActions.updateTaskOnServer(monitor.getItem().id);
   }
 };
 

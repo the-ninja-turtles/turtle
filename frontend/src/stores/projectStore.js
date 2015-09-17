@@ -41,8 +41,11 @@ const ProjectStore = Reflux.createStore({
     projects.id(id).tasks.on('change', (event) => {
       EventActions.notify(event);
       let task = this.findTask(event.id);
+      let oldStatus = task.status;
       _.extend(task, _.pick(event, 'name', 'score', 'description', 'userId', 'sprintId', 'status'));
-      this.trigger(this.project);
+      if (task.status === oldStatus) {
+        this.trigger(this.project);
+      }
     });
     projects.id(id).tasks.on('delete', (event) => {
       EventActions.notify(event);
@@ -63,21 +66,27 @@ const ProjectStore = Reflux.createStore({
     });
     projects.id(id).sprints.on('assign', (event) => {
       EventActions.notify(event);
-      let sprint = this.findSprint(event.sprintId);
-      if (event.add.length && !sprint.length) {
+      if (event.add.length) {
         _.each(event.add, (taskId) => {
           let task = this.findTask(taskId);
-          task.container.splice(_.indexOf(task.container, task), 1);
-          sprint.push(task);
+          let index = _.indexOf(this.project.backlog, task);
+          if (index > -1) {
+            this.project.backlog.splice(index, 1);
+            this.project.nextSprint.tasks.push(task);
+          }
         });
       }
-      if (event.remove.length && !this.project.backlog.length) {
+      if (event.remove.length) {
         _.each(event.remove, (taskId) => {
           let task = this.findTask(taskId);
-          task.container.splice(_.indexOf(task.container, task), 1);
-          this.project.backlog.push(task);
+          let index = _.indexOf(this.project.nextSprint.tasks, task);
+          if (index > -1) {
+            this.project.nextSprint.tasks.splice(_.indexOf(this.project.nextSprint.tasks, task), 1);
+            this.project.backlog.push(task);
+          }
         });
       }
+      this.trigger(this.project);
     });
   },
 
@@ -115,48 +124,46 @@ const ProjectStore = Reflux.createStore({
     }
   },
 
-  onUpdateTaskPosOnServer(taskId) {
-    this.onAddTaskToContainerOnServer(taskId).then(() => {
-      let task = this.findTask(taskId);
-      let ids = _.pluck(task.container, 'id');
-      let index = _.indexOf(ids, taskId);
-
-      if (task.container === this.project.backlog) {
-        projects.id(this.project.id).positions({id: taskId, index: index});
-      } else {
-        projects.id(this.project.id).sprints.id(this.project.nextSprint.id).positions({id: taskId, index: index});
-      }
-    });
-  },
-
   onAddTaskToContainerLocally(params) {
     let task = this.findTask(params.taskId);
 
-    if (params.tasks !== task.container) {
-      task.container.splice(task.container.indexOf(task), 1);
+    task.container.splice(task.container.indexOf(task), 1);
 
-      if (task.container === this.project.backlog) {
-        this.project.nextSprint.tasks.push(task);
-      } else {
-        this.project.backlog.push(task);
-      }
-
-      this.trigger(this.project);
+    if (params.tasks === this.project.backlog) {
+      this.project.backlog.push(task);
+    } else {
+      this.project.nextSprint.tasks.push(task);
     }
+
+    this.trigger(this.project);
   },
 
-  onAddTaskToContainerOnServer(taskId) {
+  onUpdateTaskOnServer(taskId) {
     let task = this.findTask(taskId);
     let change = {
       add: [],
       remove: []
     };
-    if (task.container === this.project.backlog) {
+    if (task.sprintId && task.container === this.project.backlog) {
       change.remove.push(task.id);
-    } else {
+    } else if (!task.sprintId && task.container === this.project.nextSprint.tasks) {
       change.add.push(task.id);
     }
-    return projects.id(this.project.id).sprints.id(this.project.nextSprint.id).assigntasks(change);
+    new Promise((resolve) => {
+      if (change.add.length || change.remove.length) {
+        return projects.id(this.project.id).sprints.id(this.project.nextSprint.id).assigntasks(change).then(resolve);
+      }
+      resolve();
+    }).then(() => {
+      let ids = _.pluck(task.container, 'id');
+      let index = _.indexOf(ids, taskId);
+
+      if (task.container === this.project.backlog) {
+        return projects.id(this.project.id).positions({id: taskId, index: index});
+      } else {
+        return projects.id(this.project.id).sprints.id(this.project.nextSprint.id).positions({id: taskId, index: index});
+      }
+    });
   },
 
   findTask(taskId) {

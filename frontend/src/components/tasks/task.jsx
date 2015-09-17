@@ -29,15 +29,6 @@ const taskTarget = {
         TaskActions.updateTaskPosLocally(drag);
       }
     }
-  },
-
-  drop(props, monitor) {
-    const draggedId = monitor.getItem().id;
-    if (props.isOnSprintboard) {
-      SprintActions.reorderTasksOnServer(draggedId);
-    } else {
-      TaskActions.updateTaskPosOnServer(draggedId);
-    }
   }
 };
 

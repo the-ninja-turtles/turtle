@@ -23,9 +23,7 @@ const columnTarget = {
     let newStatus = props.id;
     // if the column is different from the one that the task is dragged from
     // update the task’s status
-    if (task.status !== props.id) {
-      SprintActions.updateTaskStatusOnServer({taskId: task.id, newStatus: newStatus});
-    }
+    SprintActions.updateTaskOnServer(task.id, newStatus);
   }
 };
 

@@ -46,9 +46,21 @@ const SprintStore = Reflux.createStore({
     }
   },
 
-  onUpdateTaskStatusOnServer(params) {
-    let task = this.findTask(params.taskId);
-    projects.id(this.project.id).tasks.id(task.id).update({status: params.newStatus});
+  onUpdateTaskOnServer(taskId, newStatus) {
+    let task = this.findTask(taskId);
+    new Promise((resolve) => {
+      if (task.status === newStatus) {
+        return resolve();
+      }
+      return projects.id(this.project.id).tasks.id(task.id).update({status: newStatus}).then(resolve);
+    })
+    .then(() => {
+      console.log('reordering 123');
+      let tasks = _.flatten(this.sprint.tasksByColumn);
+      let ids = _.pluck(tasks, 'id');
+      let index = _.indexOf(ids, taskId);
+      return projects.id(this.project.id).sprints.id(this.sprint.id).positions({id: taskId, index: index});
+    });
   },
 
   onReorderTasksLocally(params) {
@@ -57,16 +69,6 @@ const SprintStore = Reflux.createStore({
     draggedTask.container.splice(draggedTask.container.indexOf(draggedTask), 1);
     targetTask.container.splice(targetTask.container.indexOf(targetTask), 0, draggedTask);
     this.trigger({sprint: this.sprint});
-  },
-
-  onReorderTasksOnServer(taskId) {
-    let tasks = _.flatten(this.sprint.tasksByColumn);
-    let ids = _.pluck(tasks, 'id');
-    clear();
-    console.log('reordered', _.pluck(tasks, 'name'));
-    let index = _.indexOf(ids, taskId);
-    console.log(tasks[index].name, index);
-    projects.id(this.project.id).sprints.id(this.sprint.id).positions({id: taskId, index: index});
   },
 
   findTask(id) {
