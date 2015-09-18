@@ -3,12 +3,8 @@ import axios from 'axios';
 import auth from '../auth/auth.js';
 
 export let origin = _.memoize((sub, port) => {
-  let domain = window.location.hostname;
-  if (domain !== 'localhost') {
-    domain = sub + '.' + domain;
-  } else {
-    domain = domain + ':' + port;
-  }
+  let domain = window.location.hostname + ':' + port;
+
   return window.location.protocol + '//' + domain;
 });
 
