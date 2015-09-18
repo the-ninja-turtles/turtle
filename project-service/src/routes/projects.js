@@ -250,13 +250,27 @@ router.post('/:projectId/assignusers', (req, res, next) => {
     return res.status(400).json(msg.project[400]);
   }
 
-  Promise.all([
-    req.project.addUsers(req.body.add),
-    req.project.removeUsers(req.body.remove)
-  ])
-  .then(() => {
-    res.sendStatus(204);
-  });
+  // reject email of user making the request (user cannot remove themselves)
+  req.body.remove = R.reject(R.equals(req.user.model.email))(req.body.remove);
+  models.User.findAll({where: {email: {$in: R.concat(req.body.add, req.body.remove)}}})
+    .then((users) => {
+      let emailToId = (email) => {
+        let user = R.find(R.propEq('email', email))(users);
+        return user ? user.id : null;
+      };
+      let add = req.body.add.map(emailToId);
+      let remove = req.body.remove.map(emailToId);
+      add = R.filter(R.identity)(add);
+      remove = R.filter(R.identity)(remove);
+
+      return Promise.all([
+        req.project.addUsers(add),
+        req.project.removeUsers(remove)
+      ]);
+    })
+    .then(() => {
+      res.sendStatus(204);
+    });
 });
 
 

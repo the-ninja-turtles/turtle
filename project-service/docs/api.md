@@ -1020,7 +1020,7 @@ Delete an existing task.
 <a name="internal-projects-users"/>
 ### Add/Remove Users to/from Project
 
-Add or remove users to/from a project via users' id.
+Add or remove users to/from a project via users' email.
 
 - **URL**
   + `/projects/:projectId/assignusers`

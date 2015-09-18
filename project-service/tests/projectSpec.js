@@ -321,7 +321,7 @@ test('/projects should respond with 405 when using wrong HTTP method', (t) => {
 });
 
 test('Internal - POST /projects/:projectId/assignusers with add should add user(s) to project', (t) => {
-  let userId;
+  let userEmail;
   let params = {
     where: {id: projectIds[0]},
     include: [{model: models.User, as: 'users'}]
@@ -329,11 +329,11 @@ test('Internal - POST /projects/:projectId/assignusers with add should add user(
 
   return models.User.findOne({where: {auth0Id: profile(1).user_id}})
     .then((user) => {
-      userId = user.id;
+      userEmail = user.email;
       return request(app)
         .post(`/projects/${projectIds[0]}/assignusers`)
         .set('Authorization', authorization(0))
-        .send({add: [userId]})
+        .send({add: [userEmail]})
         .expect(204);
     })
     .then(() => {
@@ -342,12 +342,12 @@ test('Internal - POST /projects/:projectId/assignusers with add should add user(
     })
     .then((project) => {
       t.equal(project.users.length, 2, 'There should be 2 users associated with the project');
-      t.assert(R.find(R.propEq('id', userId))(project.users), 'Users should include the one added');
+      t.assert(R.find(R.propEq('email', userEmail))(project.users), 'Users should include the one added');
     });
 });
 
 test('Internal - POST /projects/:projectId/assignusers with remove should remove user(s) from project', (t) => {
-  let userId;
+  let userEmail;
   let params = {
     where: {id: projectIds[0]},
     include: [{model: models.User, as: 'users'}]
@@ -355,11 +355,11 @@ test('Internal - POST /projects/:projectId/assignusers with remove should remove
 
   return models.User.findOne({where: {auth0Id: profile(0).user_id}})
     .then((user) => {
-      userId = user.id;
+      userEmail = user.email;
       return request(app)
         .post(`/projects/${projectIds[0]}/assignusers`)
         .set('Authorization', authorization(1))
-        .send({remove: [userId]})
+        .send({remove: [userEmail]})
         .expect(204);
     })
     .then(() => {
@@ -368,7 +368,7 @@ test('Internal - POST /projects/:projectId/assignusers with remove should remove
     })
     .then((project) => {
       t.equal(project.users.length, 1, 'There should only be 1 user on this project');
-      t.assert(!R.find(R.propEq('id', userId))(project.users), 'The removed user should not be found');
+      t.assert(!R.find(R.propEq('email', userEmail))(project.users), 'The removed user should not be found');
     });
 });
 
