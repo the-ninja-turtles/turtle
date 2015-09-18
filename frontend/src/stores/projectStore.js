@@ -12,12 +12,7 @@ const ProjectStore = Reflux.createStore({
     }
     projects.id(id).fetch().then((project) => {
       if (project.currentSprint) {
-        let sortedSprint = [];
-        _.each(project.currentSprint.tasks, (task) => {
-          sortedSprint[task.status] = sortedSprint[task.status] || [];
-          sortedSprint[task.status].push(task);
-        });
-        project.currentSprint.tasks = _.flatten(_.compact(sortedSprint));
+        project.currentSprint.tasks = _.sortBy(project.currentSprint.tasks, 'status');
       }
       this.project = project;
       this.trigger(project);
@@ -25,13 +20,40 @@ const ProjectStore = Reflux.createStore({
   },
 
   registerEventHandlers(id) {
+
+    // sprint events
     projects.id(id).sprints.on('start', (event) => {
       EventActions.notify(event);
-      this.onFetchProject(id);
+      ProjectActions.fetchProject(id);
     });
     projects.id(id).sprints.on('end', (event) => {
       EventActions.notify(event);
+      ProjectActions.fetchProject(id);
     });
+    projects.id(id).sprints.on('assign', (event) => {
+      EventActions.notify(event);
+      _.each(event.add, (taskId) => {
+        let task = this.findTask(taskId);
+        task.sprintId = event.sprintId;
+        let index = _.indexOf(this.project.backlog, task);
+        if (index > -1) {
+          this.project.backlog.splice(index, 1);
+          this.project.nextSprint.tasks.push(task);
+        }
+      });
+      _.each(event.remove, (taskId) => {
+        let task = this.findTask(taskId);
+        task.sprintId = null;
+        let index = _.indexOf(this.project.nextSprint.tasks, task);
+        if (index > -1) {
+          this.project.nextSprint.tasks.splice(_.indexOf(this.project.nextSprint.tasks, task), 1);
+          this.project.backlog.push(task);
+        }
+      });
+      this.trigger(this.project);
+    });
+
+    // task events
     projects.id(id).tasks.on('add', (event) => {
       EventActions.notify(event);
       let sprint = this.findSprint(event.sprintId);
@@ -59,32 +81,6 @@ const ProjectStore = Reflux.createStore({
       let destination = event.sprintId ? this.findSprint(event.sprintId) : this.project.backlog;
       task.container.splice(_.indexOf(task.container, task), 1);
       destination.splice(event.newIndex, 0, task);
-      this.trigger(this.project);
-    });
-    projects.id(id).sprints.on('assign', (event) => {
-      EventActions.notify(event);
-      if (event.add.length) {
-        _.each(event.add, (taskId) => {
-          let task = this.findTask(taskId);
-          task.sprintId = event.sprintId;
-          let index = _.indexOf(this.project.backlog, task);
-          if (index > -1) {
-            this.project.backlog.splice(index, 1);
-            this.project.nextSprint.tasks.push(task);
-          }
-        });
-      }
-      if (event.remove.length) {
-        _.each(event.remove, (taskId) => {
-          let task = this.findTask(taskId);
-          task.sprintId = null;
-          let index = _.indexOf(this.project.nextSprint.tasks, task);
-          if (index > -1) {
-            this.project.nextSprint.tasks.splice(_.indexOf(this.project.nextSprint.tasks, task), 1);
-            this.project.backlog.push(task);
-          }
-        });
-      }
       this.trigger(this.project);
     });
   },

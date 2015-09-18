@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import Reflux from 'reflux';
+import Router from 'react-router';
 import {SprintActions, ProjectActions} from '../../actions/actions';
 import ProjectStore from '../../stores/projectStore';
 import SprintStore from '../../stores/sprintStore';
@@ -12,7 +13,7 @@ import SprintColumn from './column.jsx';
 import TaskForm from '../tasks/taskForm.jsx';
 
 let SprintBoard = React.createClass({
-  mixins: [Reflux.ListenerMixin],
+  mixins: [Reflux.ListenerMixin, Router.Navigation],
 
   getInitialState() {
     return {
@@ -31,8 +32,12 @@ let SprintBoard = React.createClass({
     ProjectActions.fetchProject(this.state.id);
   },
 
-  onProjectStoreUpdate(data) {
-    SprintActions.loadSprint(data);
+  onProjectStoreUpdate(project) {
+    if (!project.currentSprint) { // if no current sprint, transition to project view
+      this.transitionTo('project', {id: this.state.id});
+    } else {
+      SprintActions.loadSprint(project);
+    }
   },
 
   onSprintStoreUpdate(data) {
