@@ -2,7 +2,7 @@ import React from 'react/addons';
 import {Navigation} from 'react-router';
 import Reflux from 'reflux';
 import Item from './item.jsx';
-import CreateProject from './createProject.jsx';
+import ProjectForm from './projectForm.jsx';
 import {DashboardActions} from '../../actions/actions';
 import DashboardStore from '../../stores/dashboardStore';
 
@@ -15,7 +15,8 @@ let Dashboard = React.createClass({
   getInitialState() {
     return {
       projects: [],
-      showModal: false
+      showModal: false,
+      editProject: null
     };
   },
 
@@ -24,8 +25,11 @@ let Dashboard = React.createClass({
     DashboardActions.fetchProjects();
   },
 
-  onStoreUpdate(projects) {
-    this.setState({projects: projects});
+  onStoreUpdate(data) {
+    if (data.editProject) {
+      data.showModal = true;
+    }
+    this.setState(data);
   },
 
   enterProject(id) {
@@ -41,13 +45,16 @@ let Dashboard = React.createClass({
   },
 
   open() {
-    this.setState({showModal: true});
+    this.setState({
+      editProject: null,
+      showModal: true
+    });
   },
 
   render() {
     return (
       <div className='dashboard'>
-        <CreateProject showModal={this.state.showModal} close={this.close}/>
+        <ProjectForm showModal={this.state.showModal} project={this.state.editProject} close={this.close}/>
 
         <ul>
           <Item id='0' name='+ New Project' click={this.open} isCreateProject='true'/>

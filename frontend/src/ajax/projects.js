@@ -115,7 +115,8 @@ let sprints = new Resource('sprints', 'sprint')
   .define('positions', true)
   .define('assigntasks', true);
 let projects = new Resource('projects', 'project', [tasks, sprints])
-  .define('positions', true);
+  .define('positions', true)
+  .define('assignusers', true);
 
 let lastId;
 let collection = new Collection(projects);

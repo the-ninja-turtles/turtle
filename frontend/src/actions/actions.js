@@ -3,6 +3,8 @@ import Reflux from 'reflux';
 export const DashboardActions = Reflux.createActions({
   fetchProjects: {},
   createProject: {},
+  editProject: {},
+  saveProject: {},
   deleteProject: {}
 });
 

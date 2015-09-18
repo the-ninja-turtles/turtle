@@ -1,17 +1,17 @@
 import _ from 'lodash';
 import Reflux from 'reflux';
 import projects from '../ajax/projects';
-import {DashboardActions as Actions, EventActions} from '../actions/actions';
+import {DashboardActions, EventActions} from '../actions/actions';
 
 let DashboardStore = Reflux.createStore({
-  listenables: Actions,
+  listenables: DashboardActions,
 
   init() {
     this.projects = [];
     projects.on('add', (event) => {
       EventActions.notify(event);
       this.projects.push(event);
-      this.trigger(this.projects);
+      this.trigger({projects: this.projects});
     });
 
     projects.on('delete', (event) => {
@@ -22,12 +22,27 @@ let DashboardStore = Reflux.createStore({
   onFetchProjects() {
     projects.fetch().then((projects) => {
       this.projects = projects;
-      this.trigger(this.projects);
+      this.trigger({projects: this.projects});
     });
   },
 
   onCreateProject(name, emails, cb) {
     projects.create({name: name, emails: emails || []}).then(cb);
+  },
+
+  onEditProject(id) {
+    projects.id(id).fetch().then((project) => {
+      this.trigger({editProject: project});
+    });
+  },
+
+  onSaveProject(id, name, team, cb) {
+    projects.id(id).update({name}).then((response) => { // update name
+      return projects.id(id).assignusers({add: team.add, remove: team.remove}).then(() => {
+        DashboardActions.fetchProjects();
+        cb();
+      });
+    });
   },
 
   onDeleteProject(id) {

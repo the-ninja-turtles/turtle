@@ -123,6 +123,6 @@ textarea {
 @import "components/sprintboard/sprintboard.css";
 @import "components/project/project.css";
 @import "components/dashboard/dashboard.css";
-@import "components/dashboard/createProject.css";
+@import "components/dashboard/projectForm.css";
 @import "components/tasks/task.css";
 @import "components/tasks/taskForm.css";
