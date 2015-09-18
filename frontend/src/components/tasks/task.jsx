@@ -86,12 +86,14 @@ let Task = React.createClass({
     };
 
     return connectDragSource(connectDropTarget(
-      <div className={this.isActive('sprint') ? 'task' : 'task-in-project-view'} style={taskStyle} onDoubleClick={this.editTask}>
-        <div className='task-header'> </div>
-        <span className='task-name'>{this.props.name}</span>
-        <span className='task-description'>{this.props.description}</span>
-        <span className='task-score'>{this.props.score}</span>
-        {user()}
+      <div className={this.isActive('sprint') ? 'task-wrapper-sprint' : 'task-wrapper-project'}>
+        <div className='task' style={taskStyle} onDoubleClick={this.editTask}>
+          <div className='task-header'> </div>
+          <span className='task-name'>{this.props.name}</span>
+          <span className='task-description'>{this.props.description}</span>
+          <span className='task-score'>{this.props.score}</span>
+          {user()}
+        </div>
       </div>
     ));
   }

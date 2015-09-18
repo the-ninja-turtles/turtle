@@ -1,133 +1,149 @@
-.task {
-  border: 1px solid #ccc;
-  background: #ffffff;
-  color: black;
-  text-align: left;
-  position: relative;
-  margin: 0 10px 14px 10px;
-  padding-bottom: 3px;
-  border-radius: 4px;
+.task-wrapper-sprint {
+  padding-top: 14px;
 
-  .task-header {
-    background: #222;
-    color: #EEE;
-    padding: 5px 10px;
-    height: 30px;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
+  &:first-child {
+    padding-top: 0;
   }
 
-  .task-name {
-    display: block;
-    padding: 5px 10px 0 10px;
-    font-size: 16px;
-    font-weight: bold;
-  }
+  .task {
+    border: 1px solid #ccc;
+    background: #ffffff;
+    color: black;
+    text-align: left;
+    position: relative;
+    margin: 0 auto;
+    padding-bottom: 3px;
+    border-radius: 4px;
 
-  .task-description {
-    margin: 10px 0;
-    display: block;
-    padding: 0 10px;
-  }
+    .task-header {
+      background: #222;
+      color: #EEE;
+      padding: 5px 10px;
+      height: 30px;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px;
+    }
 
-  .task-username {
-    display: none;
-  }
+    .task-name {
+      display: block;
+      padding: 5px 10px 0 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
 
-  .task-score {
-    height: 28px;
-    width: 28px;
-    line-height: 28px;
-    font-weight: bold;
-    background: #4d4d4c;
-    color: white;
-    text-align: center;
-    border-radius: 100%;
-    display: block;
-    position: absolute;
-    top: 1px;
-    right: 2px;
-  }
+    .task-description {
+      margin: 10px 0;
+      display: block;
+      padding: 0 10px;
+    }
 
-  .task-picture {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    display: block;
-    text-align: center;
-    line-height: 40px;
-    background-color: #eee;
-    background-size: contain;
-    position: absolute;
-    top: -7px;
-    right: 36px;
-    box-shadow: 1px 1px 5px black;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    .task-username {
+      display: none;
+    }
+
+    .task-score {
+      height: 28px;
+      width: 28px;
+      line-height: 28px;
+      font-weight: bold;
+      background: #4d4d4c;
+      color: white;
+      text-align: center;
+      border-radius: 100%;
+      display: block;
+      position: absolute;
+      top: 1px;
+      right: 2px;
+    }
+
+    .task-picture {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      display: block;
+      text-align: center;
+      line-height: 40px;
+      background-color: #eee;
+      background-size: contain;
+      position: absolute;
+      top: -7px;
+      right: 36px;
+      box-shadow: 1px 1px 5px black;
+      box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    }
   }
 }
 
-.task-in-project-view{
-  border: 1px solid #ccc;
-  background: #f8f8f8;
-  height: 3.9em;
-  text-align: left;
-  position: relative;
-  margin: 18px 18px 0 0;
-  border-radius: 4px;
+.task-wrapper-project {
+  padding-top: 5px;
 
-  .task-name {
-    display: block;
-    font-weight: bold;
-    max-width: 80%;
-    padding: 0.5em 0 0 0.5em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .task {
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    height: 3.9em;
+    text-align: left;
+    position: relative;
+    margin: 0 18px 0 0;
+    border-radius: 4px;
 
-  .task-description {
-    display: block;
-    padding: 0 0 0.5em 0.5em;
-    max-width: 80%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    &:first-child {
+      margin-top: 14px;
+    }
 
-  .task-score {
-    display: block;
-    text-align: center;
-    padding-top: 0.3em;
-    min-width: 2em;
-    height: 2em;
-    font-weight: bold;
-    font-size: 1.1em;
-    color: white;
-    background: #4d4d4c;
-    border-radius: 50%;
-    position: absolute;
-    z-index: 100;
-    top: -1em;
-    right: -1em;
-  }
+    .task-name {
+      display: block;
+      font-weight: bold;
+      max-width: 80%;
+      padding: 0.5em 0 0 0.5em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-  .task-username {
-    display: none;
-  }
+    .task-description {
+      display: block;
+      padding: 0 0 0.5em 0.5em;
+      max-width: 80%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-  .task-picture {
-    width: 3.9em;
-    line-height: 3.9em;
-    text-align: center;
-    display: block;
-    position: absolute;
-    background-color: #eee;
-    background-size: cover;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    .task-score {
+      display: block;
+      text-align: center;
+      padding-top: 0.3em;
+      min-width: 2em;
+      height: 2em;
+      font-weight: bold;
+      font-size: 1.1em;
+      color: white;
+      background: #4d4d4c;
+      border-radius: 50%;
+      position: absolute;
+      z-index: 100;
+      top: -1em;
+      right: -1em;
+    }
+
+    .task-username {
+      display: none;
+    }
+
+    .task-picture {
+      width: 3.9em;
+      line-height: 3.9em;
+      text-align: center;
+      display: block;
+      position: absolute;
+      background-color: #eee;
+      background-size: cover;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
   }
 }
