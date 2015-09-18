@@ -1,17 +1,31 @@
+import _ from 'lodash';
 import React from 'react';
 import {Modal, Input, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import Member from './member.jsx';
-import {DashboardActions as Actions} from '../../actions/actions.js';
+import {DashboardActions} from '../../actions/actions.js';
 
 let CreateProject = React.createClass({
+
   getInitialState() {
     return {
       projectName: '',
       invitees: [],
       inviteeEmail: '',
       disableInvite: true,
-      disableCreate: true
+      disableSubmit: true
     };
+  },
+
+  componentWillReceiveProps(nextProps) {
+    let project = nextProps.project;
+    if (project) {
+      this.setState({
+        projectName: project.name,
+        invitees: _.pluck(project.users, 'email')
+      });
+    } else {
+      this.setState(this.getInitialState());
+    }
   },
 
   checkEmail(e) {
@@ -23,36 +37,57 @@ let CreateProject = React.createClass({
   },
 
   invite() {
-    // let email = React.findDOMNode(this.refs.inviteeEmail).value;
     let email = this.refs.inviteeEmail.getValue();
     if (email) {
       let invitees = this.state.invitees.slice();
       invitees.push(email);
-      this.setState({
-        invitees: invitees,
+      let data = {
+        invitees,
         inviteeEmail: '',
         disableInvite: true
-      });
+      };
+      if (this.props.project) {
+        data.disableSubmit = false;
+      }
+
+      this.setState(data);
     }
   },
 
   removeInvite(index) {
     let invitees = this.state.invitees.slice();
     invitees.splice(index, 1);
-    this.setState({invitees: invitees});
+
+    let data = {invitees: invitees};
+    if (this.props.project) {
+      data.disableSubmit = false;
+    }
+
+    this.setState(data);
   },
 
   checkName(e) {
     this.setState({
-      disableCreate: !e.target.value,
+      disableSubmit: !e.target.value,
       projectName: e.target.value.substr(0, 40)
     });
   },
 
   createProject() {
-    let name = React.findDOMNode(this.refs.projectName).value;
-    if (name) {
-      Actions.createProject(name, this.state.invitees, (response) => { // check `response.error` for error
+    if (this.state.projectName) {
+      DashboardActions.createProject(this.state.projectName, this.state.invitees, (response) => { // check `response.error` for error
+        this.close();
+      });
+    }
+  },
+
+  saveProject() {
+    if (this.state.projectName) {
+      let team = {
+        add: _.without.apply(null, [this.state.invitees].concat(_.pluck(this.props.project.users, 'email'))),
+        remove: _.without.apply(null, [_.pluck(this.props.project.users, 'email')].concat(this.state.invitees))
+      };
+      DashboardActions.saveProject(this.props.project.id, this.state.projectName, team, (response) => {
         this.close();
       });
     }
@@ -97,10 +132,48 @@ let CreateProject = React.createClass({
       <Tooltip id='project-letter-count'>{40 - this.state.projectName.length}</Tooltip>
     );
 
+    let title = () => {
+      return this.props.project ? 'Edit Project' : 'Create a New Project';
+    };
+
+    let createButton = () => {
+      return this.props.project ? null : (
+        <button
+          className='btn block primary'
+          onClick={this.createProject}
+          disabled={this.state.disableSubmit}
+        >
+          Create project
+        </button>
+      );
+    };
+
+    let saveAndCancelButton = () => {
+      return this.props.project ? (
+        <div>
+          <button
+            className='btn primary'
+            style={{display: 'inline-block'}}
+            onClick={this.close}
+          >
+            Cancel
+          </button>
+          <button
+            className='btn primary'
+            style={{display: 'inline-block'}}
+            onClick={this.saveProject}
+            disabled={this.state.disableSubmit}
+          >
+            Save
+          </button>
+        </div>
+      ) : null;
+    };
+
     return (
       <Modal show={this.props.showModal} onHide={this.close} dialogClassName='modal-create-project'>
         <Modal.Header closeButton>
-          <Modal.Title>Create a New Project</Modal.Title>
+          <Modal.Title>{title()}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
@@ -136,13 +209,8 @@ let CreateProject = React.createClass({
         </Modal.Body>
 
         <Modal.Footer>
-          <button
-            className='btn block primary'
-            onClick={this.createProject}
-            disabled={this.state.disableCreate}
-          >
-            Create project
-          </button>
+          {createButton()}
+          {saveAndCancelButton()}
         </Modal.Footer>
       </Modal>
     );

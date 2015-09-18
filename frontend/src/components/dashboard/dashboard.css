@@ -31,11 +31,15 @@
     position: absolute;
     display: none;
     text-shadow: none;
-    font-size: 30px;
+    font-size: 20px;
   }
   .close:focus,
   .close:active {
     outline: none;
+  }
+  .edit {
+    left: 6px;
+    font-size: 18px
   }
 }
 
