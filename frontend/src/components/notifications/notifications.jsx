@@ -1,4 +1,4 @@
-import _ from 'lodash';
+// import _ from 'lodash';
 import React from 'react';
 import Reflux from 'reflux';
 import Notification from 'react-notification';
@@ -23,21 +23,34 @@ let Notifications = React.createClass({
     };
   },
 
-  onDismiss(index) {
+  getNotificationStyles() {
+    let bar = {
+      backgroundColor: '#61ACEA',
+      zIndex: '999999',
+      fontSize: '16px !important'
+    };
+
+    return {bar};
+  },
+
+  onDismiss() {
     this.setState({isActive: false});
   },
 
   render() {
-    if (this.state.isActive) {
-      _.delay(this.onDismiss, 2000);
-    }
     return (
-      <div className='notifications'>
-        <Notification message={this.state.message} isActive={this.state.isActive} action='' />
+      <div>
+        <Notification
+          isActive={this.state.isActive}
+          message={this.state.message}
+          action=''
+          style={this.getNotificationStyles()}
+          dismissAfter={2000}
+          onDismiss={this.onDismiss}
+        />
       </div>
     );
   }
-
 });
 
 export default Notifications;

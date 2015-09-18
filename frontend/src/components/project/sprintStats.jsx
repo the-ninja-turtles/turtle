@@ -52,13 +52,13 @@ let SprintStats = React.createClass({
     return (
       <div className='current-sprint-info'>
         <span className='info'>
-          <span className='info-block third text-left days-left'><strong>Current Sprint</strong></span>
+          <span className='info-block third text-left days-left'><strong>Current Sprint Information</strong></span>
           <span className='info-block third text-center'>
-            <span className='info-block-label'>Score</span>
+            <span className='info-block-label'>Score: </span>
             <span className='info-block-value'>{this.currScore()}/{this.score()}</span>
           </span>
           <span className='info-block third text-right'>
-            <span className='info-block-label'>Tasks</span>
+            <span className='info-block-label'>Completed Tasks: </span>
             <span className='info-block-score'>{this.currTasks()}/{this.tasks()}</span>
           </span>
         </span>

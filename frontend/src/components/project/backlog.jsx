@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import TaskContainer from '../tasks/taskContainer.jsx';
 import TaskForm from '../tasks/taskForm.jsx';
@@ -8,6 +9,12 @@ let Backlog = React.createClass({
     project: React.PropTypes.number.isRequired,
     users: React.PropTypes.array.isRequired,
     tasks: React.PropTypes.array.isRequired
+  },
+
+  score() {
+    return _.reduce(this.props.tasks, (acc, task) => {
+      return acc + task.score;
+    }, 0);
   },
 
   createTask() {
@@ -23,6 +30,9 @@ let Backlog = React.createClass({
             users={this.props.users}
           />
           <h1 className='left'>Backlog</h1>
+          <div className='info-block'>
+            <span className='info-block-value'>{this.score()}</span>
+          </div>
           <button className='btn primary right' onClick={this.createTask}>+ New Task</button>
           <div className='clearfix'></div>
         </header>

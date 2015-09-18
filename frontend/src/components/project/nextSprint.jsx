@@ -14,11 +14,10 @@ let NextSprint = React.createClass({
     return (
       <div className='vertical-flex-container'>
         <header className='task-container-header'>
-          <h1 className='left'>Next sprint</h1>
-          <span className='info-block right'>
-            <span className='info-block-label'>Score</span>
+          <h1 className='left'>Next Sprint</h1>
+          <div className='info-block'>
             <span className='info-block-value'>{this.score()}</span>
-          </span>
+          </div>
           <div className='clearfix'></div>
         </header>
         <TaskContainer tasks={this.props.tasks} users={this.props.users}

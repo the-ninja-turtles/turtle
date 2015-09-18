@@ -75,16 +75,16 @@ let App = React.createClass({
     let startEndSprint = () => {
       if (this.isActive('project')) {
         if (!this.state.hasCurrentSprint) {
-          return btn(<button className='btn primary' onClick={this.startSprint}>Start sprint</button>);
+          return btn(<button className='btn primary' onClick={this.startSprint}>Start Sprint</button>);
         } else {
-          return btn(<button className='btn danger' onClick={this.endSprint}>End sprint</button>);
+          return btn(<button className='btn danger' onClick={this.endSprint}>End Sprint</button>);
         }
       }
     };
 
     let gotoSprintboard = () => {
       if (this.isActive('project') && this.state.hasCurrentSprint) {
-        return btn(<button className='btn primary' onClick={this.goToSprintboard}>Open sprintboard</button>);
+        return btn(<button className='btn primary' onClick={this.goToSprintboard}>Open Sprintboard</button>);
       }
     };
 
