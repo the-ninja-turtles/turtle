@@ -4,7 +4,7 @@ import {Modal, Input, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import Member from './member.jsx';
 import {DashboardActions} from '../../actions/actions.js';
 
-let CreateProject = React.createClass({
+let ProjectForm = React.createClass({
 
   getInitialState() {
     return {
@@ -217,4 +217,4 @@ let CreateProject = React.createClass({
   }
 });
 
-export default CreateProject;
+export default ProjectForm;

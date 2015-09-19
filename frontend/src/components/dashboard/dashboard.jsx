@@ -2,7 +2,7 @@ import React from 'react/addons';
 import {Navigation} from 'react-router';
 import Reflux from 'reflux';
 import Item from './item.jsx';
-import CreateProject from './projectForm.jsx';
+import ProjectForm from './projectForm.jsx';
 import {DashboardActions} from '../../actions/actions';
 import DashboardStore from '../../stores/dashboardStore';
 
@@ -54,7 +54,7 @@ let Dashboard = React.createClass({
   render() {
     return (
       <div className='dashboard'>
-        <CreateProject showModal={this.state.showModal} project={this.state.editProject} close={this.close}/>
+        <ProjectForm showModal={this.state.showModal} project={this.state.editProject} close={this.close}/>
 
         <ul>
           <Item id='0' name='+ New Project' click={this.open} isCreateProject='true'/>
